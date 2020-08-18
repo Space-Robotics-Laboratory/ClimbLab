@@ -1,6 +1,7 @@
 # Ignore figure files
 *.eps
 *.png
+!docs/media/*.png
 *.fig
 
 # Ignore files inside data
