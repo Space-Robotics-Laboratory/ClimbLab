@@ -3,8 +3,9 @@ Matlab climbing and walking simulation platform for limbed robotics
 
 Author(s) and maintainer(s): [Space Robotics Lab.](http://www.astro.mech.tohoku.ac.jp/e/index.html) Climbing Robotics Team
 
-![logo.png](./docs/media/logo.png)![ex1_uneven_dynamic_fixed_stride.gif](./docs/media/ex1_uneven_dynamic_fixed_stride.gif)
-![ex2_flat_kinematic_Uno-gait-planning.gif](./docs/media/ex2_flat_kinematic_Uno-gait-planning.gif) ![ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif](./docs/media/ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif)
+[ex1_uneven_dynamic_fixed_stride.gif](./docs/media/ex1_uneven_dynamic_fixed_stride.gif)
+![ex2_flat_kinematic_Uno-gait-planning.gif](./docs/media/ex2_flat_kinematic_Uno-gait-planning.gif)
+![ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif](./docs/media/ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif)
 
 climbing simulator is ...
 
