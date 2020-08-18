@@ -1,0 +1,18 @@
+# Ignore figure files
+*.eps
+*.png
+*.fig
+
+# Ignore files inside data
+dat/
+!dat/dat_README.md
+*.csv
+*.dat
+*.avi
+
+# Ignore USER configuration file
+/config/USER/*
+!/config/USER/config_USER_param_template.m
+
+# Ignore MATLAB temporary files
+*.asv
