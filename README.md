@@ -15,7 +15,7 @@ The source code is released under a [BSD 3-Clause license](./LICENSE).
 
 ## Overview
 This simulator wraps up functions for:
-* [x] Dynamic analysis and simulation of articulated multi-body systems with a floating base (*This is performed by [SpaceDyn](http://www.astro.mech.tohoku.ac.jp/spacedyn/) *[1])
+* [x] Dynamic analysis and simulation of articulated multi-body systems with a floating base (*This is performed by [SpaceDyn](http://www.astro.mech.tohoku.ac.jp/spacedyn/)* [1])
 * [x] Design of legged robotic system
 * [x] Environment demonstration (any terrain shape, inclination, and gravity) 
 * [x] Visualization (Robot, map, support polygons, stability criterion, and time-history of any state variables) 
