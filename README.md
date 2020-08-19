@@ -23,7 +23,7 @@ This simulator wraps up functions for:
 #### Simulation examples
 | ![ex1_uneven_dynamic_fixed_stride.gif](./docs/media/ex1_uneven_dynamic_fixed_stride.gif) | ![ex2_flat_kinematic_Uno-gait-planning.gif](./docs/media/ex2_flat_kinematic_Uno-gait-planning.gif) |![GIA-poly-hedoron.png](./docs/media/GIA-poly-hedoron.png)|
 |--------|--------|--------|
-| Standard gait on uneven terrain | Optimal foothold selection on descrete grippable points [2] | Stability region visualization [3] |
+| 1) Standard gait on uneven terrain | 2) Optimal foothold selection on descrete grippable points [2] | 3) Stability region visualization [3] |
 
 ## Usage
 
@@ -41,7 +41,7 @@ We confirmed the code is working with:
 * Setup the parameters as you want
 * Run `climb_main.m` file (**Note: MATLAB might ask you to change folder or add path. Choose to "add path"**)
 
-## References
+## Publications
 [1] K. Yoshida et. al., "[The SpaceDyn: a MATLAB toolbox for space and mobile robots](https://ieeexplore.ieee.org/document/811712)", Proceedings of the 1999 IEEE/RSJ International Conference on Intelligent Robots and Systems. Human and Environment Friendly Robots with High Intelligence and Emotional Quotients (Cat. No.99CH36289), Kyongju, South Korea, 1999, pp. 1633-1638 vol.3, doi: 10.1109/IROS.1999.811712.
 
 [2] K. Uno et al., "[Gait Planning for a Free-Climbing Robot Based on Tumble Stability](https://ieeexplore.ieee.org/document/8700455)", Proceedings of the 2019 IEEE/SICE International Symposium on System Integration (SII), Paris, France, 2019, pp. 289-294, doi: 10.1109/SII.2019.8700455.
