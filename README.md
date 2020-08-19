@@ -11,7 +11,7 @@ Author(s) and maintainer(s): [Space Robotics Lab.](http://www.astro.mech.tohoku.
 
 The climbing simulator is being developed by the Climbing Robotics Team in [Space Robotics Laboratory](http://www.astro.mech.tohoku.ac.jp/e/index.html) at Tohoku University, Japan. 
 
-The source code is released under a BSD 3-Clause license.
+The source code is released under a [BSD 3-Clause license](./LICENSE).
 
 ## Overview
 This simulator wraps up functions for:
@@ -49,3 +49,4 @@ We confirmed the code is working with:
 [3] W. F. R. Ribeiro et al., "[Dynamic Equilibrium of Climbing Robots based on Stability Polyhedron for Gravito-Inertial Acceleration]()", Proceedings of the 23rd International Conference on Climbing and Walking Robots and the Support Technologies for Mobile Machines, (remote conference), 2020.
 
 ## FAQ
+Please contact us (limb@astro.mech.tohoku.ac.jp) if there is any questions and suggestions
