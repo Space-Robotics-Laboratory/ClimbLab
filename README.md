@@ -1,8 +1,8 @@
 # climbing simulator
 
-![ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif](./docs/media/ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif)
+**Matlab climbing and walking simulation platform for limbed robots**
 
-Matlab climbing and walking simulation platform for limbed robots
+![ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif](./docs/media/ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif)
 
 Author(s) and maintainer(s): [Space Robotics Lab.](http://www.astro.mech.tohoku.ac.jp/e/index.html) Climbing Robotics Team
 
@@ -14,13 +14,13 @@ The climbing simulator is being developed by the Climbing Robotics Team in [Spac
 The source code is released under a BSD 3-Clause license.
 
 ## Overview
-This simulator wraps up the following functions
-- [x] Dynamic analysis and simulation of articulated multi-body systems with a floating base by [SpaceDyn](http://www.astro.mech.tohoku.ac.jp/spacedyn/) [1]
-- [x] Any legged robots design by editting the link parameter file
-- [x] Environment settings (terrain shape, gravity, and inclination) 
-- [x] A plenty number of visualization function (Robot, map, support polygons, stability criterion, and time-history of any state variables) 
+This simulator wraps up functions for:
+- [x] Dynamic analysis and simulation of articulated multi-body systems with a floating base (*This is performed by [SpaceDyn](http://www.astro.mech.tohoku.ac.jp/spacedyn/) *[1])
+- [x] Design of legged robotic system
+- [x] Environment demonstration (any terrain shape, inclination, and gravity) 
+- [x] Visualization (Robot, map, support polygons, stability criterion, and time-history of any state variables) 
 
-
+#### Simulation examples
 | ![ex1_uneven_dynamic_fixed_stride.gif](./docs/media/ex1_uneven_dynamic_fixed_stride.gif) | ![ex2_flat_kinematic_Uno-gait-planning.gif](./docs/media/ex2_flat_kinematic_Uno-gait-planning.gif) |![GIA-poly-hedoron.png](./docs/media/GIA-poly-hedoron.png)|
 |--------|--------|--------|
 | Standard gait on uneven terrain | Optimal foothold selection on descrete grippable points [2] | Stability region visualization [3] |
@@ -28,13 +28,13 @@ This simulator wraps up the following functions
 ## Usage
 
 #### Requirements
-We confirmed the code is working with the following function.
+We confirmed the code is working with:
 - Matlab 2018b or higher
 - [SpaceDyn](http://www.astro.mech.tohoku.ac.jp/spacedyn/) [1] - a MATLAB Toolbox for Space and Mobile Robots (version 2, release 0)
  - SpaceDyn toolbox v2r0 is also installed by cloning this repository (under `lib/spacedyn_v2r0`)
 
 #### Build and Run
-- Download the files from this repository.
+- Download the files from this repository
 - Open MATLAB
 - Select `climbing_simulator/` as the current folder for MATLAB
   * You should see `dat/`, `lib/` and `src/` directories under it
