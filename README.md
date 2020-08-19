@@ -1,5 +1,5 @@
 # climbing simulator
-Matlab climbing and walking simulation platform for limbed robotics
+Matlab climbing and walking simulation platform for limbed robots
 
 Author(s) and maintainer(s): [Space Robotics Lab.](http://www.astro.mech.tohoku.ac.jp/e/index.html) Climbing Robotics Team
 
@@ -7,7 +7,7 @@ Author(s) and maintainer(s): [Space Robotics Lab.](http://www.astro.mech.tohoku.
 ![ex2_flat_kinematic_Uno-gait-planning.gif](./docs/media/ex2_flat_kinematic_Uno-gait-planning.gif)
 ![ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif](./docs/media/ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif)
 
-climbing simulator is ...
+The climbing simulator is being developed by the Climbing Robotics Team in [Space Robotics Laboratory (SRL)](http://www.astro.mech.tohoku.ac.jp/e/index.html) at Tohoku University, Japan. 
 
 The source code is released under a BSD 3-Clause license.
 
@@ -17,7 +17,7 @@ The source code is released under a BSD 3-Clause license.
 We confirmed the code is working with the following function.
 - Matlab 2020
 - [SpaceDyn](http://www.astro.mech.tohoku.ac.jp/spacedyn/) [1] - a MATLAB Toolbox for Space and Mobile Robots (>= version 2, release 0)
-- SpaceDyn toolbox v2r0 is also installed by cloning this repository (under `lib/spacedyn_v2r0`)
+ - SpaceDyn toolbox v2r0 is also installed by cloning this repository (under `lib/spacedyn_v2r0`)
 
 #### Build and Run
 - Download the files from this repository.
