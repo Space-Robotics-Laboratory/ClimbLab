@@ -1,13 +1,17 @@
 # climbing simulator
 Matlab climbing and walking simulation platform for limbed robots
 
+[![srl-logo-original.jpg](./docs/media/srl-logo-original.jpg)](http://www.astro.mech.tohoku.ac.jp/e/index.html)
+![crt_color_logo_a_hi-reso.png](./docs/media/crt_color_logo_a_hi-reso.png)
+
+
 Author(s) and maintainer(s): [Space Robotics Lab.](http://www.astro.mech.tohoku.ac.jp/e/index.html) Climbing Robotics Team
 
 ![ex1_uneven_dynamic_fixed_stride.gif](./docs/media/ex1_uneven_dynamic_fixed_stride.gif)
 ![ex2_flat_kinematic_Uno-gait-planning.gif](./docs/media/ex2_flat_kinematic_Uno-gait-planning.gif)
 ![ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif](./docs/media/ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif)
 
-The climbing simulator is being developed by the Climbing Robotics Team in [Space Robotics Laboratory (SRL)](http://www.astro.mech.tohoku.ac.jp/e/index.html) at Tohoku University, Japan. 
+The climbing simulator is being developed by the Climbing Robotics Team in [Space Robotics Laboratory (SRL)](http://www.astro.mech.tohoku.ac.jp/e/index.html) at Tohoku University, Japan.
 
 The source code is released under a BSD 3-Clause license.
 
