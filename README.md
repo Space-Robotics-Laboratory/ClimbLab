@@ -1,6 +1,4 @@
-# climbing simulator
-
-**Matlab climbing and walking simulation platform for limbed robots**
+# ClimbLab - Climbing robot Matlab simulator
 
 ![ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif](./docs/media/ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif)
 
@@ -45,9 +43,9 @@ We confirmed the code is working with:
 
 ## Publications
 
-[1] Kentaro Uno et al., "[Gait Planning for a Free-Climbing Robot Based on Tumble Stability](https://ieeexplore.ieee.org/document/8700455)", Proceedings of the 2019 IEEE/SICE International Symposium on System Integration (SII), Paris, France, 2019, pp. 289-294, [doi: 10.1109/SII.2019.8700455](https://doi.org/10.1109/SII.2019.8700455).
+[1] Kentaro Uno *et al*., "[Gait Planning for a Free-Climbing Robot Based on Tumble Stability](https://ieeexplore.ieee.org/document/8700455)", Proceedings of the 2019 IEEE/SICE International Symposium on System Integration (SII), Paris, France, 2019, pp. 289-294, [doi: 10.1109/SII.2019.8700455](https://doi.org/10.1109/SII.2019.8700455).
 
-[2] Warley F. R. Ribeiro et al., "[Dynamic Equilibrium of Climbing Robots based on Stability Polyhedron for Gravito-Inertial Acceleration](https://clawar.org/conference-proceedings/clawar-conference/clawar-2020-proceedings/)", Proceedings of the 23rd International Conference on Climbing and Walking Robots and the Support Technologies for Mobile Machines, Moscow, Russian Federation, 2020, pp. 297-304, [doi: 10.13180/clawar.2020.24-26.08.18](https://doi.org/10.13180/clawar.2020.24-26.08.18).
+[2] Warley F. R. Ribeiro *et al*., "[Dynamic Equilibrium of Climbing Robots based on Stability Polyhedron for Gravito-Inertial Acceleration](https://clawar.org/conference-proceedings/clawar-conference/clawar-2020-proceedings/)", Proceedings of the 23rd International Conference on Climbing and Walking Robots and the Support Technologies for Mobile Machines, Moscow, Russian Federation, 2020, pp. 297-304, [doi: 10.13180/clawar.2020.24-26.08.18](https://doi.org/10.13180/clawar.2020.24-26.08.18).
 
 ## FAQ
 Please contact us by sending an email to the following address if there is any question or suggestion.
