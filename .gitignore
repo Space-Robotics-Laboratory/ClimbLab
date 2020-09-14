@@ -6,7 +6,7 @@
 
 # Ignore files inside data
 dat/
-!dat/dat_README.md
+!dat/.gitkeep
 *.csv
 *.dat
 *.avi
