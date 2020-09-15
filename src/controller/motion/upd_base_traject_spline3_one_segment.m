@@ -20,10 +20,9 @@
 %								1st dim: x-y-z coordinates (1 to 3)
 %								2nd dim: leg number (1 to n)
 %								3rd dim: coefficient index (1 to 4)
-%								4th dim: segment number (1 or 2)
 %     INPUT
-%         gait_param             : Parameters for gait (class)
 %         path_planning_param    : Parameters for path planning (class)
+%         gait_param             : Parameters for gait (class)
 %         motion_planning_param  : Parameters for motion planning (class)
 %         des_SV      			 : Desired State variable (SpaceDyn class)
 %         LP      				 : Link Parameters (SpaceDyn class)

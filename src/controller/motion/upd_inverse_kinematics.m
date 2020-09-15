@@ -8,7 +8,7 @@
 %%%%%% Last update: 2020-04-17
 %
 %
-% Update the state of the gripper, if it is open or closed, based on the timing for the crawl gait
+% Update desired joint space configuration state from inverse kinematics
 %
 % Function variables:
 %

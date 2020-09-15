@@ -14,8 +14,6 @@
 %
 %     OUTPUT
 %         path_planning_param                   : Parameters for path planning (class)
-%
-%
 %     INPUT
 %         SV                                    : State values (SpaceDyn class)
 %         LP                                    : Link parameters (SpaceDyn class)
