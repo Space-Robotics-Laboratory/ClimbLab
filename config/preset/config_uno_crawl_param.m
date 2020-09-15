@@ -31,9 +31,9 @@ function [robot_param, environment_param, gait_param, control_param, equilibrium
 %%% Type of the robot to simulate ('HubRobo_no_grip', 'HubRobo_grip_to_palm', 'HubRobo_grip_to_spine')
 robot_param.robot_type = 'HubRobo_grip_to_palm';
 %%% x and y position of legs relative to base center [m]
-robot_param.foot_dist  = 0.12;
+robot_param.foot_dist  = 0.14;
 %%% Height of base relative to map [m]
-robot_param.base_height = 0.10;
+robot_param.base_height = 0.09;
 %%% Base position [m] 2x1 vector. or 'default' for default setting
 robot_param.base_pos_xy = [0;0];
 
@@ -41,9 +41,9 @@ robot_param.base_pos_xy = [0;0];
 %%% Type of the surface ('flat_HR', 'rough', 'flat_003', 'flat_006', 'flat_008', 'flat_009', 'flat_012') 
 environment_param.surface_type = 'flat_003';
 %%% Maximum simulation time [s]
-environment_param.time_max = 24;
+environment_param.time_max = 30;
 %%% Graspable points detection type
-environment_param.graspable_points_detection_type = 40;
+environment_param.graspable_points_detection_type = 30;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Gait Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Gait type ('do_nothing', 'crawl_fixed_stride','crawl_uno_ver')
