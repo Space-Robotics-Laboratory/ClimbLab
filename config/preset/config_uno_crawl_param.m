@@ -8,7 +8,7 @@
 %%%%%% Last update: 2020-07-09
 %
 %
-% Load configurations for parameters defined for uno crawl fait simulation 
+% Load configurations for parameters defined for uno crawl gait simulation 
 %
 % Function variables:
 %

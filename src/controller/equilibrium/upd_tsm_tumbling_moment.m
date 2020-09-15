@@ -14,12 +14,13 @@
 %
 %     OUTPUT
 %         equilibrium_eval_param : Parameters for equilibrium evaluation (class)
-%         equilibrium_eval_param.tumbling_axes         : Number of legs that makes a tumbling axis (tumbling_axes_numberx2 matrix)
-%         equilibrium_eval_param.tumbling_axes_number  : Total number of tumbling axes (scalar)
+%         equilibrium_eval_param.Mab         : Tumbling moment for each tumbling axis (1xtumbling_axes_number vector)
 %     INPUT
 %         equilibrium_eval_param : Parameters for equilibrium evaluation (class)
 %         LP           			 : Link Parameters (SpaceDyn class)
 %         SV           			 : State Variables (SpaceDyn class)
+%         POS_e                  : Position of the end-effector [m] (3xnum_limb matrix)
+%         F_grip                 : Maximum gripping force [N] (scalar)
 
 function equilibrium_eval_param = upd_tsm_tumbling_moment(equilibrium_eval_param, LP, SV, POS_e, F_grip)
 
