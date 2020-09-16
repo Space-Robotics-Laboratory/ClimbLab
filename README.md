@@ -36,10 +36,10 @@ We confirmed the code is working with:
 #### Build and Run
 * Download the files from this repository
 * Open MATLAB
-* Select `climbing_simulator/` as the current folder for MATLAB
-  - You should see `dat/`, `lib/` and `src/` directories under it
+* Select `ClimbLab/` as the current folder for MATLAB
+  - You should see `config/`, `dat/`, `docs/`, `lib/` and `src/` directories under it
 * Setup the parameters as you want
-* Run `climb_main.m` file (**Note: MATLAB might ask you to change folder or add path. Choose to "add path"**)
+* Run `src/climb_main.m` file (**Note: MATLAB might ask you to change folder or add path. Choose to "add path"**)
 
 ## Publications
 
