@@ -1,5 +1,5 @@
 %%%%%% Initialize
-%%%%%% ini_HubRobo_gripper_to_palm_LP
+%%%%%% ini_HubRobo_grip_to_palm_LP
 %%%%%% 
 %%%%%% Mass/inertia parameters and link connections for HubRobo with grippers
 %%%%%% Last link length is defined as the distance from
@@ -8,7 +8,7 @@
 %%%%%% Created on      2018-02-23 by Warley Ribeiro
 %%%%%% Last updated on 2020-06-21 by Kentaro Uno
 
-function LP = ini_HubRobo_gripper_to_palm_LP()
+function LP = ini_HubRobo_grip_to_palm_LP()
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% Definition of each link parameters %%%%%%%%%%%%%%%%%%%%

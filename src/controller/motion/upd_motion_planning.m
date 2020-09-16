@@ -16,9 +16,9 @@
 %         motion_planning_param  : Parameters for motion planning (class)
 %         des_SV      			 : Desired state variables (SpaceDyn class)
 %     INPUT
+%         motion_planning_param  : Parameters for motion planning (class)
 %         gait_param             : Parameters for gait (class)
 %         path_planning_param    : Parameters for path planning (class)
-%         motion_planning_param  : Parameters for motion planning (class)
 %		  LP                     : Link parameters (SpaceDyn class)
 %         SV 	      			 : State variables (SpaceDyn class)
 %         des_SV      			 : Desired state variables (SpaceDyn class)

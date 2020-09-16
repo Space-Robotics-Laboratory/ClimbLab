@@ -1,14 +1,14 @@
 %%%%%% Visualize
 %%%%%% vis_com_projection
 %%%%%%
-%%%%%% Disp CoM projection point
+%%%%%% Display CoM projection point
 %%%%%%
 %%%%%% Created 2020-05-28
 %%%%%% Yusuke Koizumi
 %%%%%% Last update: 2020-05-28
 %
 %
-% Disp gracpable points
+% Display Center of Mass projection
 %
 % Function variables:
 %

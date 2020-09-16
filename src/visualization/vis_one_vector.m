@@ -19,6 +19,7 @@
 %         vector       : Vector to be plotted (3x1 vector)
 %         inc          : Inclination [deg] (scalar)
 %         color        : Color for vector [RGB] (1x3 vector)
+%         width        : Width for vector line (scalar)
 
 
 function vis_one_vector(origin,vector,inc,color,width)

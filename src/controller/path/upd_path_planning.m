@@ -22,6 +22,8 @@
 %         SV                    : State values (SpaceDyn class)
 %         LP                    : Link parameters (SpaceDyn class)
 %         POS_e                 : Position of the end-effector [m] (3xnum_limb matrix)
+%         environment_param     : Parameters for environment (class)
+%         robot_param           : Parameters for robot (class)
 %         time                  : Simulation time [s] (scalar)
 
 function path_planning_param = upd_path_planning(path_planning_param, gait_param, surface_param, des_SV, SV, LP, POS_e, environment_param, robot_param, time)

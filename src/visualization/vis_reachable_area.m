@@ -1,14 +1,14 @@
 %%%%%% Visualize
 %%%%%% vis_reachable_area
 %%%%%%
-%%%%%% Disp reachable area
+%%%%%% Display reachable area
 %%%%%%
 %%%%%% Created 2020-05-20
 %%%%%% Yusuke Koizumi
 %%%%%% Last update: 2020-07-11 by Kentaro Uno
 %
 %
-% Disp reachable points
+% Display reachable points
 %
 % Function variables:
 %
@@ -17,6 +17,7 @@
 %     INPUT
 %         SV                                     : State Variables
 %         LP                                     : Link Parameters
+%         path_planning_param                    : Parameters for Path Planning (class)
 %         inc                                    : Surface inclination [deg] (scalar)
 %         ani_settings.reachable_area_line_color : Color for line [RGB] (1x3 vector)
 %         ani_settings.reachable_area_line_width : Line width of marker (scalar)

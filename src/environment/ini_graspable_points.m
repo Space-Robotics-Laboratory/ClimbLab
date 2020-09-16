@@ -15,9 +15,10 @@
 %     OUTPUT
 %         surface_param.graspable_points   : 3xN matrix contains position vectors of graspable points [m] (x;y;z)
 %     INPUT
-%         graspable_points_detection_type        : Graspable points detection type (char: 'all','peaks', etc. or int: 0~100 [%]) 
-%     USGAE EXAMPLE
-%         graspable_points_detection_type = 50;
+%         environment_param   : Parameters for environment (class)
+%         surface_param       : Parameters for surface (class)
+%     USAGE EXAMPLE
+%         environment_param.graspable_points_detection_type = 50;
 %         surface_param = ini_graspable_points(graspable_points_detection_type, surface_param);
 
 

@@ -15,9 +15,7 @@
 %     OUTPUT
 %         ---
 %     INPUT
-%         time_step           : Time step [s] (scalar) 
-%         grav                : Gravity acceleration [G] (scalar) 
-%         inc                 : Surface inclination [deg] (scalar) 
+%         environment_param   : Parameters for environment (class)
 
 
 function ini_environment(environment_param)

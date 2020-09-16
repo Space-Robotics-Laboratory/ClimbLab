@@ -16,6 +16,7 @@
 %         equilibrium_eval_param : Parameters for equilibrium evaluation (class)
 %     INPUT
 %         equilibrium_eval_param : Parameters for equilibrium evaluation (class)
+%         surface_param          : Parameters for surface (class)
 %		  LP                     : Link parameters (SpaceDyn class)
 %         SV 	      			 : State variables (SpaceDyn class)
 %         POS_e      		     : Position of the end-effector [m] (3xnum_limb matrix)

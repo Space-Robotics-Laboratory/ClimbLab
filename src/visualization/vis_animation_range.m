@@ -14,11 +14,11 @@
 %     OUTPUT
 %         ani_settings.i_lim                       : Limits for the i-axis(1x2vector), i : x, y, z
 %     INPUT
-%         motion_planning_param                    : Motion planning param
+%         motion_planning_param                    : Parameters for motion plan (struct)
+%         surface_param                            : Parameters for surface (struct)
 %         ani_settings.i_lim                       : Limits for the i-axis(1x2vector), i : x, y, z
 %         ani_settings.i_vis_range                 : Range for the i-axis (1x2 vector), i : x, y, z
-
-
+%         inc                                      : Surface inclination [deg] (scalar)
 
 
 function [ ani_settings ] = vis_animation_range(motion_planning_param, surface_param, ani_settings, inc)
