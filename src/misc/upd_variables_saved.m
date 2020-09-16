@@ -15,7 +15,10 @@
 %     OUTPUT
 %         variables_saved        : Variables to be saved (struct)
 %     INPUT
+%         variables_saved        : Variables to be saved (struct)
+%         save_settings          : Saving settings (struct)
 %         time				     : Simulation time [s] (scalar) 
+%         SV 	      			 : State variables (SpaceDyn class)
 %         equilibrium_eval_param : Parameters for equilibrium evaluation (struct)
 
 function variables_saved = upd_variables_saved(variables_saved, save_settings, time, SV, equilibrium_eval_param)

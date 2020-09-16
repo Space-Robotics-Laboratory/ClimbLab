@@ -1,14 +1,14 @@
 %%%%%% Visualize
 %%%%%% vis_graspable_points
 %%%%%%
-%%%%%% Disp graspable points
+%%%%%% Display graspable points
 %%%%%%
 %%%%%% Created 2020-05-14
 %%%%%% Yusuke Koizumi
 %%%%%% Last update: 2020-05-14
 %
 %
-% Disp graspable points
+% Display graspable points
 %
 % Function variables:
 %

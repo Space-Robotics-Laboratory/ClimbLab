@@ -1,20 +1,21 @@
 %%%%%% Visualize
 %%%%%% vis_graspable_points_in_reachable_area
 %%%%%%
-%%%%%% Disp graspable points in reachable area
+%%%%%% Display graspable points in reachable area
 %%%%%%
 %%%%%% Created 2020-05-14
 %%%%%% Yusuke Koizumi
 %%%%%% Last update: 2020-05-14
 %
 %
-% Disp graspable points in reachable area
+% Display graspable points in reachable area
 %
 % Function variables:
 %
 %     OUTPUT
 %         -
 %     INPUT
+%         path_planning_param                                   : Parameters for Path Plannning (class)
 %         inc                                                   : Surface inclination [deg] (scalar)
 %         ani_settings.graspable_points_in_reachable_area_color : Color for points [RGB] (1x3 vector)
 %         ani_settings.graspable_points_in_reachable_area_marker: Type of marker (String)

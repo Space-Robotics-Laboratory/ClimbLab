@@ -1,21 +1,21 @@
 %%%%%% Update
 %%%%%% upd_tsm
 %%%%%% 
-%%%%%% Calculate tumbling moment for axes
+%%%%%% Calculate TSM
 %%%%%% 
 %%%%%% Created 2020-05-08
 %%%%%% Warley Ribeiro
 %%%%%% Last update: 2020-05-08
 %
 %
-% Judgment of equilibrium based on tumbling moment
+% Calculate Tumble Stability Margin
 %
 % Function variables:
 %
 %     OUTPUT
 %         equilibrium_eval_param : Parameters for equilibrium evaluation (class)
-%         equilibrium_eval_param.tumbling_axes         : Number of legs that makes a tumbling axis (tumbling_axes_numberx2 matrix)
-%         equilibrium_eval_param.tumbling_axes_number  : Total number of tumbling axes (scalar)
+%         equilibrium_eval_param.tsm                   : Tumble Stability Margin [m] (scalar)
+%         equilibrium_eval_param.tsm_equilibrium_flag  : Flag for equilibrium based on TSM (scalar)
 %     INPUT
 %         equilibrium_eval_param : Parameters for equilibrium evaluation (class)
 %         LP           			 : Link Parameters (SpaceDyn class)

@@ -8,7 +8,7 @@
 %%%%%% Last update: 2020-05-28
 %
 %
-% Disp gracpable points
+% Display the next selected position to be grasped
 %
 % Function variables:
 %

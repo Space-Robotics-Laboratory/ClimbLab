@@ -23,6 +23,8 @@
 %         ani_settings.z_lim_low_is_surface  : Use or not surface as lower limit for z-axis (string)
 %         ani_settings.camera_az             : Azimuth angle for view [deg] (scalar)
 %         ani_settings.camera_el             : Elevation angle for view [deg] (scalar)
+%         surface_param                      : Parameters for surface (class)
+%         time                          	 : Simulation time [s] (scalar)
 
 
 function vis_animation_settings(ani_settings, surface_param, time)

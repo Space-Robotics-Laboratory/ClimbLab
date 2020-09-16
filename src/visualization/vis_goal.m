@@ -1,14 +1,14 @@
 %%%%%% Visualize
 %%%%%% vis_goal
 %%%%%%
-%%%%%% Disp goal
+%%%%%% Display goal
 %%%%%%
 %%%%%% Created 2020-05-28
 %%%%%% Yusuke Koizumi
 %%%%%% Last update: 2020-05-28
 %
 %
-% Disp goal
+% Display goal position
 %
 % Function variables:
 %

@@ -1,7 +1,7 @@
 %%%%%% Initialize
 %%%%%% ini_id
 %%%%%% 
-%%%%%% Create video file
+%%%%%% Create id for naming
 %%%%%% 
 %%%%%% Created 2020-04-10
 %%%%%% Warley Ribeiro
@@ -13,14 +13,13 @@
 %     Function variables:
 %
 %     OUTPUT
-%         run_id          : Run identification (string)
-%         run_date        : Run identification date (string)
+%         run_id            : Run identification (string)
+%         run_date          : Run identification date (string)
 %     INPUT
-%         robot_type      : Robot type (string) 
-%         surface_type    : Surface type (string) 
-%         grav            : Gravity [G] (scalar) 
-%         inc             : Surface inclination [deg] (scalar) 
-%         gait_param.type : Gait type (string) 
+%         robot_param       : Parameter for robot (class)
+%         environment_param : Parameter for environment (class)
+%         gait_param        : Parameter for gait (class)
+%         control_param     : Parameter for control (class)
 
 function [run_id, run_date] = ini_id(robot_param, environment_param, gait_param, control_param)
 

@@ -17,7 +17,7 @@
 %         surface_param.K     : Ground reaction force stiffness coefficient (scalar)
 %         surface_param.D     : Ground reaction force damping coefficient (scalar)
 %     INPUT
-%         surface_type        : Surface type (string: flat_HR, rough) 
+%         environment_param   : Parameters for environment (class) 
 
 function surface_param = ini_surface(environment_param)
 

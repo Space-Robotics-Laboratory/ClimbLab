@@ -15,16 +15,14 @@
 %
 %     OUTPUT
 %         LP           : Link Parameters (SpaceDyn class)
-%         des_SV       : Desired State Variables (SpaceDyn class)
 %         SV           : State Variables (SpaceDyn class)
+%         des_SV       : Desired State Variables (SpaceDyn class)
 %         F_grip       : Maximum gripping force [N] (scalar)
 %         POS_e        : Position of the end-effector [m] (3xnum_limb matrix)
 %         ORI_e        : Orientation of the end-effector [DC] (3x3*num_limb matrix)
 %         cont_POS     : Initial point of contact which is used as equilibrium position [m] (3xnum_limb matrix)
 %     INPUT
-%         robot        : Robot type (string) 
-%         foot_dist    : Distance from projection of robot center to end-point in both x and y directions [m] (scalar)
-%         base_height  : Height of base from mean surface of the ground [m] (scalar)
+%         robot_param  : Parameter for robot (class)
 %         gait_param   : Gait parameters
 %         surface_param: Surface parameters
 %

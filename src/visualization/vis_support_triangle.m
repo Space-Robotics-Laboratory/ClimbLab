@@ -8,7 +8,7 @@
 %%%%%% Last update: 2020-05-14
 %
 %
-% Disp gracpable points. Not considering gripping force.
+% Show the support polygon based on the contact positions, not considering gripping forces.
 %
 % Function variables:
 %

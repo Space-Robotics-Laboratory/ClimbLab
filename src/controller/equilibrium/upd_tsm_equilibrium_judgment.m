@@ -1,7 +1,7 @@
 %%%%%% Update
 %%%%%% upd_tsm_equilibrium_judgment
 %%%%%% 
-%%%%%% Calculate tumbling moment for axes
+%%%%%% Equilibrium judgment for each tumbling axis
 %%%%%% 
 %%%%%% Created 2020-05-08
 %%%%%% Warley Ribeiro
