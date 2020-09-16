@@ -38,7 +38,8 @@ We confirmed the code is working with:
 * Open MATLAB
 * Select `ClimbLab/` as the current folder for MATLAB
   - You should see `config/`, `dat/`, `docs/`, `lib/` and `src/` directories under it
-* Setup the parameters as you want
+* Setup the parameters as you want by changing the variable `config`.
+  - Note: If you select USER configuration type, follow instructions described in the `config/USER/config_USER_param_template.m`.
 * Run `src/climb_main.m` file (**Note: MATLAB might ask you to change folder or add path. Choose to "add path"**)
 
 ## Publications
