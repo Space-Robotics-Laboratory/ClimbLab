@@ -1,0 +1,19 @@
+# Ignore figure files
+*.eps
+*.png
+!docs/media/*.png
+*.fig
+
+# Ignore files inside data
+dat/
+!dat/.gitkeep
+*.csv
+*.dat
+*.avi
+
+# Ignore USER configuration file
+/config/USER/*
+!/config/USER/config_USER_param_template.m
+
+# Ignore MATLAB temporary files
+*.asv
