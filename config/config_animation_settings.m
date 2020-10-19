@@ -71,10 +71,12 @@ ani_settings.robot_color = [0.2, 0.2, 0];
 ani_settings.robot_alpha = 0.8;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Surface related %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Surface grid color
-ani_settings.grid_color = [0.9 0.9 0.9];
-%%% Surface color
-ani_settings.surface_color = gray;
+%%% Surface viz. on/off
+ani_settings.surface_show = 'on';
+    %%% Surface grid color
+    ani_settings.grid_color = [0.9 0.9 0.9];
+    %%% Surface color
+    ani_settings.surface_color = gray;
 
 %%% Graspable points viz. on/off
 ani_settings.graspable_points_show = 'off';
@@ -111,6 +113,8 @@ ani_settings.goal_show = 'off';
     ani_settings.goal_marker = '.';
     %%% Goal size
     ani_settings.goal_size = 25;
+    %%% Goal vis. height from the ground
+    ani_settings.goal_vis_height = 0.0;
 
 %%% Next desired position vis. on/off
 ani_settings.next_desired_position_show = 'off';
@@ -118,13 +122,24 @@ ani_settings.next_desired_position_show = 'off';
     ani_settings.next_desired_position_color = 'm';
     %%% Next desired position line width
     ani_settings.next_desired_position_line_width = 1;
+    
+%%% Plot trajectory
+ani_settings.trajectory_show = 'on';
+	%%% Trajectory line color
+    ani_settings.trajectory_color = 'c';
+	%%% Trajectory line widith
+    ani_settings.trajectory_width = 3;
+	%%% Trajectory line type
+    ani_settings.trajectory_line_type = ':';
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Equilibrium related %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Support triangle visualization
 ani_settings.support_triangle_show = 'off';
     %%% Support triangle color
-    ani_settings.support_triangle_color =[0 1.0 1.0];
+    ani_settings.support_triangle_color = [0 1.0 1.0];
+    %%% Support triangle edge line color
+    ani_settings.support_triangle_edge_color = [0.0 0.0 0.0];
     %%% Support triangle transparency
     ani_settings.support_triangle_alpha = 0.5;
 
@@ -159,5 +174,7 @@ ani_settings.com_projection_show = 'off';
     ani_settings.com_projection_marker = '.';
     %%% CoM projection point size
     ani_settings.com_projection_size = 25;
+    %%% CoM projection point vis. height from the ground
+    ani_settings.com_projection_vis_height = 0.0;
     
 end

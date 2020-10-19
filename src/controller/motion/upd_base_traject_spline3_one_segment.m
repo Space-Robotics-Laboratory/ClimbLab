@@ -33,7 +33,7 @@ function [motion_planning_param, path_planning_param] = upd_base_traject_spline3
 	% If all legs are in support phase
 	if sum(des_SV.sup) == LP.num_limb
 		% Begin of a new cycle
-	    if path_planning_param.swing_number == gait_param.sequence(1) || strcmp(gait_param.type,'crawl_uno_ver')
+	    if path_planning_param.swing_number == gait_param.sequence(1) || strcmp(gait_param.type,'crawl_uno_ver') || strcmp(gait_param.type,'nonperiodic_uno_ver')
 			% x, y and z
 			for j = 1:3
 				% Single segment

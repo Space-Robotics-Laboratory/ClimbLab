@@ -5,7 +5,7 @@
 %%%%%% 
 %%%%%% Created 2020-05-12
 %%%%%% Yusuke Koizumi
-%%%%%% Last update: 2020-07-11 by Kentaro Uno
+%%%%%% Last update: 2020-10-01 by Keigo Haji
 %
 %
 % Extract graspable points according to the graspable_points_detection_type
@@ -17,12 +17,15 @@
 %     INPUT
 %         environment_param   : Parameters for environment (class)
 %         surface_param       : Parameters for surface (class)
-%     USAGE EXAMPLE
+%         gripper_param
+%         map_param
+%         matching_settings
+%     USGAE EXAMPLE
 %         environment_param.graspable_points_detection_type = 50;
-%         surface_param = ini_graspable_points(graspable_points_detection_type, surface_param);
+%         surface_param = ini_graspable_points(graspable_points_detection_type, surface_param, gripper_param, map_param, matching_setting);
+%         environment_param.graspable_points_detection_type = 'gripper'; 
 
-
-function surface_param = ini_graspable_points(environment_param, surface_param)
+function surface_param = ini_graspable_points(environment_param, surface_param, gripper_param, map_param, matching_settings)
 global x;global y;global z;
 
 [n,m]=size(z);
@@ -32,6 +35,7 @@ surface_param.graspable_points(1,:)=reshape(X,1,n*m);
 surface_param.graspable_points(2,:)=reshape(Y,1,n*m);
 surface_param.graspable_points(3,:)=reshape(z,1,n*m);
 
+    
 % set the floor level variable to have a z directional height in global
 % frame.
 surface_param.floor_level = mean(surface_param.graspable_points(3,:));
@@ -39,10 +43,10 @@ surface_param.floor_level = mean(surface_param.graspable_points(3,:));
 switch environment_param.graspable_points_detection_type
     case 'all'
         ;
+    case 'gripper'
+        surface_param.graspable_points = target_detection(surface_param.graspable_points, environment_param.graspable_points_detection_type, gripper_param, map_param, matching_settings);
     case 'peaks'
-        % will be added in the next update 
-        % need some func. to detect peaks
-        ;
+        surface_param.graspable_points = target_detection(surface_param.graspable_points, environment_param.graspable_points_detection_type, gripper_param, map_param, matching_settings);
     otherwise
         if isnumeric(environment_param.graspable_points_detection_type)
             if environment_param.graspable_points_detection_type >=0 && environment_param.graspable_points_detection_type <=100

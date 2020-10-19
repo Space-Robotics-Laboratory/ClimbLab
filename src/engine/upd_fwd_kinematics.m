@@ -1,26 +1,26 @@
 %%%%%% Update
-%%%%%% upd_fwd_kinematics
+%%%%%% upd_fwd_dynamics
 %%%%%% 
-%%%%%% Calculate forward kinematics
+%%%%%% Calculate forward dynamics
 %%%%%% 
-%%%%%% Created 2020-04-09
+%%%%%% Created 2020-04-08
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-04-09
+%%%%%% Last update: 2020-04-15
 %
-% Use SpaceDyn functions for forward kinematics to obtain the position and orientation of the end-effectors. Also converts
-% the base orientation to degrees
+% Use SpaceDyn functions for forward dynamics to obtain joints and links accelerations, velocities and positions from the
+% given torques and external forces
 %
 % Function variables:
 %
 %     OUTPUT
-%         POS_e        : Position of the end-effector [m] (3xnum_limb matrix)
-%         Qe_deg       : Orientation of the end-effector (Euler angles) [deg] (3xnum_limb matrix)
-%         Q0_deg       : Orientation of the base (Euler angles) [deg] (3x1 vector)
-%     INPUT
-%         LP           : Link Parameters (SpaceDyn class)
-%         SV           : State Variables (SpaceDyn class)
+%         SV                  : State Variables (SpaceDyn class)
+%     INPUT 
+%		  environment_param.dynamics_flag   : Flag to compute ('on') or not compute ('off') dynamics
+%         LP                  : Link parameters (SpaceDyn class)
+%         SV                  : State variables (SpaceDyn class)
+%         des_SV              : Desired state variables (SpaceDyn class)
 
-function [POS_e, Qe_deg, Q0_deg] = upd_fwd_kinematics(LP, SV)
+function [POS_e, Qe_deg, Q0_deg, SV] = upd_fwd_kinematics(LP, SV)
 
 POS_e = zeros(3,LP.num_limb);
 Qe_rad = zeros(3,LP.num_limb);

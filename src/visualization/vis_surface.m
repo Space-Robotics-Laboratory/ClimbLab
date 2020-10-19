@@ -42,10 +42,12 @@ if inc ~= 0
 else
     Z = z;
 end
-% Plot map
-mesh(X,Y,Z,'edgecolor', ani_settings.grid_color);
+
+if strcmp(ani_settings.surface_show,'on')
+    % Plot map
+    mesh(X,Y,Z,'edgecolor', ani_settings.grid_color);
 
 
-colormap(ani_settings.surface_color);
-
+    colormap(ani_settings.surface_color);
+end
 end

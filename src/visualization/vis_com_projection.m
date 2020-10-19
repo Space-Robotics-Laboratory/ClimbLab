@@ -15,18 +15,23 @@
 %     OUTPUT
 %         -
 %     INPUT
-%         SV                                 : State Variables
-%         inc                                : Surface inclination [deg] (scalar)
-%         ani_settings.com_projection_color  : Color for points [RGB] (1x3 vector)
-%         ani_settings.com_projection_marker : Type of marker (String)
-%         ani_settings.com_projection_size   : Size of points (scalar)
-%         ani_settings.com_projection_show   : on / off
+%		  LP                                      : Link parameters (SpaceDyn class)
+%         SV                                      : State Variables
+%         inc                                     : Surface inclination [deg] (scalar)
+%         ani_settings.com_projection_color       : Color for points [RGB] (1x3 vector)
+%         ani_settings.com_projection_marker      : Type of marker (String)
+%         ani_settings.com_projection_size        : Size of points (scalar)
+%         ani_settings.com_projection_vis_height  : visualization height from the ground
+%                                                   to see it well (scalar)
+%         ani_settings.com_projection_show        : on / off
 
 
-function vis_com_projection(SV, inc, ani_settings)
+function vis_com_projection(LP, SV, inc, ani_settings)
 if strcmp(ani_settings.com_projection_show,'on')
-    [a,b,c] =  get_map_pos(SV.R0(1),SV.R0(2));
-    com_proj = rpy2dc([0;pi*inc/180;0])*[SV.R0(1,1)-norm(c)*tan(inc*pi/180);SV.R0(2,1);c];
+    CoM = upd_CoM(LP, SV);
+    [a,b,c] =  get_map_pos(CoM(1),CoM(2));
+    c = c + ani_settings.com_projection_vis_height;
+    com_proj = rpy2dc([0;pi*inc/180;0])*[CoM(1)-norm(CoM(3)-c)*tan(inc*pi/180);CoM(2);c];
     plot3(com_proj(1,1),com_proj(2,1),com_proj(3,1),ani_settings.com_projection_marker,'Color',ani_settings.com_projection_color,'MarkerSize',ani_settings.com_projection_size);
 end
 end

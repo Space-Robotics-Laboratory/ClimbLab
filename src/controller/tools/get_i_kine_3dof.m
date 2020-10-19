@@ -5,7 +5,7 @@
 %%%%%% 
 %%%%%% Created 2020-06-25
 %%%%%% Kentaro Uno
-%%%%%% Last update: 2020-06-25
+%%%%%% Last update: 2020-09-22
 %
 %
 % Calculate joints angular position of a 3 degrees of freedom manipulator from the end-effector position
@@ -81,20 +81,21 @@ q_sol(2,1) = - q2;
 q_sol(3,1) = - ( q3 + pi()/2 );
 
 %%% adjust the solutions to be described radians from -2*pi to 2*pi()
-% @TODO: if adding the adjustment for q1 and q2, simulation would be broken somehow... 
-% if q_sol(1,1) > 2*pi()
-%     q_sol(1,1) = q_sol(1,1) - 2*pi();
-% elseif q_sol(1,1) < -2*pi()
-%     q_sol(1,1) = q_sol(1,1) + 2*pi();
-% end 
-% if q_sol(2,1) > 2*pi()
-%     q_sol(2,1) = q_sol(2,1) - 2*pi();
-% elseif q_sol(2,1) < -2*pi()
-%     q_sol(2,1) = q_sol(2,1) + 2*pi();
-% end 
-if q_sol(3,1) > 2*pi()
+if q_sol(1,1) > pi()
+    q_sol(1,1) = q_sol(1,1) - 2*pi();
+elseif q_sol(1,1) < -pi()
+    q_sol(1,1) = q_sol(1,1) + 2*pi();
+end
+
+if q_sol(2,1) > pi()
+    q_sol(2,1) = q_sol(2,1) - 2*pi();
+elseif q_sol(2,1) < -pi()
+    q_sol(2,1) = q_sol(2,1) + 2*pi();
+end 
+
+if q_sol(3,1) > pi()
     q_sol(3,1) = q_sol(3,1) - 2*pi();
-elseif q_sol(3,1) < -2*pi()
+elseif q_sol(3,1) < -pi()
     q_sol(3,1) = q_sol(3,1) + 2*pi();
 end 
 

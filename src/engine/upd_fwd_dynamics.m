@@ -15,7 +15,7 @@
 %     OUTPUT
 %         SV                  : State Variables (SpaceDyn class)
 %     INPUT 
-%		  environment_param.dynamics_flag   : Flag to compute ('on') or not compute ('off') dynamics
+%		  dynamics_flag       : Flag to compute ('on') or not compute ('off') dynamics
 %         LP                  : Link parameters (SpaceDyn class)
 %         SV                  : State variables (SpaceDyn class)
 %         des_SV              : Desired state variables (SpaceDyn class)
