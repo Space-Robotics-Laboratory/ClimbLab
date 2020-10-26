@@ -7,14 +7,15 @@
 %%%%%% 
 %%%%%% --------------------------------------------------------------------
 %%%%%% This configration file can reproduce the similar result of iSAIRAS
-%%%%%% 2020 proceeding paper by Uno et al. (a little improved.)
-%%%%%% Paper URL: 
+%%%%%% 2020 proceeding paper by K. Uno et al. (a little improved than the 
+%%%%%% proceedings paper.)
+%%%%%% Proceedings Paper URL: 
 %%%%%% https://www.hou.usra.edu/meetings/isairas2020fullpapers/pdf/5027.pdf
 %%%%%% --------------------------------------------------------------------
 %%%%%% 
 %%%%%% Creation: 2020-09-10
 %%%%%% Kentaro Uno
-%%%%%% Last update: 2020-10-16
+%%%%%% Last update: 2020-10-26
 %%%%%% Kentaro Uno
 %
 %
@@ -59,7 +60,7 @@ environment_param.grav = 1/6;
 %%% Type of the surface ('flat_HR', 'rough', 'climbing_holds_1m_x_1m', 'flat_003', 'flat_006', 'flat_008', 'flat_009', 'flat_012') 
 environment_param.surface_type = 'climbing_holds_1m_x_1m';
 %%% Maximum simulation time [s]
-environment_param.time_max = 40;
+environment_param.time_max = 96;
 %%% Graspable points detection type
 environment_param.graspable_points_detection_type = "gripper";
 %%% Dynamics on/off
@@ -78,7 +79,7 @@ environment_param.detachment_detection_method = 'max_holding_force';
 %%% Gait type ('do_nothing', 'crawl_fixed_stride','crawl_uno_ver', nonperiodic_uno_ver)
 gait_param.type = 'nonperiodic_uno_ver';
 %%% Step height [m]
-gait_param.step_height = 0.04;
+gait_param.step_height = 0.05;
 %%% Period of one cycle [s]
 gait_param.T = 16;
 %%% Duty cycle
@@ -104,6 +105,11 @@ equilibrium_eval_param.type = 'tsm';
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Animation Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Frame rate [frames/s] [20,25,50]
+ani_settings.frame_rate = 20;
+%%% Animation video resolution [px] [[1280 720], [640 480]]
+ani_settings.animation_resolution = [1280 720];
 
 %%% Link radius [m]
 ani_settings.link_radius = 0.0185;
@@ -131,8 +137,8 @@ ani_settings.move_camera = 'off';
     %%% z-axis visualization range [m] [[-0.08, 0.1], [-0.1, .14]]
     ani_settings.z_vis_range = ani_settings.z_lim - mean(ani_settings.z_lim);
 %%% Camera angle azimuth and elevation [deg]
-ani_settings.camera_az =-40;
-ani_settings.camera_el = 10;
+ani_settings.camera_az = -40;
+ani_settings.camera_el =  10;
 
 %%% Font name
 ani_settings.font_name = 'Times New Roman';
@@ -160,13 +166,19 @@ ani_settings.graspable_points_show = 'off';
 
 %%% Graspable points in reachable area viz. on/off
 ani_settings.graspable_points_in_reachable_area_show = 'on';
+    %%% Graspable points size
+    ani_settings.graspable_points_in_reachable_area_size = 40;
 
 %%% Reachable area viz. on/off
 ani_settings.reachable_area_show = 'on';
-
+    %%% Reachable area line width
+    ani_settings.reachable_area_line_width = 3;
+    
 %%% Next desired position vis. on/off
 ani_settings.next_desired_position_show = 'on';
     ani_settings.next_desired_position_color = [0.0, 0.7, 0.7];
+    %%% Next desired position line width
+    ani_settings.next_desired_position_line_width = 3;
     
 %%% Plot trajectory
 ani_settings.trajectory_show = 'off';
@@ -191,11 +203,15 @@ ani_settings.gravity_vec_show = 'on';
 
 %%% CoM projection point vis. on/off
 ani_settings.com_projection_show = 'on';
+    %%% CoM projection point vis. marker size
+    ani_settings.com_projection_size = 40;
     %%% CoM projection point vis. height from the ground
     % visualization position can be offseted to locate it vertically upper to the ground to show it well
     ani_settings.com_projection_vis_height = 0.04; % [m]
 %%% Goal vis. on/off
 ani_settings.goal_show = 'on';
+    %%% Goal vis. marker size
+    ani_settings.goal_size  = 40;
     %%% Goal vis. height from the ground
     ani_settings.goal_vis_height = 0.04; % [m]
 
@@ -215,6 +231,8 @@ save_settings.tsm = 'on';
 
 %%% Plot footholds history on/off
 plot_settings.footholds = 'on';
+%%% Plot TSM
+plot_settings.tsm = 'on';
 %%% Plot TSM
 plot_settings.tsm = 'on';
 
