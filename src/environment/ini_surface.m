@@ -5,7 +5,8 @@
 %%%%%% 
 %%%%%% Created 2020-04-06
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-04-06
+%%%%%% Last update: 2020-10-16
+%%%%%% Kentaro Uno
 %
 %
 % Load surface points from .mat file and set contact characteristics (stiffness and damping)

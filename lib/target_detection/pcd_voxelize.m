@@ -5,7 +5,7 @@
 %%%%%% 
 %%%%%% Created 2020-09-02
 %%%%%% Keigo Haji
-%%%%%% Last update: 2020-09-23
+%%%%%% Last update: 2020-10-16
 %%%%%% Keigo Haji
 %--------------------------------------------------------------------------
 % pcd_voxelize.m makes the point cloud data voxelized.
@@ -126,4 +126,21 @@ index_list_of_solid_voxels = sub2ind(dimensional_size_of_voxel_space, subscripts
 % Set solid voxels as 1
 terrain_matrix(index_list_of_solid_voxels) = 1;
 
+
+% If you want to see the point cloud data after voxelization, refer to the
+% following command. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% size_of_terrain_matrix = size(terrain_matrix);
+% index_list_of_solid_voxels_in_terrain_matrix = find(terrain_matrix);
+% number_of_solid_voxels = length(index_list_of_solid_voxels_in_terrain_matrix);
+% solid_voxels_matrix = zeros(3,number_of_solid_voxels);
+% [x_subscripts_of_all_solid_voxels,y_subscripts_of_all_soid_voxels,z_subscripts_of_all_solid_voxels] = ind2sub([size_of_terrain_matrix(1),size_of_terrain_matrix(2)],index_list_of_solid_voxels_in_terrain_matrix);
+% solid_voxels_matrix(1,:) = x_subscripts_of_all_solid_voxels';
+% solid_voxels_matrix(2,:) = y_subscripts_of_all_soid_voxels';
+% solid_voxels_matrix(3,:) = z_subscripts_of_all_solid_voxels';
+% max_z_subscripts = max(z_subscripts_of_all_solid_voxels);
+% solid_voxels_matrix(3,:) = -solid_voxels_matrix(3,:) + max_z_subscripts;
+% scatter3(solid_voxels_matrix(1,:), solid_voxels_matrix(2,:),solid_voxels_matrix(3,:),'s','k')
+% axis equal
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end

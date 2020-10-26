@@ -5,7 +5,8 @@
 %%%%%% 
 %%%%%% Created 2020-05-12
 %%%%%% Yusuke Koizumi
-%%%%%% Last update: 2020-10-01 by Keigo Haji
+%%%%%% Last update: 2020-10-01
+%%%%%% Keigo Haji
 %
 %
 % Extract graspable points according to the graspable_points_detection_type

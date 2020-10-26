@@ -5,7 +5,8 @@
 %%%%%%
 %%%%%% Created 2020-05-18
 %%%%%% Yusuke Koizumi
-%%%%%% Last update: 2020-05-18
+%%%%%% Last update: 2020-09-11
+%%%%%% Kentaro Uno
 %
 %
 % Update the graspable points in reachable area for path planning

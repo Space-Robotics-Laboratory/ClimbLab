@@ -5,7 +5,8 @@
 %%%%%%
 %%%%%% Created 2020-05-28
 %%%%%% Yusuke Koizumi
-%%%%%% Last update: 2020-05-28
+%%%%%% Last update: 2020-10-16
+%%%%%% Kentaro Uno
 %
 %
 % Display Center of Mass projection
