@@ -25,9 +25,20 @@
 function vis_graspable_points_in_reachable_area(path_planning_param, inc, ani_settings)
 if strcmp(ani_settings.graspable_points_in_reachable_area_show,'on')
     rot = rpy2dc([0;pi*inc/180;0])';
-    if ~isempty(path_planning_param.graspable_points_in_reachable_area)
-        graspable_points_in_reachable_area= rot'*path_planning_param.graspable_points_in_reachable_area;
-        plot3(graspable_points_in_reachable_area(1,:),graspable_points_in_reachable_area(2,:),graspable_points_in_reachable_area(3,:),ani_settings.graspable_points_in_reachable_area_marker,'Color',ani_settings.graspable_points_in_reachable_area_color,'MarkerSize',ani_settings.graspable_points_in_reachable_area_size)
-    end
+    
+    % get an index of the swing leg
+    i = path_planning_param.swing_number;
+    if ~isempty(path_planning_param.graspable_points_in_reachable_area(:,:,i))
+        graspable_points_in_reachable_area = rot'*path_planning_param.graspable_points_in_reachable_area(:,:,i);
+        
+        for i = 1 : 1 : size(graspable_points_in_reachable_area,2)
+            % if the contents is zero, it should not be drawn
+            if sum(graspable_points_in_reachable_area(:,i)) ~= 0
+                plot3(graspable_points_in_reachable_area(1,i), ...
+                      graspable_points_in_reachable_area(2,i), ...
+                      graspable_points_in_reachable_area(3,i), ...
+                      ani_settings.graspable_points_in_reachable_area_marker,'Color',ani_settings.graspable_points_in_reachable_area_color,'MarkerSize',ani_settings.graspable_points_in_reachable_area_size)
+            end
+        end
 end
 end

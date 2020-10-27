@@ -28,7 +28,7 @@ function [robot_param, environment_param, gait_param, control_param, equilibrium
     plot_settings] = config_gia_static(robot_param, environment_param, gait_param, control_param, ...
     equilibrium_eval_param, ani_settings, save_settings, plot_settings)
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Robot Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Type of the robot to simulate ('HubRobo_no_grip', 'HubRobo_grip_to_palm', 'HubRobo_grip_to_spine')
+%%% Type of the robot to simulate ('HubRobo_v2_2_no_grip', 'HubRobo_v2_2_grip_to_palm', 'HubRobo_v3_1_grip_to_palm', 'HubRobo_v2_2_grip_to_spine')
 robot_param.robot_type = 'HubRobo_grip_to_spine_old';
 %%% x and y position of legs relative to base center [m]
 robot_param.foot_dist  = 0.12;
@@ -48,6 +48,9 @@ environment_param.time_max = 0;
 
 %%% Surface Inclination [deg]
 environment_param.inc = 70;
+
+%%% Gripper detachment method ('none', 'max_holding_force')
+environment_param.detachment_detection_method = 'none';
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Gait Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Gait type ('do_nothing', 'crawl_fixed_stride','crawl_uno_ver')
@@ -72,7 +75,7 @@ ani_settings.x_lim = [-0.27, 0.25];
 %%% y-axis limits [m] [[-0.25, 0.4], [-0.25, .25]]
 ani_settings.y_lim = [-0.4, 0.35];
 %%% z-axis limits [m] [[-0.08, 0.1], [-0.1, .14]] [-0.25 0.25]
-ani_settings.z_lim = [-0.3, 0.35];
+ani_settings.z_lim = [-0.3, 0.25];
 %%% Lower z-axis limit same as lower point on surface on/off
 ani_settings.z_lim_low_is_surface = 'off';
 %%% 'on' camera follows robot, 'off' camera fixed
@@ -82,9 +85,9 @@ ani_settings.camera_az = -160;
 ani_settings.camera_el = 12;
 
 %%% Link radius [m]
-ani_settings.link_radius = 0.008;
+ani_settings.link_radius = 0.010;
 %%% Base thickness [m]
-ani_settings.base_thickness = 0.02;
+ani_settings.base_thickness = 0.03;
 
 %%% Robot color
 ani_settings.robot_color = [0.2, 0.2, 0];
@@ -113,6 +116,8 @@ ani_settings.gia_vec_show = 'on';
     ani_settings.gia_vec_color = [1 0 0];
     %%% GIA vector width
     ani_settings.gia_vec_width = 3;
+    
+ani_settings.trajectory_show = 'off';
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Save Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 save_settings.csv_file = 'off';

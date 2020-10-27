@@ -25,6 +25,10 @@ function equilibrium_eval_param = upd_tsm_equilibrium_judgment(equilibrium_eval_
 
 equilibrium_eval_param.tsm_axes_judgment = zeros(1,equilibrium_eval_param.tumbling_axes_number);
 
+if equilibrium_eval_param.tumbling_axes_number == 0
+    equilibrium_eval_param.tsm_axes_judgment = 0;
+else
+
 for i = 1:equilibrium_eval_param.tumbling_axes_number
 	% Current tumbling axis legs' number
 	a = equilibrium_eval_param.tumbling_axes(i,1);
@@ -45,6 +49,8 @@ for i = 1:equilibrium_eval_param.tumbling_axes_number
 			end
 		end
 	end
+end
+
 end
 
 

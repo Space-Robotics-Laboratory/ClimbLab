@@ -44,11 +44,20 @@ case 'do_nothing'
 	path_planning_param = [];
         
 case 'crawl_uno_ver'
-	% Select new swing leg
-	path_planning_param = upd_swing_number_crawl_fixed_stride(path_planning_param, gait_param, des_SV, LP, time);
-	% Select next grasping point
-	path_planning_param = upd_graspable_points_in_reachable_area(SV,LP,surface_param,path_planning_param);
-    path_planning_param = upd_swing_next_pos_crawl_uno_ver(path_planning_param, gait_param, surface_param, SV,des_SV, LP, POS_e,inc, base_height, time);
+
+    % update the graspable points in all reachable region of limbs
+    path_planning_param = upd_graspable_points_in_reachable_area(SV,LP,surface_param,path_planning_param);
+    % Select new swing leg 
+    path_planning_param = upd_swing_number_crawl_fixed_stride(path_planning_param, gait_param, des_SV, LP, time);
+	% Select next grasping point of the selected swing limb
+    path_planning_param = upd_swing_next_pos_crawl_uno_ver(path_planning_param, gait_param, surface_param, SV, des_SV, LP, POS_e, inc, base_height, time);
+
+case 'nonperiodic_uno_ver'
+	
+    % update the graspable points in all reachable region of limbs
+    path_planning_param = upd_graspable_points_in_reachable_area(SV,LP,surface_param,path_planning_param);
+    % Select new swing leg and its next grasping point of the selected swing limb
+	path_planning_param = upd_swing_num_and_grasping_point_based_on_graspable_options(path_planning_param, gait_param, surface_param, des_SV, SV, LP, POS_e, inc, base_height, time);
     
     otherwise
 	disp('Invalid gait type');

@@ -69,11 +69,11 @@ cnt = cnt + 1;
 end
 
 cnt = 1;
-for j=  joint_limit(3,1):0.5:joint_limit(3,2)    % change of the link 3 when link 2 has 0 degree
+for j=  joint_limit(3,1):0.5:joint_limit(3,2)    % change of the link 3 when link 2 bends down minimumly
 
 SV.q = zeros(12,1);
 SV.q(1) = 45*pi/180;
-SV.q(2) = 0*pi/180;
+SV.q(2) = joint_limit(2,1)*pi/180;
 SV.q(3) = j*pi/180;
 
 SV = calc_aa( LP, SV );

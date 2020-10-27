@@ -20,8 +20,8 @@
 function robot_param = config_robot_param()
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% General settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% Type of the robot to simulate ('HubRobo_no_grip', 'HubRobo_grip_to_palm', 'HubRobo_grip_to_spine')
-robot_param.robot_type = 'HubRobo_grip_to_palm';
+%%% Type of the robot to simulate ('HubRobo_v2_2_no_grip', 'HubRobo_v2_2_grip_to_palm', 'HubRobo_v3_1_grip_to_palm', 'HubRobo_v2_2_grip_to_spine')
+robot_param.robot_type = 'HubRobo_v2_2_grip_to_palm';
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Position settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

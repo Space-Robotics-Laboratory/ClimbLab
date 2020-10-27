@@ -5,7 +5,7 @@
 %%%%%%
 %%%%%% Created 2020-06-01
 %%%%%% Kentaro Uno
-%%%%%% Last update: 2020-06-02
+%%%%%% Last update: 2020-09-22
 %
 %
 % Plot time history of footholds 
@@ -44,10 +44,16 @@ if strcmp(plot_settings.footholds,'on')
     % plot footholds history
     for i=1:LP.num_limb
         footholds = [];
-        footholds = path_planning_param.footholds_history_limb(:,:,i);
-        if path_planning_param.footholds_history_limb(:,size(path_planning_param.footholds_history_limb,2),i) == [0;0;0]
-            footholds(:,size(path_planning_param.footholds_history_limb,2)) = [];
+%         footholds = path_planning_param.footholds_history_limb(:,:,i);
+        
+        %%% ignore the invalid footholds (which is labeled as [0;0;0] in path_planning_param.footholds_history_limb)
+        for j=1:size(path_planning_param.footholds_history_limb,2)
+            if path_planning_param.footholds_history_limb(:,j,i) ~= [0;0;0]
+                footholds = horzcat( footholds, path_planning_param.footholds_history_limb(:,j,i) );
+            end
         end
+
+
         plot(footholds(1,:),footholds(2,:),':k','LineWidth',2)
         
         hsv = zeros(size(footholds,2), 3);

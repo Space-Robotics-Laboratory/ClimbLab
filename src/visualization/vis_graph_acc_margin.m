@@ -5,7 +5,7 @@
 %%%%%%
 %%%%%% Created 2020-07-03
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-07-03
+%%%%%% Last update: 2020-07-27
 %
 %
 % Plot time history of acceleration margin
@@ -30,6 +30,7 @@ if strcmp(plot_settings.acc_margin,'on')
     xlabel('\itt \rm[s]','FontName',plot_settings.font_name,'FontSize',plot_settings.font_size);
     ylabel('\it{a}_{\rmmarg} \rm[m/s^2]','FontName',plot_settings.font_name,'FontSize',plot_settings.font_size);
     set(gca,'fontsize',plot_settings.font_size,'LineWidth',plot_settings.width/2);
+    set(gcf,'color','w');
     grid on;
 end
 

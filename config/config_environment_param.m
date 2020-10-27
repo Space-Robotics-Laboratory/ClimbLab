@@ -28,6 +28,9 @@ environment_param.grav = 1/6;
 %%% Dynamics on/off
 environment_param.dynamics_flag = 'on';
 
+%%% Gripper detachment method ('none', 'max_holding_force')
+environment_param.detachment_detection_method = 'none';
+
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Time settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Time-step [s]
@@ -43,7 +46,7 @@ environment_param.inc = 0;
 environment_param.surface_K = 1000;
 %%% Ground reaction force damping coefficient (scalar)
 environment_param.surface_D = 1;
-%%% Graspable points detection type
+%%% Graspable points detection type ('all', 'gripper', 'peaks')
 environment_param.graspable_points_detection_type = 'all';
    
 end

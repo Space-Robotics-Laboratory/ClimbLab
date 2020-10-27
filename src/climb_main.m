@@ -4,16 +4,16 @@
 %%%%%% Main file for climbing/walking simulation
 %%%%%% 
 %%%%%% Created 2020-02-20 by Warley Ribeiro
-%%%%%% Last update: 2020-07-09
+%%%%%% Last update: 2020-10-16 by Kentaro Uno
 
 clc; clear; close all; 
 tic; ini_path(); variables_saved = [];
 
-%%% Select configuration 'default', 'USER', 'uno_crawl_param', 'gia_static'
-config = 'uno_crawl_param';
+%%% Select configuration 'default', 'USER', 'uno_crawl_param', 'nonperiodic_demo_param', 'gia_static', 'iSAIRAS_2020_demo_param'
+config = 'iSAIRAS_2020_demo_param';
 %%% Load all initial parameters from configuration files stored in config/
 [robot_param, environment_param, gait_param, control_param, equilibrium_eval_param, ani_settings, save_settings, ...
-    plot_settings] = config_simulation(config);
+    plot_settings, gripper_param, map_param, matching_settings] = config_simulation(config);
 
 %%% Define a code for current set of simulations
 run_cod = 'test';
@@ -23,7 +23,7 @@ global d_time; global Gravity; global Ez; global contact_f; global x; global y; 
 
 ini_environment(environment_param);
 surface_param = ini_surface(environment_param);
-surface_param = ini_graspable_points(environment_param,surface_param);
+surface_param = ini_graspable_points(environment_param, surface_param, gripper_param, map_param, matching_settings);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Initialize robot %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [LP, SV, des_SV, F_grip, POS_e, ORI_e, cont_POS] = ini_robot(robot_param, gait_param, surface_param);
@@ -41,7 +41,7 @@ for time = 0:d_time:environment_param.time_max
 	% Display time
 	disp(time)
     
-%     if norm(SV.R0(1:2) - gait_param.goal(1:2)) < 0.03
+%     if norm(SV.R0(1:2) - gait_param.goal(1:2)) < 0.02
 %         break
 %     end
 
@@ -59,18 +59,19 @@ for time = 0:d_time:environment_param.time_max
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Robot controller %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	SV = upd_control(SV, des_SV, control_param);
-	SV = upd_grasp_slip(LP, SV, des_SV);
-	SV.sup = des_SV.sup;
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Kinematics and dynamics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	cont_POS = upd_collision_endeffector(LP, SV, POS_e, cont_POS);
 	SV = upd_ground_reaction_forces_spring_damper(LP, SV, surface_param, POS_e, cont_POS);
 	SV = upd_fwd_dynamics(environment_param, LP, SV, des_SV);
-	[POS_e, Qe_deg, Q0_deg] = upd_fwd_kinematics(LP, SV);
+	[POS_e, Qe_deg, Q0_deg, SV] = upd_fwd_kinematics(LP, SV);
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Save selected variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	variables_saved = upd_variables_saved(variables_saved, save_settings, time, SV, equilibrium_eval_param);
+	variables_saved = upd_variables_saved(variables_saved, save_settings, time, LP, SV, POS_e, equilibrium_eval_param);
     
+    SV = upd_grasp_detach(LP, SV, des_SV, F_grip, environment_param, equilibrium_eval_param, variables_saved);
+% 	SV.sup = des_SV.sup;
+	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Climbing animation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	% Visualization
     if rem(time,1/ani_settings.frame_rate) == 0 && strcmp(ani_settings.display,'on')
@@ -84,12 +85,12 @@ for time = 0:d_time:environment_param.time_max
         vis_reachable_area(SV, LP, path_planning_param, inc, ani_settings, surface_param);
         vis_goal(gait_param, inc, ani_settings);
         vis_support_triangle(SV,POS_e,inc,ani_settings);
-        vis_com_projection(SV, inc, ani_settings);
+        vis_com_projection(LP, SV, inc, ani_settings);
         vis_next_desired_position(path_planning_param, inc, ani_settings);
         vis_stability_polyhedron(inc, equilibrium_eval_param, ani_settings);
         vis_vectors(inc,ani_settings,equilibrium_eval_param,LP,SV);
-		% Visualize trajectory (to be added)
 		vis_animation_settings(ani_settings,surface_param,time);
+        vis_trajectory_4legged(environment_param,ani_settings,variables_saved);
         writeVideo(video,getframe(1));
     end
 
@@ -98,18 +99,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Saving variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close(video);
 data = sav_data_file(variables_saved, save_settings, run_cod, run_id, run_date);
-
-% Plot time history of base position
-vis_graph_base_pos(data, plot_settings)
-% Plot time history of footholds 
-vis_footholds(LP, plot_settings, inc, surface_param, path_planning_param);
-% Plot TSM (requires saving CSV and equilibrium method as 'tsm')
-vis_graph_tsm(data, plot_settings);
-% Plot GIA acceleration margin (requires saving CSV and equilibrium method as 'gia')
-vis_graph_acc_margin(data, plot_settings);
-% Plot GIA inclination margin (requires saving CSV and equilibrium method as 'gia')
-vis_graph_inclination_margin(data, plot_settings);
-
+% Plot graphs
+vis_plot_graph(data, plot_settings, LP, inc, surface_param, path_planning_param);
 
 toc
 % EOF

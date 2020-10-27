@@ -27,6 +27,10 @@ function equilibrium_eval_param = upd_tsm_tumbling_moment(equilibrium_eval_param
 % Initialize tumbling moment Mab 
 equilibrium_eval_param.Mab = zeros(1,equilibrium_eval_param.tumbling_axes_number);
 
+if equilibrium_eval_param.tumbling_axes_number == 0
+    equilibrium_eval_param.Mab(1) = 0;
+else
+
 for i = 1:equilibrium_eval_param.tumbling_axes_number
 	% Current tumbling axis legs' number
 	a = equilibrium_eval_param.tumbling_axes(i,1);
@@ -68,4 +72,5 @@ for i = 1:equilibrium_eval_param.tumbling_axes_number
 	end
 end
 
+end
 end
