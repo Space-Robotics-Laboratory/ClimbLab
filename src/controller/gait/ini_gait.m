@@ -51,10 +51,34 @@ case 'crawl_fixed_stride'
 	% Swing phase for each limb based on the sequence
 	for i=1:4
 	    gait_param.phi(gait_param.sequence(i)) = phi(i);
-	end
+    end
+    
 case 'crawl_uno_ver'
 
 	% Swing period for one leg
+	gait_param.T_d   = (1 - gait_param.beta)*gait_param.T;
+	% Half swing period
+	gait_param.T_dr  = gait_param.T_d/2;
+	% Supporting period for one leg
+	gait_param.T_dd  = gait_param.beta*gait_param.T; 
+	% All legs supporting period
+	gait_param.T_ddd = (2*gait_param.beta - 1.5)*gait_param.T;
+
+	% Swing phase for each leg [s]
+	phi = [0;
+       gait_param.T_d   + gait_param.T_ddd;
+       2*gait_param.T_d + gait_param.T_ddd;
+       3*gait_param.T_d + 2*gait_param.T_ddd;]';
+
+	% Swing phase for each limb based on the sequence
+	for i=1:4
+		gait_param.phi(gait_param.sequence(i)) = phi(i);
+    end
+    
+% for now, the below is exact same as the case of 'crawl_uno_ver' (20200703)
+case 'nonperiodic_uno_ver'
+
+    % Swing period for one leg
 	gait_param.T_d   = (1 - gait_param.beta)*gait_param.T;
 	% Half swing period
 	gait_param.T_dr  = gait_param.T_d/2;
@@ -81,7 +105,9 @@ end
 
 % Initialize the valuables to record footprint and com projection history 
 path_planning_param.footholds_history_limb = [];
+
 path_planning_param.footholds_count_limb = ones(4,1);
-%path_planning_param.com_projection_history = [];
+% @TODO: make a array to record the CoM projection 
+% path_planning_param.com_projection_history = [];
 
 end

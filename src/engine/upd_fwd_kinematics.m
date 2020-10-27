@@ -20,7 +20,7 @@
 %         LP           : Link Parameters (SpaceDyn class)
 %         SV           : State Variables (SpaceDyn class)
 
-function [POS_e, Qe_deg, Q0_deg] = upd_fwd_kinematics(LP, SV)
+function [POS_e, Qe_deg, Q0_deg, SV] = upd_fwd_kinematics(LP, SV)
 
 POS_e = zeros(3,LP.num_limb);
 Qe_rad = zeros(3,LP.num_limb);

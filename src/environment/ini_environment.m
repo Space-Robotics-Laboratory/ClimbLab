@@ -5,7 +5,7 @@
 %%%%%% 
 %%%%%% Created 2020-04-09
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-04-09
+%%%%%% Last update: 2020-09-07
 %
 %
 % Initialize global environment parameters
@@ -15,7 +15,7 @@
 %     OUTPUT
 %         ---
 %     INPUT
-%         environment_param   : Parameters for environment (class)
+%         environment_param   : Parameters for environment related variables (struct)
 
 
 function ini_environment(environment_param)

@@ -20,7 +20,6 @@
 %         equilibrium_eval_param : Parameters for equilibrium evaluation (class)
 %         LP           			 : Link Parameters (SpaceDyn class)
 
-
 function equilibrium_eval_param = upd_tsm(equilibrium_eval_param, LP)
 
 global Gravity

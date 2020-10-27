@@ -19,13 +19,17 @@ This simulator wraps up functions for:
 * [x] Visualization (Robot, map, support polygons, stability criterion, and time-history of any state variables) 
 
 #### Simulation examples
-| ![ex1_uneven_dynamic_fixed_stride.gif](./docs/media/ex1_uneven_dynamic_fixed_stride.gif) | ![ex2_flat_kinematic_Uno-gait-planning.gif](./docs/media/ex2_flat_kinematic_Uno-gait-planning.gif) |![GIA-poly-hedoron.png](./docs/media/GIA-poly-hedoron.png)|
-|--------|--------|--------|
-| 1) Standard gait on uneven terrain | 2) Optimal foothold selection on descrete grippable points [1] | 3) Stability region visualization [2] |
+| ![ex1_uneven_dynamic_fixed_stride.gif](./docs/media/ex1_uneven_dynamic_fixed_stride.gif) | ![ex2_flat_kinematic_Uno-gait-planning.gif](./docs/media/ex2_flat_kinematic_Uno-gait-planning.gif) |
+|--------|--------|
+| 1) Standard gait on uneven terrain | 2) Optimal foothold selection on descrete grippable points [1] |
+
+|![GIA-poly-hedoron.png](./docs/media/GIA-poly-hedoron.png) | ![ex4_uneven_terrain_dynamic_Non-perioidc-gait-planning.gif](./docs/media/ex4_uneven_terrain_dynamic_Non-perioidc-gait-planning.gif)|
+|--------|--------|
+| 3) Stability region visualization [2] | 4) Topographically salient region detection and non-periodic foothold selection [3] |
 
 ## Usage
 
-If you use this simulator in academic context, please put citations of the following publications [1] and [2].
+If you use this simulator in academic context, please put citations of the following publications.
 
 #### Requirements
 We confirmed the code is working with:
@@ -48,7 +52,18 @@ We confirmed the code is working with:
 
 [2] Warley F. R. Ribeiro *et al*., "[Dynamic Equilibrium of Climbing Robots based on Stability Polyhedron for Gravito-Inertial Acceleration](https://clawar.org/conference-proceedings/clawar-conference/clawar-2020-proceedings/)", Proceedings of the 23rd International Conference on Climbing and Walking Robots and the Support Technologies for Mobile Machines, Moscow, Russian Federation, 2020, pp. 297-304, [doi: 10.13180/clawar.2020.24-26.08.18](https://doi.org/10.13180/clawar.2020.24-26.08.18).
 
+[3] Kentaro Uno *et al*., "[Non-Periodic Gait Planning Based on Salient Region Detection for a Planetary Cave Exploration Robot](https://www.hou.usra.edu/meetings/isairas2020fullpapers/pdf/5027.pdf)", Proceedings of the International Symposium on Artificial Intelligence, Robotics and Automation in Space, remote conference, 2020, No. 5027.
+
 ## FAQ
+
 Please contact us by sending an email to the following address if there is any question or suggestion.
 
     limb[at]astro.mech.tohoku.ac.jp
+
+## Release note
+
+* Version 1.0: released on 18th Sept. 2020.
+* Version 2.0: released on 26th Oct. 2020. This version includes:
+    - topographically salient regioon detection algorithm [3]
+    - non-periodic gait plannner [3]
+    - gripper detachment evaluation  

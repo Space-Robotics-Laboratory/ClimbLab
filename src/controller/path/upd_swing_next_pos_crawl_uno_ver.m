@@ -5,7 +5,7 @@
 %%%%%%
 %%%%%% Created 2020-06-12
 %%%%%% Yusuke Koizumi
-%%%%%% Last update: 2020-07-11 by Kentaro Uno
+%%%%%% Last update: 2020-09-11 by Kentaro Uno
 %
 %
 % Update next grasping position for crawl gait using Uno-san's method
@@ -17,6 +17,7 @@
 %
 %         path_planning_param.POS_cur       : Current position of the swing leg when selecting a new one [m] (3x1 vector)
 %         path_planning_param.POS_next      : Next desired position of the swing leg [m] (3x1 vector)
+%         path_planning_param.base_next     : Next desired position of the base [m] (3x1 vector)
 %         path_planning_param.leg_T         : Initial and final time for the movement between current and desired position [s] (2x1 vector)
 %         path_planning_param.base_T        : Initial and final time for the movement between current and desired position [s] (2x1 vector)
 %     INPUT
@@ -31,7 +32,7 @@
 %         base_height           : Height of base relative to map [m]
 %         time                  : Simulation time [s] (scalar)
 
-function path_planning_param = upd_swing_next_pos_crawl_uno_ver(path_planning_param, gait_param, surface_param, SV, des_SV, LP, POS_e,inc, base_height, time)
+function path_planning_param = upd_swing_next_pos_crawl_uno_ver(path_planning_param, gait_param, surface_param, SV, des_SV, LP, POS_e, inc, base_height, time)
 if sum(des_SV.sup) == LP.num_limb && ~isempty(path_planning_param.graspable_points_in_reachable_area)
     i = path_planning_param.swing_number;
     % Current position of swing leg on the surface
@@ -42,7 +43,7 @@ if sum(des_SV.sup) == LP.num_limb && ~isempty(path_planning_param.graspable_poin
     path_planning_param.base_cur = SV.R0;
     % Graspable points in Reachable area
     GP_in_RA = [];
-    GP_in_RA = path_planning_param.graspable_points_in_reachable_area;
+    GP_in_RA = path_planning_param.graspable_points_in_reachable_area(:,:,i);
     % Projection point (current position in a map)
     [~,~,c] =  get_map_pos(SV.R0(1),SV.R0(2));
     %     Base_proj = [a;b;c];
@@ -56,7 +57,7 @@ if sum(des_SV.sup) == LP.num_limb && ~isempty(path_planning_param.graspable_poin
     path_planning_param.POS_next = POS_e;
     for ind = 1:size(GP_in_RA,2)
         vec_tmp = GP_in_RA(1:2,ind) - POS_e(1:2,i);
-        if norm(vec_tmp) <= 20.0
+        if norm(vec_tmp) <= 0.2
             dot_tmp(1,ind) = dot(vec_sg(1:2,1), vec_tmp);
         else
             dot_tmp(1,ind) = 0;
@@ -64,6 +65,7 @@ if sum(des_SV.sup) == LP.num_limb && ~isempty(path_planning_param.graspable_poin
     end
     
     RequirementCheck_flag = false;
+    path_planning_param.POS_last_selected(:, i) = path_planning_param.POS_next(:, i);
     while ~RequirementCheck_flag
         [~,I] = max(dot_tmp);
         %         disp([GP_in_RA;dot_tmp]);
@@ -77,6 +79,12 @@ if sum(des_SV.sup) == LP.num_limb && ~isempty(path_planning_param.graspable_poin
         RequirementCheck_flag = true;
         %         RequirementCheck_flag = Requirement_Check(RequirementCheck_flag,LP,path_planning_param);
         RequirementCheck_flag = Requirement_Check(SV,LP,POS_e,path_planning_param);
+        % Also, if the next desired landing point is same as last time, it should
+        % be removed from the options
+        if norm(path_planning_param.POS_next(:, i)-POS_e(:, i)) <= 0.01
+            RequirementCheck_flag = false
+        end
+        
         if ~RequirementCheck_flag
             GP_in_RA(:, I) = [];
             dot_tmp(I) = [];
@@ -95,15 +103,16 @@ if sum(des_SV.sup) == LP.num_limb && ~isempty(path_planning_param.graspable_poin
     path_planning_param.base_T = [time; time + gait_param.T_d];
     
 
-% Record the footholds of leg i
-if time == 0
-    for j=1:LP.num_limb
-        path_planning_param.footholds_history_limb(:,path_planning_param.footholds_count_limb(j),j) = POS_e(:,j);
-        path_planning_param.footholds_count_limb(j) = path_planning_param.footholds_count_limb(j) + 1;
+    % Record the footholds of leg i
+    if time == 0
+        for j=1:LP.num_limb
+            path_planning_param.footholds_history_limb(:,path_planning_param.footholds_count_limb(j),j) = POS_e(:,j);
+            path_planning_param.footholds_count_limb(j) = path_planning_param.footholds_count_limb(j) + 1;
+        end
     end
-end
-path_planning_param.footholds_history_limb(:,path_planning_param.footholds_count_limb(i),i) = path_planning_param.POS_next(:,i);
-path_planning_param.footholds_count_limb(i) = path_planning_param.footholds_count_limb(i) + 1;
+    path_planning_param.footholds_history_limb(:,path_planning_param.footholds_count_limb(i),i) = path_planning_param.POS_next(:,i);
+    path_planning_param.footholds_count_limb(i) = path_planning_param.footholds_count_limb(i) + 1;
+
 end
 end
 

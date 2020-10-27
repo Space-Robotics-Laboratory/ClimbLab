@@ -5,7 +5,7 @@
 %%%%%% 
 %%%%%% Created 2020-07-09
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-07-09
+%%%%%% Last update: 2020-09-08
 %
 %
 % Define configurations for default parameters. This file is not actually used, but it contains a list of ALL parameters. use
@@ -34,8 +34,8 @@ function [robot_param, environment_param, gait_param, control_param, equilibrium
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% General settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% Type of the robot to simulate ('HubRobo_no_grip', 'HubRobo_grip_to_palm', 'HubRobo_grip_to_spine')
-robot_param.robot_type = 'HubRobo_grip_to_palm';
+%%% Type of the robot to simulate ('HubRobo_v2_2_no_grip', 'HubRobo_v2_2_grip_to_palm', 'HubRobo_v3_1_grip_to_palm', 'HubRobo_v2_2_grip_to_spine')
+robot_param.robot_type = 'HubRobo_v2_2_grip_to_palm';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Position settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -196,10 +196,12 @@ ani_settings.robot_color = [0.2, 0.2, 0];
 ani_settings.robot_alpha = 0.8;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Surface related %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Surface grid color
-ani_settings.grid_color = [0.9 0.9 0.9];
-%%% Surface color
-ani_settings.surface_color = gray;
+%%% Surface viz. on/off
+ani_settings.surface_show = 'on';
+    %%% Surface grid color
+    ani_settings.grid_color = [0.9 0.9 0.9];
+    %%% Surface color
+    ani_settings.surface_color = gray;
 
 %%% Graspable points viz. on/off
 ani_settings.graspable_points_show = 'off';
@@ -236,6 +238,8 @@ ani_settings.goal_show = 'off';
     ani_settings.goal_marker = '.';
     %%% Goal size
     ani_settings.goal_size = 25;
+    %%% Goal vis. height from the ground
+    ani_settings.goal_vis_height = 0.0;
 
 %%% Next desired position vis. on/off
 ani_settings.next_desired_position_show = 'off';
@@ -243,13 +247,24 @@ ani_settings.next_desired_position_show = 'off';
     ani_settings.next_desired_position_color = 'm';
     %%% Next desired position line width
     ani_settings.next_desired_position_line_width = 1;
+    
+%%% Plot trajectory
+ani_settings.trajectory_show = 'on';
+	%%% Trajectory line color
+    ani_settings.trajectory_color = 'c';
+	%%% Trajectory line widith
+    ani_settings.trajectory_width = 3;
+	%%% Trajectory line type
+    ani_settings.trajectory_line_type = ':';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Equilibrium related %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Support triangle visualization
 ani_settings.support_triangle_show = 'off';
     %%% Support triangle color
-    ani_settings.support_triangle_color =[0 1.0 1.0];
+    ani_settings.support_triangle_color = [0 1.0 1.0];
+    %%% Support triangle edge line color
+    ani_settings.support_triangle_edge_color = [0.0 0.0 0.0];
     %%% Support triangle transparency
     ani_settings.support_triangle_alpha = 0.5;
 
@@ -284,6 +299,8 @@ ani_settings.com_projection_show = 'off';
     ani_settings.com_projection_marker = '.';
     %%% CoM projection point size
     ani_settings.com_projection_size = 25;
+    %%% CoM projection point vis. height from the ground
+    ani_settings.com_projection_vis_height = 0.0;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Save Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -315,6 +332,42 @@ plot_settings.width = 3;
 %%% Plot Base position
 plot_settings.base_pos = 'on';
 plot_settings.base_pos_fig_number = 2;
+%%% Plot Base orientation
+plot_settings.base_ori = 'off';
+plot_settings.base_ori_fig_number = 3;
+%%% Plot Base velocity
+plot_settings.base_vel = 'off';
+plot_settings.base_vel_fig_number = 4;
+%%% Plot Base angular velocity
+plot_settings.base_angvel = 'off';
+plot_settings.base_angvel_fig_number = 5;
+%%% Plot Base velocity
+plot_settings.base_acc = 'off';
+plot_settings.base_acc_fig_number = 6;
+%%% Plot Base angular velocity
+plot_settings.base_angacc = 'off';
+plot_settings.base_angacc_fig_number = 7;
+
+%%% Plot Joint angular position
+plot_settings.joint_pos = 'off';
+plot_settings.joint_pos_fig_number = 8;
+%%% Plot Joint angular velocity
+plot_settings.joint_vel = 'off';
+plot_settings.joint_vel_fig_number = 9;
+%%% Plot Joint angular acceleration
+plot_settings.joint_acc = 'off';
+plot_settings.joint_acc_fig_number = 10;
+%%% Plot Joint torque
+plot_settings.joint_torque = 'off';
+plot_settings.joint_torque_fig_number = 11;
+
+%%% Plot Leg Position
+plot_settings.leg_pos = 'off';
+plot_settings.leg_pos_fig_number = 12; % and 13, 14, 15 are also used 
+
+%%% Plot Reaction Force
+plot_settings.reaction_force = 'off';
+plot_settings.reaction_force_fig_number = 16; % and 17~23  are also used 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Gait related %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% 101 ~ 200

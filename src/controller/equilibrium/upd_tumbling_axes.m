@@ -25,23 +25,34 @@ function equilibrium_eval_param = upd_tumbling_axes(equilibrium_eval_param, LP, 
 
 equilibrium_eval_param.tumbling_axes = [];
 
-cnt = 1;
-for a = 1:LP.num_limb
-    if SV.sup(a) == 1
-        equilibrium_eval_param.tumbling_axes(cnt,1) = a;
-        for b = a+1:LP.num_limb
-            if SV.sup(b) == 1
-                equilibrium_eval_param.tumbling_axes(cnt,2) = b;
-                cnt = cnt + 1;
-                break
+if sum(SV.sup) > 1
+
+    cnt = 1;
+    for a = 1:LP.num_limb
+        if SV.sup(a) == 1
+            equilibrium_eval_param.tumbling_axes(cnt,1) = a;
+            for b = a+1:LP.num_limb
+                if SV.sup(b) == 1
+                    equilibrium_eval_param.tumbling_axes(cnt,2) = b;
+                    cnt = cnt + 1;
+                    break
+                end
             end
         end
     end
-end
 
-% Close polygon with initial support point
-equilibrium_eval_param.tumbling_axes(cnt,2) = equilibrium_eval_param.tumbling_axes(1,1);
-% Total number of tumbling axes
-equilibrium_eval_param.tumbling_axes_number = cnt;
+    % Close polygon with initial support point
+    equilibrium_eval_param.tumbling_axes(cnt,2) = equilibrium_eval_param.tumbling_axes(1,1);
+    % Total number of tumbling axes
+    equilibrium_eval_param.tumbling_axes_number = cnt;
+else
+    % One or none supporting legs case
+    for a = 1:LP.num_limb
+        if SV.sup(a) == 1
+            equilibrium_eval_param.tumbling_axes = [a a];
+        end
+    end
+    equilibrium_eval_param.tumbling_axes_number = 0;
+end
 
 end

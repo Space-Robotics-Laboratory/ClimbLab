@@ -42,29 +42,35 @@ global x ; global y ; global z;
 
 switch robot_param.robot_type
 
-case 'HubRobo_no_grip'
-    LP = ini_HubRobo_no_grip_LP();
-    F_grip = 0.0;
-    % Calculate reachable area
-    joint_limit=[-60 60; 0 90; -135 0]; %[deg]
-    
-case 'HubRobo_grip_to_spine'
-    LP = ini_HubRobo_grip_to_spine_LP();
-    F_grip = 3.2;
-    % Calculate reachable area
-    joint_limit=[-60 60; 0 90; -135 0]; %[deg]
-    
 case 'HubRobo_grip_to_spine_old'
     LP = ini_HubRobo_grip_to_spine_LP_old();
     F_grip = 3.2;
     % Calculate reachable area
     joint_limit=[-60 60; 0 90; -135 0]; %[deg]
     
-case 'HubRobo_grip_to_palm'
-    LP = ini_HubRobo_grip_to_palm_LP();
+case 'HubRobo_v2_2_no_grip'
+    LP = ini_HubRobo_v2_2_no_grip_LP();
+    F_grip = 0.0;
+    % Calculate reachable area
+    joint_limit=[-60 60; 0 90; -135 0]; %[deg]
+    
+case 'HubRobo_v2_2_grip_to_spine'
+    LP = ini_HubRobo_v2_2_grip_to_spine_LP();
+    F_grip = 3.2;
+    % Calculate reachable area
+    joint_limit=[-60 60; -15 90; -135 0]; %[deg]
+    
+case 'HubRobo_v2_2_grip_to_palm'
+    LP = ini_HubRobo_v2_2_grip_to_palm_LP();
     F_grip = 3.2;
     % Calculate reachable area
     joint_limit=[-60 60; 0 90; -135 0]; %[deg]
+
+case 'HubRobo_v3_1_grip_to_palm'
+    LP = ini_HubRobo_v3_1_grip_to_palm_LP();
+    F_grip = 9.0;
+    % Calculate reachable area
+    joint_limit=[-60 60; -15 90; -125 0]; %[deg]
         
 otherwise
     disp('invalid robot type');
@@ -110,7 +116,7 @@ cont_POS = POS_e;
 
 % Initialize desired state
 des_SV = SV;
-if strcmp(gait_param.type,'crawl_uno_ver')
+if strcmp(gait_param.type,'crawl_uno_ver') || strcmp(gait_param.type,'nonperiodic_uno_ver')
     LP = ini_reachable_area(LP,SV, POS_e(3,1)-SV.R0(3,1),joint_limit);
 end
 end

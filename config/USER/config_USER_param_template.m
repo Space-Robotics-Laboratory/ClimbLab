@@ -7,7 +7,8 @@
 %%%%%% 
 %%%%%% Created 2020-07-08
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-07-08
+%%%%%% Last update: 2020-10-01
+%%%%%% Keigo Haji
 %
 %
 % Load configurations for parameters defined by the USER 
@@ -23,12 +24,15 @@
 %         ani_settings
 %         save_settings
 %         plot_settings
+%         gripper_param
+%         map_param
+%         matching_settings
 %     INPUT
 %         -
 
 function [robot_param, environment_param, gait_param, control_param, equilibrium_eval_param, ani_settings, save_settings, ...
-    plot_settings] = config_USER_param(robot_param, environment_param, gait_param, control_param, ...
-    equilibrium_eval_param, ani_settings, save_settings, plot_settings)
+    plot_settings, gripper_param, map_param, matching_settings] = config_USER_param(robot_param, environment_param, gait_param, control_param, ...
+    equilibrium_eval_param, ani_settings, save_settings, plot_settings, gripper_param, map_param, matching_settings)
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Robot Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -52,6 +56,15 @@ environment_param.time_max = 2;
 save_settings.csv_file = 'off';
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Plot Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Gripper Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Map Parameters and settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Matching Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 end

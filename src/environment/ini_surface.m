@@ -5,7 +5,8 @@
 %%%%%% 
 %%%%%% Created 2020-04-06
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-04-06
+%%%%%% Last update: 2020-10-16
+%%%%%% Kentaro Uno
 %
 %
 % Load surface points from .mat file and set contact characteristics (stiffness and damping)
@@ -22,6 +23,7 @@
 function surface_param = ini_surface(environment_param)
 
 global x ; global y ; global z;
+surface_param.graspable_points = [];
 
 switch environment_param.surface_type
 
@@ -30,6 +32,10 @@ case 'flat_HR'
 
 case 'rough'
 	load('map_uneven.mat');
+    
+case 'climbing_holds_1m_x_1m'
+    load('climbing_holds_1m_x_1m.mat'); 
+    % see also ini_graspable_points.m
 
 case 'flat_003' 
 	load('flat_delta_003.mat');
