@@ -10,6 +10,16 @@
 
 function LP = ini_HubRobo_grip_to_spine_LP_old()
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% Definition of the robot performance %%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% state the type of the joint configuration -> IK analytical solution is switched
+LP.joint_allocation_type = 'insect';
+
+% Max. endurable gripping force
+LP.F_grip = 3.2;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% Definition of each link parameters %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,6 +48,8 @@ LP.S0 = [ 1 0 0 1 0 0 1 0 0 1 0 0];
 LP.SE = [ 0 0 1 0 0 1 0 0 1 0 0 1 ];
 % Type of joint
 LP.J_type = [ 'R' 'R' 'R'  'R' 'R' 'R'  'R' 'R' 'R'  'R' 'R' 'R' ];
+% Movable limitation of joint
+LP.joint_limit=[-60 60; 0 90; -120 0]; %[deg]
 
 % Position vector from base CoM to i-th joint
 LP.c0 = [  0.054  0  0 -0.054  0  0 -0.054  0  0  0.054  0  0;

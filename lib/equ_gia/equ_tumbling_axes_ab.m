@@ -5,7 +5,7 @@
 %%%%%% 
 %%%%%% Created 2020-02-03
 %%%%%% by Warley Ribeiro
-%%%%%% Last update: 2020-06-10
+%%%%%% Last update: 2021-08-20
 %
 %
 % Obtain all possible tumbling axes numbering, accordingly to the number of the supporting legs. This function requires that
@@ -25,21 +25,34 @@
 
 function [tumbling_axes, tumbling_axes_number] = equ_tumbling_axes_ab(n, grasp_flag)
 
-cnt = 1;
-for a = 1:n
-    if grasp_flag(a) == 1
-        tumbling_axes(cnt,1) = a;
-        for b = a+1:n
-            if grasp_flag(b) == 1
-                tumbling_axes(cnt,2) = b;
-                cnt = cnt + 1;
-                break
+if sum(grasp_flag) > 1
+
+    cnt = 1;
+    for a = 1:n
+        if grasp_flag(a) == 1
+            tumbling_axes(cnt,1) = a;
+            for b = a+1:n
+                if grasp_flag(b) == 1
+                    tumbling_axes(cnt,2) = b;
+                    cnt = cnt + 1;
+                    break
+                end
             end
         end
     end
-end
 
-% Close polygon with initial support point
-tumbling_axes(cnt,2) = tumbling_axes(1,1);
-% Total number of tumbling axes
-tumbling_axes_number = cnt;
+    % Close polygon with initial support point
+    tumbling_axes(cnt,2) = tumbling_axes(1,1);
+    % Total number of tumbling axes
+    tumbling_axes_number = cnt;
+else
+    % One or none supporting legs case
+    for a = 1:n
+        if grasp_flag(a) == 1
+            tumbling_axes = [a a];
+        else
+            tumbling_axes = [0 0];
+        end
+    end
+    tumbling_axes_number = 0;
+end

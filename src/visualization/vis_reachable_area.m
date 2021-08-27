@@ -5,7 +5,8 @@
 %%%%%%
 %%%%%% Created 2020-05-20
 %%%%%% Yusuke Koizumi
-%%%%%% Last update: 2020-07-11 by Kentaro Uno
+%%%%%% Last updated: 2020-05-17
+%%%%%% Kentaro Uno
 %
 %
 % Display reachable points
@@ -17,7 +18,7 @@
 %     INPUT
 %         SV                                     : State Variables
 %         LP                                     : Link Parameters
-%         path_planning_param                    : Parameters for Path Planning (class)
+%         gait_planning_param                    : Parameters for Gait Planning (class)
 %         inc                                    : Surface inclination [deg] (scalar)
 %         ani_settings.reachable_area_line_color : Color for line [RGB] (1x3 vector)
 %         ani_settings.reachable_area_line_width : Line width of marker (scalar)
@@ -27,12 +28,12 @@
 
 
 
-function vis_reachable_area(SV, LP, path_planning_param, inc, ani_settings, surface_param)
+function vis_reachable_area(SV, LP, gait_planning_param, inc, ani_settings, surface_param)
 if strcmp(ani_settings.reachable_area_show, 'on')
     % get an index of the swing leg
-    i = path_planning_param.swing_number;
+    i = gait_planning_param.swing_number;
     
-    alpha = LP.Qi(3, (3*i-2));
+    alpha = LP.Qi(3, (3*i-2)) + SV.Q0(3);
     joint = SV.R0 + SV.A0*LP.c0(:,3*i-2);
     r_min = LP.reachable_area.min-LP.c0(1,1);
     r_max = LP.reachable_area.max-LP.c0(1,1);

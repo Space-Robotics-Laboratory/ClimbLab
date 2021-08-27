@@ -118,17 +118,17 @@ text(LP.c0(1,1),LP.c0(2,1),LP.c0(3,1) , str )
 hold on;
 
 % visualize the reachable area on the z-xy plane
-plot3(POS_e1_tmp1(:,1),POS_e1_tmp1(:,2),POS_e1_tmp1(:,3), color, ... 
-      POS_e1_tmp2(:,1),POS_e1_tmp2(:,2),POS_e1_tmp2(:,3), color, ...
-      POS_e1_tmp3(:,1),POS_e1_tmp3(:,2),POS_e1_tmp3(:,3), color, ... 
-      POS_e1_tmp4(:,1),POS_e1_tmp4(:,2),POS_e1_tmp4(:,3), color, 'DisplayName', robot_name)
+plot3(POS_e1_tmp1(:,1)-LP.c0(1,1),POS_e1_tmp1(:,2),POS_e1_tmp1(:,3), color, ... 
+      POS_e1_tmp2(:,1)-LP.c0(1,1),POS_e1_tmp2(:,2),POS_e1_tmp2(:,3), color, ...
+      POS_e1_tmp3(:,1)-LP.c0(1,1),POS_e1_tmp3(:,2),POS_e1_tmp3(:,3), color, ... 
+      POS_e1_tmp4(:,1)-LP.c0(1,1),POS_e1_tmp4(:,2),POS_e1_tmp4(:,3), color, 'DisplayName', robot_name)
 % matlab figure settings
 grid on;
 daspect([1 1 1]) % set grid is standardized
 xlabel('x (origin: CoM of robot)')
 zlabel('z (origin: CoM of robot)')
-xlim([    0 ,  0.5]);
-ylim([-0.15 , 0.25]);
+xlim([    -0.05 ,  0.35]);
+ylim([-0.3 , 0.3]);
 legend
 
 hold on;
