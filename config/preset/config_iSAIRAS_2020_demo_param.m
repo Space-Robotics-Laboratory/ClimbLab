@@ -15,7 +15,7 @@
 %%%%%% 
 %%%%%% Creation: 2020-09-10
 %%%%%% Kentaro Uno
-%%%%%% Last update: 2020-10-26
+%%%%%% Last update: 2021-02-22
 %%%%%% Kentaro Uno
 %
 %
@@ -27,7 +27,7 @@
 %     OUTPUT
 %         robot_param
 %         environment_param
-%         gait_param
+%         gait_planning_param
 %         control_param
 %         equilibrium_eval_param
 %         ani_settings
@@ -36,21 +36,31 @@
 %     INPUT
 %         -
 
-function [robot_param, environment_param, gait_param, control_param, equilibrium_eval_param, ani_settings, save_settings, ...
-    plot_settings, gripper_param, map_param, matching_settings] = config_USER_param(robot_param, environment_param, gait_param, control_param, ...
-    equilibrium_eval_param, ani_settings, save_settings, plot_settings, gripper_param, map_param, matching_settings)
+function [robot_param, environment_param, gait_planning_param, control_param, equilibrium_eval_param, ani_settings, save_settings, ...
+    plot_settings, gripper_param, map_param, matching_settings, sensing_camera_param] = config_iSAIRAS_2020_demo_param(robot_param, environment_param, gait_planning_param, control_param, ...
+    equilibrium_eval_param, ani_settings, save_settings, plot_settings, gripper_param, map_param, matching_settings, sensing_camera_param)
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Robot Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Type of the robot to simulate ('HubRobo_v2_2_no_grip', 'HubRobo_v2_2_grip_to_palm', 'HubRobo_v3_1_grip_to_palm', 'HubRobo_v2_2_grip_to_spine')
-robot_param.robot_type = 'HubRobo_v3_1_grip_to_palm';
+robot_param.robot_type = 'HubRobo_v3_2_grip_to_palm';
 %%% x and y position of legs relative to base center [m]
-robot_param.foot_dist  = 0.150;
+robot_param.x_foot_dist = 0.150;
+robot_param.y_foot_dist = 0.150;
 %%% Height of base relative to map [m]
 robot_param.base_height = 0.060;
 %%% Base position [m] 2x1 vector. or 'default' for default setting
 robot_param.base_pos_xy = [0.2;0.5];
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Sensing Camera Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Following Values are written in RealSense D435i datasheet.
+sensing_camera_param.fov_horizontal = 86*pi/180;     %[radian]
+sensing_camera_param.fov_vertical = 57*pi/180;   %[radian]
+sensing_camera_param.fov_max_distance = 0.3;   %[m]
+sensing_camera_param.fov_min_distance = 0.05;    %[m]
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Environment Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -76,16 +86,18 @@ environment_param.detachment_detection_method = 'max_holding_force';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% Gait type ('do_nothing', 'crawl_fixed_stride','crawl_uno_ver', nonperiodic_uno_ver)
-gait_param.type = 'nonperiodic_uno_ver';
+%%% Gait type ('do_nothing', 'crawl_fixed_stride','crawl_gait_for_discrete_footholds', nonperiodic_gait_for_discrete_footholds)
+gait_planning_param.type = 'nonperiodic_gait_for_discrete_footholds';
 %%% Step height [m]
-gait_param.step_height = 0.05;
+gait_planning_param.step_height = 0.04;
 %%% Period of one cycle [s]
-gait_param.T = 16;
+gait_planning_param.T = 16;
 %%% Duty cycle
-gait_param.beta = 0.75;
+gait_planning_param.beta = 0.75;
 %%% Goal position [m]
-gait_param.goal = [0.4;0.5;0.0];
+gait_planning_param.goal = [0.4;0.5;0.0];
+%%% Allowable maximum stride [m]
+gait_planning_param.allowable_max_stride = 0.1; 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Control Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -114,9 +126,17 @@ ani_settings.animation_resolution = [1280 720];
 %%% Link radius [m]
 ani_settings.link_radius = 0.0185;
 %%% Base thickness [m]
-ani_settings.base_thickness = 0.07;
+ani_settings.base_upper_thickness = 0.07;
+ani_settings.base_lower_thickness = 0.03;
+%%% Base horisontal scaling factor
+ani_settings.base_xy_scale_factor = 1.05;
+%%% Robot color
+ani_settings.robot_base_upper_color = [0.1, 0.1, 0.1];
+ani_settings.robot_base_lower_color = [0.1, 0.1, 0.1];
+ani_settings.robot_limb_color       = [0.1, 0.1, 0.1];
 %%% Robot transparency
-ani_settings.robot_alpha = 0.72;
+ani_settings.robot_base_alpha = 0.72;
+ani_settings.robot_limb_alpha = 0.72;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Camera related %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% x-axis limits [m] [[-0.25, 0.4], [-0.25, .25], [0, .5]]
@@ -195,12 +215,18 @@ ani_settings.trajectory_show = 'off';
 ani_settings.support_triangle_show = 'on';
     %%% Support triangle transparency
     ani_settings.support_triangle_edge_color = 'none';
-
-%%% Gravity vector visualize on/off
-ani_settings.gravity_vec_show = 'on';
-    %%% Gravity vector color
-    ani_settings.gravity_vec_color = [1.0, 0.0, 0.0];
-
+    
+%%% Transformation from acceleration to visualize GIA Stable Region, GIA
+%%% vector in the position coordinate -> this scale is used for all 
+%%% accelerational variables visualization
+ani_settings.acceleration_expansion_factor = 0.02;
+    %%% Gravitational Acceleration vector visualize on/off
+    ani_settings.gravitational_acceleration_vec_show = 'on';
+        %%% Gravity Acceleration vector color
+        ani_settings.gravitational_acceleration_vec_color = [1.0, 0.0, 0.0];
+        %%% Gravity Acceleration vector width
+        ani_settings.gravitational_acceleration_vec_width = 6;
+        
 %%% CoM projection point vis. on/off
 ani_settings.com_projection_show = 'on';
     %%% CoM projection point vis. marker size
@@ -208,6 +234,7 @@ ani_settings.com_projection_show = 'on';
     %%% CoM projection point vis. height from the ground
     % visualization position can be offseted to locate it vertically upper to the ground to show it well
     ani_settings.com_projection_vis_height = 0.04; % [m]
+    
 %%% Goal vis. on/off
 ani_settings.goal_show = 'on';
     %%% Goal vis. marker size
@@ -215,6 +242,23 @@ ani_settings.goal_show = 'on';
     %%% Goal vis. height from the ground
     ani_settings.goal_vis_height = 0.04; % [m]
 
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Sensing Camera related %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% RealSense Camera fov vis. on/off
+ani_settings.sensing_fov_show = 'on';
+    %%% Sensing camera position marker size
+    ani_settings.sensing_camera_MarkerSize = 1;
+    %%% Sensing camera marker color
+    ani_settings.sensing_camera_MarkerColor = '.k';
+    %%% Sensing camera fov line width
+    ani_settings.sensing_camera_fov_LineWidth = 1;
+    %%% Sensing camera fov line color
+    ani_settings.sensing_camera_fov_LineColor = 'w';
+%%% RealSense Camera fov filling vis. on/off
+ani_settings.sensing_fov_face_filling = 'on';
+    %%% Filling color
+    ani_settings.sensing_fov_face_color = 'w';
+    %%% Filling color alpha
+    ani_settings.sensing_fov_face_alpha = 0.2;
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Save Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -231,8 +275,6 @@ save_settings.tsm = 'on';
 
 %%% Plot footholds history on/off
 plot_settings.footholds = 'on';
-%%% Plot TSM
-plot_settings.tsm = 'on';
 %%% Plot TSM
 plot_settings.tsm = 'on';
 

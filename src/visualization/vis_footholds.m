@@ -5,7 +5,8 @@
 %%%%%%
 %%%%%% Created 2020-06-01
 %%%%%% Kentaro Uno
-%%%%%% Last update: 2020-09-22
+%%%%%% Last update: 2021-04-05
+%%%%%% Kentaro Uno
 %
 %
 % Plot time history of footholds 
@@ -20,36 +21,38 @@
 %         plot_settings.footholds_fig_number: Figure number (integer)
 %         inc                               : Surface inclination [deg] (scalar)
 %         surface_param.graspable_points    : Position of graspable points
-%         path_planning_param.footholds_history_limb                   
+%         gait_planning_param.footholds_history_limb                   
 %             : Three-dimensional matrix to store footholds of one limb (double), which is updated in upd_swing_next_pos_crawl_fixed_stride()
-%               e.g.) path_planning_param.footholds_history_limb(1,3,2) means: x(1) position of the third foothold of limb 2
+%               e.g.) gait_planning_param.footholds_history_limb(1,3,2) means: x(1) position of the third foothold of limb 2
 
 
-function vis_footholds(LP, plot_settings, inc, surface_param, path_planning_param)
+function vis_footholds(LP, plot_settings, inc, surface_param, gait_planning_param)
 if strcmp(plot_settings.footholds,'on')
     figure(plot_settings.footholds_fig_number)
     
     % plot the graspabe points first
-    plot(surface_param.graspable_points(1,:),surface_param.graspable_points(2,:),'xb')
+    plot(surface_param.graspable_points(1,:),surface_param.graspable_points(2,:),'.','color',[0.5,0.5,0.5])
     hold on
     surf_AA = rpy2dc([0;pi*inc/180;0])';
-    % plot(path_planning_param.com_projection_history(1,:), path_planning_param.com_projection_history(2,:),'-k','LineWidth',2)
+    % plot(gait_planning_param.com_projection_history(1,:), gait_planning_param.com_projection_history(2,:),'-k','LineWidth',2)
 
     % color settings
     hue_for_limb_1 = 0.80; % magenta
     hue_for_limb_2 = 0.6;  % blue
     hue_for_limb_3 = 1.0;  % red
-    hue_for_limb_4 = 0.35; % green
+    hue_for_limb_4 = 0.3; % green
 
     % plot footholds history
     for i=1:LP.num_limb
         footholds = [];
-%         footholds = path_planning_param.footholds_history_limb(:,:,i);
+%         footholds = gait_planning_param.footholds_history_limb(:,:,i);
         
-        %%% ignore the invalid footholds (which is labeled as [0;0;0] in path_planning_param.footholds_history_limb)
-        for j=1:size(path_planning_param.footholds_history_limb,2)
-            if path_planning_param.footholds_history_limb(:,j,i) ~= [0;0;0]
-                footholds = horzcat( footholds, path_planning_param.footholds_history_limb(:,j,i) );
+        %%% ignore the invalid footholds (which is labeled as [0;0;0] in gait_planning_param.footholds_history_limb)
+        for j=1:size(gait_planning_param.footholds_history_limb,2)
+            if gait_planning_param.footholds_history_limb(1,j,i) ~= 0 ... 
+               || gait_planning_param.footholds_history_limb(2,j,i) ~= 0 ...
+               || gait_planning_param.footholds_history_limb(3,j,i) ~= 0
+               footholds = horzcat( footholds, gait_planning_param.footholds_history_limb(:,j,i) );
             end
         end
 
@@ -81,16 +84,20 @@ if strcmp(plot_settings.footholds,'on')
         hold on
     end
     
-    % plot the CoM projection history (to be added)
+    % plot the CoM projection history
+    plot(gait_planning_param.com_projection_history(1,:),gait_planning_param.com_projection_history(2,:),...
+        'k-','LineWidth',2.0);
     
     % figure settings
-    title('Footholds history');
-    xlabel('\itx_g \rm[m]','FontName','calibri','FontSize',10); ylabel('\ity_g \rm[m]','FontName','calibri','FontSize',10);
-    set(gca,'fontsize',10);
+    title('Footholds history', 'FontSize', plot_settings.font_size, 'FontName', plot_settings.font_name);
+    xlabel('\itx_g \rm[m]', 'FontSize', plot_settings.font_size, 'FontName', plot_settings.font_name); 
+    ylabel('\ity_g \rm[m]', 'FontSize', plot_settings.font_size, 'FontName', plot_settings.font_name);
+    set(gca,'fontsize',plot_settings.font_size,'LineWidth',plot_settings.width/2);
+    set(gcf,'color','w');
     ax = gca;
     ax.XLim = [min(surface_param.graspable_points(1,:)) max(surface_param.graspable_points(1,:))]; ax.YLim = [min(surface_param.graspable_points(2,:)) max(surface_param.graspable_points(2,:))];
     ax.DataAspectRatio = [1 1 1];
-    grid on;
+    grid off;
 end
 % % save as fig file (to be added)
 % if sav == 1

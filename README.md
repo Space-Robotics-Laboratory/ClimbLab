@@ -1,6 +1,6 @@
 # ClimbLab - Climbing robot Matlab simulator
 
-![ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif](./docs/media/ex3_uneven_dynamic_Uno-gait-planning_stability_polyhedron.gif)
+![climblab.png](./docs/media/climblab.png)
 
 Author(s) and maintainer(s): [Space Robotics Lab.](http://www.astro.mech.tohoku.ac.jp/e/index.html) Climbing Robotics Team
 
@@ -27,9 +27,20 @@ This simulator wraps up functions for:
 |--------|--------|
 | 3) Stability region visualization [2] | 4) Topographically salient region detection and non-periodic foothold selection [3] |
 
-## Usage
+## Publication
 
-If you use this simulator in academic context, please put citations of the following publications.
+If you use this simulator in an academic context, please cite the following publication.
+> K. Uno, W. F. R. Ribeiro, Y. Koizumi, K. Haji, K. Kurihara, W. Jones, and K. Yoshida
+> **"ClimbLab: MATLAB Simulation Platform for Legged Climbing Robotics"**,
+> Proceedings of the 24th International Conference on Climbing and Walking Robots and the Support Technologies for Mobile Machines (CLAWAR), 2021.
+
+    @inproceedings{uno2021climblab,
+      title={ClimbLab: MATLAB Simulation Platform for Legged Climbing Robotics},
+      author={Kentaro Uno and Warley F. R. Ribeiro and Yusuke Koizumi and Keigo Haji and Koki Kurihara and William Jones and Kazuya Yoshida},
+      booktitle={Proceedings of the 24th International Conference on Climbing and Walking Robots and the Support Technologies for Mobile Machines (CLAWAR)},
+      pages={TBD},
+      year={2021}
+    }
 
 #### Requirements
 We confirmed the code is working with:
@@ -46,7 +57,9 @@ We confirmed the code is working with:
   - Note: If you select USER configuration type, follow instructions described in the `config/USER/config_USER_param_template.m`.
 * Run `src/climb_main.m` file (**Note: MATLAB might ask you to change folder or add path. Choose to "add path"**)
 
-## Publications
+## References
+
+Our recent works using ClimbLab simulator are as follows:
 
 [1] Kentaro Uno *et al*., "[Gait Planning for a Free-Climbing Robot Based on Tumble Stability](https://ieeexplore.ieee.org/document/8700455)", Proceedings of the 2019 IEEE/SICE International Symposium on System Integration (SII), Paris, France, 2019, pp. 289-294, [doi: 10.1109/SII.2019.8700455](https://doi.org/10.1109/SII.2019.8700455).
 
@@ -58,12 +71,16 @@ We confirmed the code is working with:
 
 Please contact us by sending an email to the following address if there is any question or suggestion.
 
-    limb[at]astro.mech.tohoku.ac.jp
+    srl-limb[at]grp.tohoku.ac.jp
 
 ## Release note
 
 * Version 1.0: released on 18th Sept. 2020.
 * Version 2.0: released on 26th Oct. 2020. This version includes:
-    - topographically salient regioon detection algorithm [3]
-    - non-periodic gait plannner [3]
-    - gripper detachment evaluation  
+    - topographically salient region detection algorithm [3]
+    - non-periodic gait planner [3]
+    - gripper detachment evaluation
+* Version 3.0: released on 27th Aug.2021. This version includes
+    - Camera sensing 
+    - New robot models
+    - More analysis scripts

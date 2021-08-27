@@ -5,7 +5,8 @@
 %%%%%% 
 %%%%%% Created 2019-08-07
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2019-08-07
+%%%%%% Last update: 2021-04-26
+%%%%%% Kentaro Uno
 %
 %
 % Draw trajectory of all 4 legs of a robot
@@ -15,29 +16,27 @@
 %     OUTPUT
 %         -
 %     INPUT 
-%         environment_param   : Parameters for environment related variables (struct)
-%         ani_settings        : Animation settings (struct)
-%         variables_saved     : Variables to be saved (struct)
+%         environment_param      : Parameters for environment related variables (struct)
+%         motion_planning_param  : Motiion planning parameters (struct)
+%           motion_planning_param.trajectories.[LF, LH, RH, RF]:
+%               trajectories of EE updated in upd_motion_planning
+%         ani_settings           : Animation settings (struct)
 
 
-function vis_trajectory_4legged(environment_param,ani_settings,variables_saved)
+function vis_trajectory_4legged(environment_param, motion_planning_param, ani_settings)
 
 % Visualize Trajectory
 if strcmp(ani_settings.trajectory_show,'on')
+
     color = ani_settings.trajectory_color;
     width = ani_settings.trajectory_width;
     line_type = ani_settings.trajectory_line_type;
     inc = environment_param.inc;
     
-    trajectory1 = variables_saved.pos_e1';
-    vis_trajectory(trajectory1,inc,color,width,line_type);
-    trajectory2 = variables_saved.pos_e2';
-    vis_trajectory(trajectory2,inc,color,width,line_type);
-    trajectory3 = variables_saved.pos_e3';
-    vis_trajectory(trajectory3,inc,color,width,line_type);
-    trajectory4 = variables_saved.pos_e4';
-    vis_trajectory(trajectory4,inc,color,width,line_type);
+    vis_trajectory(motion_planning_param.trajectories.LF, inc, color, width, line_type);
+    vis_trajectory(motion_planning_param.trajectories.LH, inc, color, width, line_type);
+    vis_trajectory(motion_planning_param.trajectories.RH, inc, color, width, line_type);
+    vis_trajectory(motion_planning_param.trajectories.RF, inc, color, width, line_type);
 end
-
 
 end

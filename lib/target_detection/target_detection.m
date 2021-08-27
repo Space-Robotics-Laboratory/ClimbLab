@@ -7,7 +7,7 @@
 %%%%%% 
 %%%%%% Created 2020-09-02
 %%%%%% Keigo Haji
-%%%%%% Last update: 2020-10-16
+%%%%%% Last update: 2021-04-16
 %%%%%% Keigo Haji
 %
 % Select points which can be grasped by the gripper from graspable points 
@@ -98,7 +98,15 @@ if map_param.transform == "on"
 elseif map_param.transform == "off"
    [graspable_points] = pcd_re_transform(voxel_coordinates_of_graspable_points,map_param.voxel_size,offset_vector);
 end
-   
+
+
+% Delete the targets whose z positions are less than threshold
+if matching_settings.delete_lower_targets == "on"
+    [graspable_points] = target_delete(graspable_points,matching_settings.delete_lower_targets_threshold);
+else
+    ;
+end
+
 end
 
 

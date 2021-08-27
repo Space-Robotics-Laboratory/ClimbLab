@@ -4,7 +4,8 @@
 %%%%%% 
 %%%%%% Created 2020-04-09
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-04-09
+%%%%%% Last update: 2020-03-16
+%%%%%% Kentaro Uno
 %
 %
 % Modify three-dimensional figure parameters
@@ -31,7 +32,10 @@ function vis_animation_settings(ani_settings, surface_param, time)
 
 %%% Definition of files for writing simulation results %%%
 % Labels
-xlabel({'\it{x} \rm{[m]}';['Time: ',num2str(time,'%.2f'), ' [s]']},'FontName',ani_settings.font_name,'FontSize',ani_settings.font_size);
+xlabel({'\it{x} \rm{[m]}';['Time: ',num2str(time,'%.2f'), ' [s]    ']},'FontName',ani_settings.font_name,'FontSize',ani_settings.font_size);
+if strcmp(ani_settings.animation_elapsed_time_show,'off')
+	xlabel('\it{x} \rm{[m]}','FontName',ani_settings.font_name,'FontSize',ani_settings.font_size);
+end
 ylabel('\it{y} \rm{[m]}','FontName',ani_settings.font_name,'FontSize',ani_settings.font_size);
 zlabel('\it{z} \rm{[m]}','FontName',ani_settings.font_name,'FontSize',ani_settings.font_size);
 % Define fonts

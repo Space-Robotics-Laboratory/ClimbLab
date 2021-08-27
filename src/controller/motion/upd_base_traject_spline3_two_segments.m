@@ -5,7 +5,8 @@
 %%%%%% 
 %%%%%% Created 2020-04-14
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-04-14
+%%%%%% Last update: 2020-11-18
+%%%%%% Kentaro Uno
 %
 %
 % Update coefficients for cubic spline of base trajectory
@@ -14,7 +15,7 @@
 %
 %     OUTPUT
 %         motion_planning_param : Parameters for motion planning (class)
-%         path_planning_param   : Parameters for path planning (class)
+%         gait_planning_param   : Parameters for Gait Planning (class)
 %
 %         motion_planning_param.spline_coeff_base: Coefficients for spline curve (3x1x(m+1)x2 matrix))
 %								1st dim: x-y-z coordinates (1 to 3)
@@ -22,24 +23,23 @@
 %								3rd dim: coefficient index (1 to 4)
 %								4th dim: segment number (1 or 2)
 %     INPUT
-%         gait_param             : Parameters for gait (class)
-%         path_planning_param    : Parameters for path planning (class)
+%         gait_planning_param    : Parameters for gait planning (class)
 %         motion_planning_param  : Parameters for motion planning (class)
 %         des_SV      			 : Desired State variable (SpaceDyn class)
 %         LP      				 : Link Parameters (SpaceDyn class)
 
-function [motion_planning_param, path_planning_param] = upd_base_traject_spline3_two_segments(path_planning_param, gait_param, motion_planning_param, des_SV, LP)
+function [motion_planning_param, gait_planning_param] = upd_base_traject_spline3_two_segments(gait_planning_param, motion_planning_param, des_SV, LP)
 
 % Define new trajectory for base
 	% If all legs are in support phase
 	if sum(des_SV.sup) == LP.num_limb
 		% Begin of a new cycle
-	    if path_planning_param.swing_number == gait_param.sequence(1)
+	    if gait_planning_param.swing_number == gait_planning_param.sequence(1)
 			% x, y and z
 			for j = 1:3
 				% First segment
-	  	    	CC_1 = upd_spline3_pos_vel(path_planning_param.base_cur(j), path_planning_param.base_next(j),...
-	  	    	                             0, 0, path_planning_param.base_T(1), path_planning_param.base_T(2));
+	  	    	CC_1 = upd_spline3_pos_vel(gait_planning_param.base_cur(j), gait_planning_param.base_next(j),...
+	  	    	                             0, 0, gait_planning_param.base_T(1), gait_planning_param.base_T(2));
 	        	for k = 1:size(CC_1)
 		        	motion_planning_param.spline_coeff_base(j,1,k,1) = CC_1(k); % xyz coord, leg_num, spline_coeff, segment_num
 		        	motion_planning_param.spline_coeff_base(j,1,k,2) = CC_1(k);
