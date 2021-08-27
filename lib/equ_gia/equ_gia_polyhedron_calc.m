@@ -5,7 +5,7 @@
 %%%%%% 
 %%%%%% Created 2020-01-20
 %%%%%% by Warley Ribeiro
-%%%%%% Last update: 2020-06-15
+%%%%%% Last update: 2020-08-20
 %
 % Considering the tumble stability with the addition of gripping forces to prevent the tumbling motion, the following
 % equation describe the limit condition for one tumbling axis
@@ -38,8 +38,9 @@
 %         polyhedron.edge_vec        : Direction vector for the edges of the polyhedron [m] (3xn matrix)
 %         polyhedron.edge_point      : Position of a point in the line of the edge where the z position is null (3xn matrix)
 %         polyhedron.vertex          : Position of the corners of the polyhedron (3x(n+1) matrix)
-%        gia              : Gravito-Inertial Acceleration vector [m/s^2] (3x1 vector)
-%        equ_flag         : Flag of equilibrium condition (1: equilibrium, 0: not in equilibrium) (scalar)
+%        gia                 : Gravito-Inertial Acceleration vector [m/s^2] (3x1 vector)
+%        equ_flag            : Flag of equilibrium condition (1: equilibrium, 0: not in equilibrium) (scalar)
+%        tumbling_axes_number: Number of possible tumbling axes (scalar)
 %    INPUT
 %        POS_e            : End-effector positions POS_e = [p1 p2 ... pn] [m] (3xn matrix) 
 %        pg               : Center of Gravity position [m] (3x1 vector)
@@ -53,7 +54,7 @@
 %        floor_base       : Vertical (z-axis) coordinate of floor for polyhedron base [m] (scalar)
 %        expansion_factor : Expansion factor for the acceleration vector compared to the position vectors (scalar)
 
-function [polyhedron, gia, equ_flag] = equ_gia_polyhedron_calc(POS_e, pg, a_g, mass, grasp_flag, F_hold, F0, M0, plot_on, ...
+function [polyhedron, gia, equ_flag, tumbling_axes_number] = equ_gia_polyhedron_calc(POS_e, pg, a_g, mass, grasp_flag, F_hold, F0, M0, plot_on, ...
                                                                floor_base, expansion_factor)
 
 global Gravity
@@ -72,6 +73,9 @@ gia = Gravity - a_g;
 
 % Check equilibrium based on the current GIA and maximum acceleration limit
 equ_flag = 1;
+if tumbling_axes_number == 0
+    equ_flag = 0;
+end
 for i = 1:tumbling_axes_number
     if gia'*n_ab_u(:,i) > norm(gia_limit_nab(:,i))
         % Equilibrium flag
@@ -83,17 +87,19 @@ end
 polyhedron.plane_point = gia_limit_nab;
 polyhedron.plane_vector = n_ab;
 
-if plot_on 
+if plot_on && tumbling_axes_number > 1
     % Shrink vector and move to center of gravity
     polyhedron.plane_point_exp = expansion_factor*polyhedron.plane_point + pg;
-    % Calculate intersection lines
+    % Calculate intersection lines (Polyhedron Edges)
     for i = 1:tumbling_axes_number
         if i == tumbling_axes_number
             j = 1;
         else
             j = i+1;
         end
+        % Intersection line direction
         polyhedron.edge_vec(:,i) = cross(n_ab_u(:,i),n_ab_u(:,j));
+        % Intersection line point (z = 0)
         if abs(polyhedron.edge_vec(3,i)) > 0.0001
             polyhedron.edge_point(3,i) = 0;
             A = [n_ab_u(1,i) n_ab_u(2,i);
@@ -101,13 +107,44 @@ if plot_on
             B = [n_ab_u(:,i)'*polyhedron.plane_point_exp(:,i);
                  n_ab_u(:,j)'*polyhedron.plane_point_exp(:,j)];
             polyhedron.edge_point(1:2,i) = A\B;
+        else
+            % Intersection line point (y = 0)
+            if abs(polyhedron.edge_vec(2,i)) > 0.0001
+                polyhedron.edge_point(2,i) = 0;
+                A = [n_ab_u(1,i) n_ab_u(3,i);
+                     n_ab_u(1,j) n_ab_u(3,j)];
+                B = [n_ab_u(:,i)'*polyhedron.plane_point_exp(:,i);
+                     n_ab_u(:,j)'*polyhedron.plane_point_exp(:,j)];
+                polyhedron.edge_point([1,3],i) = A\B;
+            % Intersection line point (x = 0)
+            else
+                polyhedron.edge_point(1,i) = 0;
+                A = [n_ab_u(2,i) n_ab_u(3,i);
+                     n_ab_u(2,j) n_ab_u(3,j)];
+                B = [n_ab_u(:,i)'*polyhedron.plane_point_exp(:,i);
+                     n_ab_u(:,j)'*polyhedron.plane_point_exp(:,j)];
+                polyhedron.edge_point(2:3,i) = A\B;
+            end
         end
     end
     
     % Calculate intersection points
+    % Compute support triangle surface
+    v1 = POS_e(:,tumbling_axes(1,1)) - POS_e(:,tumbling_axes(1,2));
+    v2 = POS_e(:,tumbling_axes(2,1)) - POS_e(:,tumbling_axes(2,2));
+    sup_plane_vector = cross(v1,v2);
+    sup_plane_point  = POS_e(:,tumbling_axes(1,1));
     for i = 1:tumbling_axes_number
-        % Lines and floor base
-        ind = (floor_base - polyhedron.edge_point(3,i))/polyhedron.edge_vec(3,i);
+    
+        % Intersection between lines and support triangle surface
+        if abs(polyhedron.edge_vec(:,i)'*sup_plane_vector) > 0.0001
+            ind = (sup_plane_point - polyhedron.edge_point(:,i))'*sup_plane_vector / (polyhedron.edge_vec(:,i)'*sup_plane_vector);
+        else
+            disp('Polyhedron edge is parallel to surface. Unable to compute correct visualization');
+            ind = 0;
+        end
+        
+%         ind = (floor_base - polyhedron.edge_point(3,i))/polyhedron.edge_vec(3,i);
         polyhedron.vertex(:,i) = polyhedron.edge_point(:,i) + ind*polyhedron.edge_vec(:,i);
     end
     % Between lines

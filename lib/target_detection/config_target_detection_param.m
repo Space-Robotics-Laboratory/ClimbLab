@@ -5,7 +5,7 @@
 %%%%%% 
 %%%%%% Created 2020-08-17
 %%%%%% Keigo Haji
-%%%%%% Last update: 2020-10-01
+%%%%%% Last update: 2021-04-16
 %%%%%% Keigo Haji
 %
 %
@@ -87,7 +87,8 @@ matching_settings.colony_threshold = 4;           % the number of vocels you thi
 matching_settings.mesh_threshold = 0.015;         % mesh threshold [m]
 matching_settings.mesh_size = 0.015;              % length of one side of mesh [m]
 
-
+matching_settings.delete_lower_targets = 'off';
+matching_settings.delete_lower_targets_threshold = 0.01;        %[m]
 
 
 

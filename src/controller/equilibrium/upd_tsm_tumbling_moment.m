@@ -3,9 +3,10 @@
 %%%%%% 
 %%%%%% Calculate tumbling moment for axes
 %%%%%% 
-%%%%%% Created 2020-05-06
-%%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-05-06
+%%%%%% Created: 2020-05-06
+%%%%%% by Warley Ribeiro
+%%%%%% Last update: 2020-12-21
+%%%%%% by Kentaro Uno
 %
 %
 % Calculate tumbling moment
@@ -20,9 +21,9 @@
 %         LP           			 : Link Parameters (SpaceDyn class)
 %         SV           			 : State Variables (SpaceDyn class)
 %         POS_e                  : Position of the end-effector [m] (3xnum_limb matrix)
-%         F_grip                 : Maximum gripping force [N] (scalar)
+%         LP.F_grip              : Maximum gripping force [N] (scalar)
 
-function equilibrium_eval_param = upd_tsm_tumbling_moment(equilibrium_eval_param, LP, SV, POS_e, F_grip)
+function equilibrium_eval_param = upd_tsm_tumbling_moment(equilibrium_eval_param, LP, SV, POS_e)
 
 % Initialize tumbling moment Mab 
 equilibrium_eval_param.Mab = zeros(1,equilibrium_eval_param.tumbling_axes_number);
@@ -45,7 +46,7 @@ for i = 1:equilibrium_eval_param.tumbling_axes_number
 	equilibrium_eval_param.Mab(i) = Mb'*(pa-pb)/abs(norm(pa-pb)) + Fb'*(cross(pb,pa))/abs(norm(pa-pb));
 
 	% If there is a gripping force
-	if F_grip ~= 0
+	if LP.F_grip ~= 0
 		% Check all possible gripping points besides the ones forming the tumbling axis
 		for j = 1:LP.num_limb
 			if j ~= a && j ~= b && SV.sup(j) == 1
@@ -63,7 +64,7 @@ for i = 1:equilibrium_eval_param.tumbling_axes_number
 				else
 					sgnx = 0;
 				end
-				Fgripper = sgnx * F_grip * ng;
+				Fgripper = sgnx * LP.F_grip * ng;
 
 				% Update tumbling moment with gripping force
 				equilibrium_eval_param.Mab(i) = equilibrium_eval_param.Mab(i) - Fgripper'*(cross((pb-pj),(pa-pj))/abs(norm(pa-pb))); 

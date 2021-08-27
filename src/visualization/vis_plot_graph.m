@@ -5,7 +5,8 @@
 %%%%%%
 %%%%%% Created 2020-07-27
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-09-08
+%%%%%% Last updated: 2021-07-09
+%%%%%% Keigo Haji
 %
 %
 % Plot graphs
@@ -19,10 +20,10 @@
 %         plot_settings         : plot settings (struct)
 %         LP                    : Link Parameters (SpaceDyn class)
 %         surface_param         : Parameters for surface (struct)
-%         path_planning_param   : Parameters for path planning (struct)
+%         gait_planning_param   : Parameters for Gait Planning (struct)
 
 
-function vis_plot_graph(data, plot_settings, LP, inc, surface_param, path_planning_param)
+function vis_plot_graph(data, plot_settings, LP, inc, surface_param, gait_planning_param)
 
 % Plot time history of base position
 if strcmp(plot_settings.base_pos,'on')
@@ -87,7 +88,6 @@ if strcmp(plot_settings.joint_torque,'on')
     vis_graph_time_history(data, plot_settings, tau, fig_number, 'Joints torque', '\it{tau} \rm[Nm]')
 end
 
-
 % Plot time history of legs position
 if strcmp(plot_settings.leg_pos,'on')
     for i = 1:4
@@ -119,15 +119,45 @@ if strcmp(plot_settings.reaction_force,'on')
 end
 
 % Plot time history of footholds 
-vis_footholds(LP, plot_settings, inc, surface_param, path_planning_param);
+vis_footholds(LP, plot_settings, inc, surface_param, gait_planning_param);
 
 
 % Plot TSM (requires saving CSV and equilibrium method as 'tsm')
 vis_graph_tsm(data, plot_settings);
 % Plot GIA acceleration margin (requires saving CSV and equilibrium method as 'gia')
-vis_graph_acc_margin(data, plot_settings);
+vis_graph_gia_margin(data, plot_settings);
 % Plot GIA inclination margin (requires saving CSV and equilibrium method as 'gia')
-vis_graph_inclination_margin(data, plot_settings);
+vis_graph_gia_inclination_margin(data, plot_settings);
 
+% Plot time history of manipulability
+if strcmp(plot_settings.manipulability,'on')
+vis_graph_time_history(data, plot_settings, [data.manipulability1 data.manipulability2 data.manipulability3 data.manipulability4]', plot_settings.manipulability_fig_number, 'Manipulability', ...
+                                                           '\it{w\rm{_{i}}}');
+end
+
+% Plot time history of mean manipulability of all limbs
+if strcmp(plot_settings.mean_manipulability,'on')
+    fig_number = plot_settings.mean_manipulability_fig_number;
+    vis_graph_time_history(data, plot_settings, data.mean_manipulability, fig_number, 'Mean Manipulability Measure', '\rm{mean} \it{w\rm{_{i}}}');
+end
+
+% Plot time history of minimum manipulability of all limbs
+if strcmp(plot_settings.mean_manipulability,'on')
+    fig_number = plot_settings.min_manipulability_fig_number;
+    vis_graph_time_history(data, plot_settings, data.min_manipulability, fig_number, 'Min. Manipulability Measure', '\rm{min.} \it{w\rm{_{i}}}');
+end
+
+% Plot time history of the maximum of absolute torque of all joint
+if strcmp(plot_settings.joint_max_torque,'on')
+    tau_max = data.tau_max;
+    fig_number = plot_settings.joint_max_torque_fig_number;
+    vis_graph_time_history(data, plot_settings, tau_max, fig_number, 'Max. joint torque', '\it{tau\rm{_{max}}} \rm[Nm]')
+end
+% Plot time history of the RMS value of torque of all joint
+if strcmp(plot_settings.joint_rms_torque,'on')
+    tau_rms = data.tau_rms;
+    fig_number = plot_settings.joint_rms_torque_fig_number;
+    vis_graph_time_history(data, plot_settings, tau_rms, fig_number, 'RMS joint torque', '\it{tau\rm{_{rms}}} \rm[Nm]')
+end
 
 end

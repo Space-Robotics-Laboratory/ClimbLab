@@ -5,7 +5,7 @@
 %%%%%% 
 %%%%%% Created 2020-10-16
 %%%%%% Keigo Haji
-%%%%%% Last update: 2020-10-16
+%%%%%% Last update: 2021-04-19
 %%%%%% Keigo Haji
 %-------------------------------------------------------------------------
 % map_format_conversion.m changes the point cloud data of the terrain
@@ -25,13 +25,18 @@
 %   interpolation_method : "linear" or "natural" 
 % 
 % [Note]
-% This function is not executed in climb_main.m.
+% This function is not executed in main_sim.m.
 % This function is used to convert a new PCD file acquired by a RealSense
 % camera from a 3*N matrix to the grid format used by ClimbLab. 
 % After execution, check the results to see if the terrain data is not
 % upside down.  
 % If there is no problem, pack the three variables of xyz together and save
 % them as a .mat file. 
+% [Note 2]
+% When you added new bouldering holds map taken by RealSense camera in
+% ClimbLab, you must include 'climbing_holds' in the .mat file name. This
+% is because we switch how to plot the surface in vis_surface depending on
+% the name of the map. 
 %-------------------------------------------------------------------------
 function [x,y,z] = map_format_conversion(pcd,interpolation_method)
 

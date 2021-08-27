@@ -5,7 +5,7 @@
 %%%%%%
 %%%%%% Created 2020-05-28
 %%%%%% Yusuke Koizumi
-%%%%%% Last update: 2020-10-16
+%%%%%% Last updated: 2020-11-18
 %%%%%% Kentaro Uno
 %
 %
@@ -16,7 +16,7 @@
 %     OUTPUT
 %         -
 %     INPUT
-%         path_planning_param.POS_next             : Next desired position of end-effector
+%         gait_planning_param.POS_next             : Next desired position of end-effector
 %         inc                                      : Surface inclination [deg] (scalar)
 %         ani_settings.next_desired_position_color : Color for points [RGB] (1x3 vector)
 %         ani_settings.next_desired_position_marker: Type of marker (String)
@@ -25,11 +25,11 @@
 
 
 
-function vis_next_desired_position(path_planning_param, inc, ani_settings)
+function vis_next_desired_position(gait_planning_param, inc, ani_settings)
 if strcmp(ani_settings.next_desired_position_show,'on')
-    dr = 0.015;
+    dr = 0.030;
     dz = 0;
-    des_pos_now = path_planning_param.POS_next(:,path_planning_param.swing_number);
+    des_pos_now = gait_planning_param.POS_next(:,gait_planning_param.swing_number);
     des_pos_square(:,1) = des_pos_now + [dr; dr; dz];
     des_pos_square(:,2) = des_pos_now + [dr;-dr; dz];
     des_pos_square(:,3) = des_pos_now + [-dr;-dr;dz];

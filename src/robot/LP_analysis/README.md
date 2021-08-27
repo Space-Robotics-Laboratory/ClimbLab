@@ -22,14 +22,10 @@ All code is confirmed to work on
 hubrobo_description
 |--README.md
 |--docs/
-|--2D_reachable_region_vis/
-|   |--sample_main.m
-|   |--SV
-|--3D_reachable_region_vis/
-|   |--sample_main.m
-|   |--SV
 |--tools/
 |--LP_to_design/
+|--main_LP_2D_analysis.m
+|--main_LP_3D_analysis.m
 ```
 
 ## Build and Usage

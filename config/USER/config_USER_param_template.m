@@ -7,7 +7,7 @@
 %%%%%% 
 %%%%%% Created 2020-07-08
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-10-01
+%%%%%% Last update: 2021-07-26
 %%%%%% Keigo Haji
 %
 %
@@ -18,7 +18,7 @@
 %     OUTPUT
 %         robot_param
 %         environment_param
-%         gait_param
+%         gait_planning_param
 %         control_param
 %         equilibrium_eval_param
 %         ani_settings
@@ -27,12 +27,13 @@
 %         gripper_param
 %         map_param
 %         matching_settings
+%         sensing_camera_param
 %     INPUT
 %         -
 
-function [robot_param, environment_param, gait_param, control_param, equilibrium_eval_param, ani_settings, save_settings, ...
-    plot_settings, gripper_param, map_param, matching_settings] = config_USER_param(robot_param, environment_param, gait_param, control_param, ...
-    equilibrium_eval_param, ani_settings, save_settings, plot_settings, gripper_param, map_param, matching_settings)
+function [robot_param, environment_param, gait_planning_param, control_param, equilibrium_eval_param, ani_settings, save_settings, ...
+    plot_settings, gripper_param, map_param, matching_settings, sensing_camera_param] = config_USER_param(robot_param, environment_param, gait_planning_param, control_param, ...
+    equilibrium_eval_param, ani_settings, save_settings, plot_settings, gripper_param, map_param, matching_settings, sensing_camera_param)
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Robot Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -44,7 +45,12 @@ environment_param.time_max = 2;
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Control Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+if contains(robot_param.robot_type, 'HubRobo_v3')
+    %%% Controller Proportional (P) gain
+    control_param.kp = 10.0;
+    %%% Controller Derivative (D) gain
+    control_param.kd = 0.3;
+end
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Equilibrium Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -65,6 +71,9 @@ save_settings.csv_file = 'off';
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Matching Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Sensing Camera Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 end

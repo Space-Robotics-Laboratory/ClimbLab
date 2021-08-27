@@ -5,7 +5,8 @@
 %%%%%% 
 %%%%%% Created 2020-04-17
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-04-17
+%%%%%% Last update: 2021-04-26
+%%%%%% Warley Ribeiro
 %
 %
 % Update the state of the gripper, if it is open or closed, based on the timing for the crawl gait
@@ -15,16 +16,27 @@
 %     OUTPUT
 %         des_SV      			 : Desired state variables (SpaceDyn class)
 %     INPUT
-%         gait_param             : Parameters for gait (class)
-%         path_planning_param    : Parameters for path planning (class)
+%         gait_planning_param    : Parameters for gait planning (class)
 %         des_SV      			 : Desired state variables (SpaceDyn class)
 %         time     				 : Simulation time [s] (scalar)
 
-function des_SV = upd_gripper_state_time(gait_param, path_planning_param, des_SV, time)
+function des_SV = upd_gripper_state_time(gait_planning_param, LP, des_SV, time)
 
-% Release gripper
-des_SV.sup(path_planning_param.swing_number) = 0;
-% Close gripper
-if rem(time,gait_param.T_d) == 0 && time~=0
-	des_SV.sup(path_planning_param.swing_number) = 1;
+global d_time
+
+for i = 1:LP.num_limb
+    if i == gait_planning_param.swing_number
+        % Release gripper of swing limb
+        des_SV.sup(i) = 0;
+        % Close gripper of swing limb when reaching next grasping position
+        if size(gait_planning_param.leg_T,2) > 1
+            close_timing = gait_planning_param.leg_T(2,i);
+        else
+            close_timing = gait_planning_param.leg_T(2);
+        end
+        if time >= (close_timing - d_time) && time~=0
+            des_SV.sup(i) = 1;
+        end
+    end
 end
+

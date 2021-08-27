@@ -5,7 +5,7 @@
 %%%%%% 
 %%%%%% Created 2020-02-04
 %%%%%% Warley Ribeiro
-%%%%%% Last update: 2020-06-15
+%%%%%% Last update: 2020-08-20
 %
 % Calculate maximum acceleration for the normal direction n_ab
 %
@@ -39,6 +39,10 @@ function gia_limit_nab = gia_limit(n, mass, grasp_flag, tumbling_axes, tumbling_
 % Initialize variables
 gia_limit_nab = zeros(3,tumbling_axes_number);
 
+if tumbling_axes_number == 0
+    gia_limit_nab(1:3) = zeros(3,1);
+else
+
 for i = 1:tumbling_axes_number
     a = tumbling_axes(i,1); b = tumbling_axes(i,2);
     % Tumbling axis initial and final points
@@ -57,4 +61,8 @@ for i = 1:tumbling_axes_number
     % Maximum GIA
     gia_limit_nab(:,i) = Mab/(mass*norm(n_ab(:,i)))*n_ab_u(:,i);
     
+end
+
+end
+
 end

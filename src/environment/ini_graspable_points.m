@@ -5,7 +5,7 @@
 %%%%%% 
 %%%%%% Created 2020-05-12
 %%%%%% Yusuke Koizumi
-%%%%%% Last update: 2020-10-01
+%%%%%% Last update: 2021-04 -16
 %%%%%% Keigo Haji
 %
 %
@@ -36,10 +36,12 @@ surface_param.graspable_points(1,:)=reshape(X,1,n*m);
 surface_param.graspable_points(2,:)=reshape(Y,1,n*m);
 surface_param.graspable_points(3,:)=reshape(z,1,n*m);
 
-    
+% Deletes the columns that have NaN values.  
+surface_param.graspable_points = rmmissing(surface_param.graspable_points, 2);
 % set the floor level variable to have a z directional height in global
-% frame.
+% frame.    
 surface_param.floor_level = mean(surface_param.graspable_points(3,:));
+
 
 switch environment_param.graspable_points_detection_type
     case 'all'
@@ -48,6 +50,16 @@ switch environment_param.graspable_points_detection_type
         surface_param.graspable_points = target_detection(surface_param.graspable_points, environment_param.graspable_points_detection_type, gripper_param, map_param, matching_settings);
     case 'peaks'
         surface_param.graspable_points = target_detection(surface_param.graspable_points, environment_param.graspable_points_detection_type, gripper_param, map_param, matching_settings);
+    case 'climbing_holds_map_on_testfield'
+        load('graspable_points_of_testfield_without_board.mat');
+        surface_param.graspable_points = graspable_points_on_testfield_deleted_targets_on_board;
+        % load('graspable_points_on_test_field.mat');
+        % surface_param.graspable_points = graspable_points_on_test_field;
+    case 'climbing_holds_map_on_full_testfield'
+        load('graspable_points_of_full_testfield.mat');
+        surface_param.graspable_points = graspable_points_on_full_testfield;
+        % load('graspable_points_on_test_field.mat');
+        % surface_param.graspable_points = graspable_points_on_test_field;
     otherwise
         if isnumeric(environment_param.graspable_points_detection_type)
             if environment_param.graspable_points_detection_type >=0 && environment_param.graspable_points_detection_type <=100
