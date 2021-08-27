@@ -42,10 +42,6 @@ If you use this simulator in an academic context, please cite the following publ
       year={2021}
     }
 
-## Usage
-
-If you use this simulator in academic context, please put citations of the following publications.
-
 #### Requirements
 We confirmed the code is working with:
 * Matlab 2018b or higher
@@ -81,8 +77,10 @@ Please contact us by sending an email to the following address if there is any q
 
 * Version 1.0: released on 18th Sept. 2020.
 * Version 2.0: released on 26th Oct. 2020. This version includes:
-    - topographically salient regioon detection algorithm [3]
-    - non-periodic gait plannner [3]
+    - topographically salient region detection algorithm [3]
+    - non-periodic gait planner [3]
     - gripper detachment evaluation
-* Version 3.0: released on TBD ....
-    - TBD ....
+* Version 3.0: released on 27th Aug.2021. This version includes
+    - Camera sensing 
+    - New robot models
+    - More analysis scripts
