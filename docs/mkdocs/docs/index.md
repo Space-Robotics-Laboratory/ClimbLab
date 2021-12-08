@@ -18,16 +18,6 @@ For full documentation visit [mkdocs.org](https://mkdocs.org).
 
 ## Examples
 
-#### Mathematical Equations
-
-* We installed `python-markdown-math` and necessary java script, so LaTeX-ish equations can be visualized. 
-
-E.g.)
-
-$$
-P\cdot Q = \|P\|\|Q\|\cos\alpha
-$$
-
 #### Important Note
 
 * We installed `admonition` for the important message such as cautions, note, and remarks.
