@@ -1,14 +1,13 @@
 site_name: ClimbLab Manuals
 
 nav:
-    - Home: index.md
     - 1. ClimbLab: 1.md
     - 2. Simulation: 2.md
     - 3. Functions/Algorithms: 3.md
     - 4. Simulation Architecture: 4.md
     - 5. How to Contribute: 5.md
     - 6. Appendix: 6.md
-
+    - Documentation using MkDocs: index.md
 
 theme: 
     name: readthedocs
