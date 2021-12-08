@@ -22,8 +22,17 @@ extra_css:
     - "css/custom.css"
 
 markdown_extensions:
-    - mdx_math
+    - meta
+    - pymdownx.mark
+    - pymdownx.magiclink
+    - pymdownx.emoji
+    - fontawesome_markdown
+    - pymdownx.keys
+    - def_list
     - admonition
+    - codehilite:
+        linenums: true
+        use_pygments: true
 
 extra_javascript: 
     - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
