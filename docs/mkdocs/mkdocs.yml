@@ -1,0 +1,23 @@
+site_name: ClimbLab Manuals
+
+nav:
+    - Home: index.md
+    - 1. ClimbLab: 1.md
+    - 2. Simulation: 2.md
+    - 3. Functions/Algorithms: 3.md
+    - 4. Simulation Architecture: 4.md
+    - 5. How to Contribute: 5.md
+    - 6. Appendix: 6.md
+
+
+theme: readthedocs
+
+extra_css:
+    - "css/custom.css"
+
+markdown_extensions:
+    - mdx_math
+    - admonition
+
+extra_javascript: 
+  - http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
