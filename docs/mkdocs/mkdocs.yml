@@ -28,6 +28,7 @@ markdown_extensions:
 #    - pymdownx.emoji  # build error 
 #    - fontawesome_markdown  # build error 
 #    - pymdownx.keys  # build error 
+#    - python-markdown-math
     - def_list
     - admonition
     - codehilite:
