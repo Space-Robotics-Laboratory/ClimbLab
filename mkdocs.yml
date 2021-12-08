@@ -10,7 +10,13 @@ nav:
     - 6. Appendix: 6.md
 
 
-theme: readthedocs
+theme: 
+    name: readthedocs
+    language: 'ja'
+
+extra:
+    search:
+        language: 'jp'
 
 extra_css:
     - "css/custom.css"
