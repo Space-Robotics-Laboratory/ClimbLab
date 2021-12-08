@@ -5,11 +5,6 @@
 # Required
 version: 2
 
-# Set the version of Python and other tools you might need
-build:
-    tools: 
-        python: "2.7"
-
 mkdocs:
     configuration: mkdocs.yml
     fail_on_warning: false
@@ -17,6 +12,7 @@ mkdocs:
 formats: all
  
 python:
+    version: 2.7
     install:
         - requirements: docs/requirements.txt
 
