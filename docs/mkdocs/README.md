@@ -45,7 +45,7 @@ $ pip install mkdocs
 * Change the directory of MkDocs and type the build command.
 
 ```
-$ cd ~/bibucket/climblab/docs/mkdocs
+$ cd ~/ClimbLab/docs/mkdocs
 $ mkdocs build
 ```
 
