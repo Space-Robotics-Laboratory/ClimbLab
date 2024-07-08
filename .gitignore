@@ -17,3 +17,6 @@ dat/
 
 # Ignore MATLAB temporary files
 *.asv
+
+# Ignore MkDocs output files
+docs/mkdocs/site/*
