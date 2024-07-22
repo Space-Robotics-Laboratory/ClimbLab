@@ -74,7 +74,7 @@ classDiagram
   }
 
   class Trajectory {
-    + points: 3x1 double
+    + points: 3xn double
     - line_style: string
     - color: 1x3 double
     - width: double

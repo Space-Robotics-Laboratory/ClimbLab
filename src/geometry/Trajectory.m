@@ -24,9 +24,9 @@ classdef Trajectory
       arguments (Input)
         trajectory;
         point      (3, 1) {mustBeA(point,      "double")};
-        line_style (1, 1) {mustBeA(line_style, "string")};
-        color;
-        width      (1, 1) {mustBeA(width,      "double")};
+        line_style (1, 1) {mustBeA(line_style, "string")} = "none";
+        color = [0.0, 0.0, 0.0];
+        width      (1, 1) {mustBeA(width,      "double")} = 0.0;
       end
       trajectory.points = point;
 
@@ -34,6 +34,9 @@ classdef Trajectory
       trajectory.color = validatecolor(color);
       trajectory.width = width;
 
+      if (line_style == "none")
+        return;
+      end
       trajectory.line = animatedline( ...
         LineStyle = trajectory.line_style, ...
         Color = trajectory.color, ...
@@ -50,6 +53,9 @@ classdef Trajectory
 
       trajectory.points = horzcat(trajectory.points, point);
 
+      if (trajectory.line_style == "none")
+        return;
+      end
       addpoints(trajectory.line, point(1, 1), point(2, 1), point(3, 1));
     end
 
