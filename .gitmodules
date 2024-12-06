@@ -1,0 +1,3 @@
+[submodule "lib/SpaceDyn"]
+	path = lib/SpaceDyn
+	url = git@github.com:Space-Robotics-Laboratory/SpaceDyn.git
