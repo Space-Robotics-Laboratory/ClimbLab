@@ -1,0 +1,78 @@
+classdef ConfigMotionPlanning
+  %% Properties
+  properties (SetAccess = private, GetAccess = public)
+    base_trajectory_type (1, 1) string = "5th_order_bezier";
+    limb_trajectory_type (1, 1) string = "7th_order_bezier";
+      % "7th_order_bezier", "7th_order_spline"
+
+    % Visualization settings
+    visualize_limb_trajectory (1, 1) logical = true;  % true/false
+      limb_trajectory_line_style (1, 1) string = ":";
+      limb_trajectory_color = [0.5, 0.5, 0.5];
+      limb_trajectory_width (1, 1) double = 3;
+  end
+
+  %% Constructor
+  methods (Access = public)
+
+    function config_motion_planning = ConfigMotionPlanning(config)
+    % ConfigMotionPlanning() Constructor
+    %   Override properties value based on specified config file if config is not "default"
+      arguments (Input)
+        config (1, 1) {mustBeA(config, "string")};
+      end
+      if (config == "default")
+        return;
+      end
+
+      config_file_name = "config_" + config;
+      if (~isfile("config\preset\" + config_file_name + ".m"))
+        error("ERROR: The specified config file does NOT exist.");
+      end
+
+      config_file = str2func(config_file_name);
+      user_config = feval(config_file);
+
+      this_config_prop_name = properties(config_motion_planning);
+
+      meta_class = metaclass(user_config);
+      meta_props = meta_class.PropertyList;
+
+      for i = 1 : length(meta_props)
+        get_access_authorization = meta_props(i, 1).GetAccess{1, 1}.Name;
+
+        if (strcmp(get_access_authorization, "ConfigMotionPlanning"))
+          user_config_prop_name = meta_props(i, 1).Name;
+
+          if (~any(strcmp(this_config_prop_name, user_config_prop_name)))
+            error("ERROR: Invalid property name is specified in user customized config file. " + ...
+              "That property name is """ + user_config_prop_name + """. " + ...
+              "Property name defined in user customized config file have to match " + ...
+              "default config property name.");
+          end
+
+          config_motion_planning.(user_config_prop_name) = user_config.(user_config_prop_name);
+        end
+      end
+    end
+
+  end
+
+  %% Getter
+  methods (Access = public)
+    function [base_trajectory_type, limb_trajectory_type] = getTrajectoryType(config_motion_planning)
+      base_trajectory_type = config_motion_planning.base_trajectory_type;
+      limb_trajectory_type = config_motion_planning.limb_trajectory_type;
+    end
+    function boolean = getVisualizeLimbTrajectory(config_motion_planning)
+      boolean = config_motion_planning.visualize_limb_trajectory;
+    end
+    function [line_style, color, width] = getLimbTrajectoryVisualSettings(config_motion_planning)
+      line_style = config_motion_planning.limb_trajectory_line_style;
+      color = config_motion_planning.limb_trajectory_color;
+      width = config_motion_planning.limb_trajectory_width;
+    end
+  end
+
+end
+% EOF
