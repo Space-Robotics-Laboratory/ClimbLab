@@ -3,7 +3,7 @@ classdef GaitPlanning
 % Plan desired base pose and gait schedule
 %
 % Created     : 2021.04.08 by Warley Ribeiro
-% Last updated: 2024.10.22 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = immutable, GetAccess = public)

@@ -1,15 +1,21 @@
 classdef LimbTrajectory
+% LimbTrajectory
+% Plan limb end-effector pose trajectory and calculate desired pose at current time step
+%
+% Created     : 2024.05.20 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
+
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    position PositionTrajectory;
-    orientation;
+    position_ PositionTrajectory;
+    orientation_;
   end
   properties (Constant, GetAccess = private)
-    start_time         (1, 1) double = 0.0;              % [s]
-    start_velocity     (3, 1) double = [0.0; 0.0; 0.0];  % [m/s]
-    final_velocity     (3, 1) double = [0.0; 0.0; 0.0];  % [m/s]
-    start_acceleration (3, 1) double = [0.0; 0.0; 0.0];  % [m/s^2]
-    final_acceleration (3, 1) double = [0.0; 0.0; 0.0];  % [m/s^s]
+    kStartTime_         (1, 1) double = 0.0;              % [s]
+    kStartVelocity_     (3, 1) double = [0.0; 0.0; 0.0];  % [m/s]
+    kFinalVelocity_     (3, 1) double = [0.0; 0.0; 0.0];  % [m/s]
+    kStartAcceleration_ (3, 1) double = [0.0; 0.0; 0.0];  % [m/s^2]
+    kFinalAcceleration_ (3, 1) double = [0.0; 0.0; 0.0];  % [m/s^s]
   end
   properties (SetAccess = private, GetAccess = public)
     mid_time     (1, 1) double;  % [s]
@@ -20,24 +26,24 @@ classdef LimbTrajectory
   %% Methods called only from MotionPlanning
   methods (Access = ?MotionPlanning)
 
-    function limb_trajectory = LimbTrajectory(config)
+    function limb_trajectory = LimbTrajectory(config_motion_planning)
     % LimbTrajectory() Constructor
       arguments (Input)
-        config (1, 1) {mustBeA(config, "ConfigMotionPlanning")};
+        config_motion_planning (1, 1) {mustBeA(config_motion_planning, "ConfigMotionPlanning")};
       end
-      [~, type] = config.getTrajectoryType();
+      [~, type] = config_motion_planning.getTrajectoryType();
 
-      limb_trajectory.position = PositionTrajectory(type);
+      limb_trajectory.position_ = PositionTrajectory(type);
 
       % TODO: Implement
-      limb_trajectory.orientation = [];
+      limb_trajectory.orientation_ = [];
 
-      if (~config.getVisualizeLimbTrajectory())
+      if (~config_motion_planning.getVisualizeLimbTrajectory())
         return;
       end
 
-      [line_style, color, width] = config.getLimbTrajectoryVisualSettings();
-      limb_trajectory.position = limb_trajectory.position.setVisualSettings( ...
+      [line_style, color, width] = config_motion_planning.getLimbTrajectoryVisualSettings();
+      limb_trajectory.position_ = limb_trajectory.position_.setVisualSettings( ...
         line_style, color, width);
     end
 
@@ -64,19 +70,19 @@ classdef LimbTrajectory
       limb_trajectory = limb_trajectory.calcMidVelocity( ...
         motion_duration, current_EE_position, desired_EE_position);
 
-      time_constraints = [limb_trajectory.start_time, limb_trajectory.mid_time, motion_duration];
+      time_constraints = [limb_trajectory.kStartTime_, limb_trajectory.mid_time, motion_duration];
       position_constraints = [current_EE_position, limb_trajectory.mid_position, ...
                               desired_EE_position];
-      velocity_constraints = [limb_trajectory.start_velocity, limb_trajectory.mid_velocity, ...
-                              limb_trajectory.final_velocity];
-      acceleration_constraints = [limb_trajectory.start_acceleration, ...
-                                  limb_trajectory.final_acceleration];
+      velocity_constraints = [limb_trajectory.kStartVelocity_, limb_trajectory.mid_velocity, ...
+                              limb_trajectory.kFinalVelocity_];
+      acceleration_constraints = [limb_trajectory.kStartAcceleration_, ...
+                                  limb_trajectory.kFinalAcceleration_];
 
-      limb_trajectory.position = limb_trajectory.position.plan( ...
+      limb_trajectory.position_ = limb_trajectory.position_.plan( ...
         time_constraints, position_constraints, velocity_constraints, acceleration_constraints);
 
-      limb_trajectory.position = limb_trajectory.position.storePlannedTrajectory( ...
-        limb_trajectory.start_time, motion_duration);
+      limb_trajectory.position_ = limb_trajectory.position_.storePlannedTrajectory( ...
+        limb_trajectory.kStartTime_, motion_duration);
     end
 
     function limb_trajectory = update(limb_trajectory, ...
@@ -90,7 +96,7 @@ classdef LimbTrajectory
         motion_final_time (1, 1) {mustBeA(motion_final_time, "double")};
       end
 
-      limb_trajectory.position = limb_trajectory.position.update( ...
+      limb_trajectory.position_ = limb_trajectory.position_.update( ...
         current_time, motion_start_time, motion_final_time);
     end
 
@@ -101,7 +107,7 @@ classdef LimbTrajectory
         limb_trajectory;
         current_EE_position (3, 1) {mustBeA(current_EE_position, "double")};
       end
-      limb_trajectory.position = limb_trajectory.position.stay(current_EE_position);
+      limb_trajectory.position_ = limb_trajectory.position_.stay(current_EE_position);
     end
 
   end
@@ -110,7 +116,7 @@ classdef LimbTrajectory
   methods (Access = private)
 
     function limb_trajectory = calcMidTime(limb_trajectory, final_time)
-      limb_trajectory.mid_time = (limb_trajectory.start_time + final_time) / 2;
+      limb_trajectory.mid_time = (limb_trajectory.kStartTime_ + final_time) / 2;
     end
 
     function limb_trajectory = calcMidPosition(limb_trajectory, ...
@@ -142,10 +148,9 @@ classdef LimbTrajectory
     function limb_trajectory = calcMidVelocity(limb_trajectory, ...
         final_time, start_position, final_position)
       limb_trajectory.mid_velocity = ...
-        2 * (final_position - start_position) / (final_time - limb_trajectory.start_time);
+        2 * (final_position - start_position) / (final_time - limb_trajectory.kStartTime_);
     end
 
   end
 
-end
-% EOF
+end  % LimbTrajectory

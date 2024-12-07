@@ -25,33 +25,34 @@ classdef ConfigMotionPlanning
         return;
       end
 
-      config_file_name = "config_" + config;
-      if (~isfile("config\preset\" + config_file_name + ".m"))
+      kConfigFileName = "config_" + config;
+      kPathToConfigFile = "config" + filesep + "preset" + filesep + kConfigFileName + ".m";
+      if (~isfile(kPathToConfigFile))
         error("ERROR: The specified config file does NOT exist.");
       end
 
-      config_file = str2func(config_file_name);
-      user_config = feval(config_file);
+      kConfigFile = str2func(kConfigFileName);
+      kUserConfig = feval(kConfigFile);
 
-      this_config_prop_name = properties(config_motion_planning);
+      kDefaultConfigPropName = properties(config_motion_planning);
 
-      meta_class = metaclass(user_config);
+      meta_class = metaclass(kUserConfig);
       meta_props = meta_class.PropertyList;
 
       for i = 1 : length(meta_props)
         get_access_authorization = meta_props(i, 1).GetAccess{1, 1}.Name;
 
         if (strcmp(get_access_authorization, "ConfigMotionPlanning"))
-          user_config_prop_name = meta_props(i, 1).Name;
+          kUserConfigPropName = meta_props(i, 1).Name;
 
-          if (~any(strcmp(this_config_prop_name, user_config_prop_name)))
+          if (~any(strcmp(kDefaultConfigPropName, kUserConfigPropName)))
             error("ERROR: Invalid property name is specified in user customized config file. " + ...
-              "That property name is """ + user_config_prop_name + """. " + ...
+              "That property name is """ + kUserConfigPropName + """. " + ...
               "Property name defined in user customized config file have to match " + ...
               "default config property name.");
           end
 
-          config_motion_planning.(user_config_prop_name) = user_config.(user_config_prop_name);
+          config_motion_planning.(kUserConfigPropName) = kUserConfig.(kUserConfigPropName);
         end
       end
     end
@@ -74,5 +75,4 @@ classdef ConfigMotionPlanning
     end
   end
 
-end
-% EOF
+end  % ConfigMotionPlanning

@@ -1,15 +1,21 @@
 classdef BaseTrajectory
+% BaseTrajectory
+% Plan robot base pose trajectory and calculate desired pose at current time step
+%
+% Created     : 2024.05.20 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
+
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    position PositionTrajectory;
-    orientation;
+    position_ PositionTrajectory;
+    orientation_;
   end
   properties (Constant, GetAccess = private)
-    start_time         (1, 1) double = 0.0;              % [s]
-    start_velocity     (3, 1) double = [0.0; 0.0; 0.0];  % [m/s]
-    final_velocity     (3, 1) double = [0.0; 0.0; 0.0];  % [m/s]
-    start_acceleration (3, 1) double = [0.0; 0.0; 0.0];  % [m/s^2]
-    final_acceleration (3, 1) double = [0.0; 0.0; 0.0];  % [m/s^s]
+    kStartTime_         (1, 1) double = 0.0;              % [s]
+    kStartVelocity_     (3, 1) double = [0.0; 0.0; 0.0];  % [m/s]
+    kFinalVelocity_     (3, 1) double = [0.0; 0.0; 0.0];  % [m/s]
+    kStartAcceleration_ (3, 1) double = [0.0; 0.0; 0.0];  % [m/s^2]
+    kFinalAcceleration_ (3, 1) double = [0.0; 0.0; 0.0];  % [m/s^s]
   end
 
   %% Methods called only from MotionPlanning
@@ -22,11 +28,11 @@ classdef BaseTrajectory
       end
       [type, ~] = config.getTrajectoryType();
 
-      base_trajectory.position = PositionTrajectory(type);
+      base_trajectory.position_ = PositionTrajectory(type);
 
 
       line_style = "none"; color = [0.0, 0.0, 0.0]; width = 0.0;
-      base_trajectory.position = base_trajectory.position.setVisualSettings( ...
+      base_trajectory.position_ = base_trajectory.position_.setVisualSettings( ...
         line_style, color, width);
     end
 
@@ -43,17 +49,17 @@ classdef BaseTrajectory
       desired_base_position = gait_planning.base_pose_planner_.getDesiredBasePosition();
       motion_duration = gait_planning.getTransferDuration();
 
-      time_constraints = [base_trajectory.start_time, motion_duration];
+      time_constraints = [base_trajectory.kStartTime_, motion_duration];
       position_constraints = [current_base_position, desired_base_position];
-      velocity_constraints = [base_trajectory.start_velocity, base_trajectory.final_velocity];
-      acceleration_constraints = [base_trajectory.start_acceleration, ...
-                                  base_trajectory.final_acceleration];
+      velocity_constraints = [base_trajectory.kStartVelocity_, base_trajectory.kFinalVelocity_];
+      acceleration_constraints = [base_trajectory.kStartAcceleration_, ...
+                                  base_trajectory.kFinalAcceleration_];
 
-      base_trajectory.position = base_trajectory.position.plan( ...
+      base_trajectory.position_ = base_trajectory.position_.plan( ...
         time_constraints, position_constraints, velocity_constraints, acceleration_constraints);
 
-      base_trajectory.position = base_trajectory.position.storePlannedTrajectory( ...
-        base_trajectory.start_time, motion_duration);
+      base_trajectory.position_ = base_trajectory.position_.storePlannedTrajectory( ...
+        base_trajectory.kStartTime_, motion_duration);
     end
 
     function base_trajectory = update(base_trajectory, current_time, motion_start_time, motion_final_time)
@@ -64,11 +70,10 @@ classdef BaseTrajectory
         motion_final_time (1, 1) {mustBeA(motion_final_time, "double")};
       end
 
-      base_trajectory.position = base_trajectory.position.update( ...
+      base_trajectory.position_ = base_trajectory.position_.update( ...
         current_time, motion_start_time, motion_final_time);
     end
 
   end
 
-end
-% EOF
+end  % BaseTrajectory

@@ -65,7 +65,7 @@ classdef ConfigPathPlanning
               "default config property name.");
           end
 
-          config_path_planning.(kUserConfigPropName) = user_config.(kUserConfigPropName);
+          config_path_planning.(kUserConfigPropName) = kUserConfig.(kUserConfigPropName);
         end
       end
     end

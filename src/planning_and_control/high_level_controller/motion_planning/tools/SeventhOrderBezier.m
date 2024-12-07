@@ -1,21 +1,28 @@
 classdef SeventhOrderBezier
+% SeventhOrderBezier
+% Calculate seventh order bezier trajectory coefficients
+%
+% Created     : 2021.08.21 by Warley Ribeiro
+% Last updated: 2024.12.07 by Masazumi Imai
+
   %% Properties
   properties (Constant, GetAccess = private)
     % Order of the Bezier polynomial
-    bezier_polynomial_order (1, 1) uint8 = 7;
+    kBezierPolynomialOrder_ (1, 1) uint8 = 7;
   end
   properties (SetAccess = private, GetAccess = public)
-    coefficients (3, 8) double;  % control points
-      % 1st dim: x-y-z coordinates
-      % 2nd dim: coefficient index
+    % Coefficients (control points)
+    %   1st dim: x-y-z coordinates
+    %   2nd dim: coefficient index
+    coefficients_ (3, 8) double;
   end
 
   %% Public Methods
   methods (Access = public)
 
-    % Constructor
     function seventh_order_bezier = SeventhOrderBezier()
-      seventh_order_bezier.coefficients = zeros(3, 8);
+    % SeventhOrderBezier() Constructor
+      seventh_order_bezier.coefficients_ = zeros(3, seventh_order_bezier.kBezierPolynomialOrder_ + 1);
     end
 
     function seventh_order_bezier = calcCoefficients(seventh_order_bezier, ...
@@ -28,7 +35,7 @@ classdef SeventhOrderBezier
         acceleration_constraints (3, :) {mustBeA(acceleration_constraints, "double")};
       end
 
-      n = double(seventh_order_bezier.bezier_polynomial_order);
+      n = double(seventh_order_bezier.kBezierPolynomialOrder_);
       AA = zeros(3, n + 1);
 
       start_time = time_constraints(1, 1);
@@ -88,7 +95,7 @@ classdef SeventhOrderBezier
 
       AA(1:3, 4:5) = (TT \ XX)';
 
-      seventh_order_bezier.coefficients = AA;
+      seventh_order_bezier.coefficients_ = AA;
     end
 
     function desired_position = calcDesiredPositionForCurrentTimeStep(seventh_order_bezier, ...
@@ -100,11 +107,11 @@ classdef SeventhOrderBezier
         final_time   (1, 1) {mustBeA(final_time,   "double")};
       end
 
-      n = double(seventh_order_bezier.bezier_polynomial_order);
+      n = double(seventh_order_bezier.kBezierPolynomialOrder_);
       x = zeros(3, 1);
       % Compute position from the Bezier curve equation
       for j = 0 : n
-        control_points = seventh_order_bezier.coefficients(:, j + 1);
+        control_points = seventh_order_bezier.coefficients_(:, j + 1);
         bernstein_polynomial = ...
           seventh_order_bezier.calcBernsteinPolynomial(start_time, final_time, current_time, j, n);
         x = x + control_points .* bernstein_polynomial;
@@ -123,5 +130,4 @@ classdef SeventhOrderBezier
 
   end
 
-end
-% EOF
+end  % SeventhOrderBezier

@@ -1,18 +1,18 @@
 classdef TrajectoryHistory
 % TrajectoryHistory
 %
-% Created     : 2024.10.22 by Masazumi Imai
+% Created     : 2024.05.20 by Masazumi Imai
 % Last updated: 2024.12.07 by Masazumi Imai
 
 %% Properties
   properties (SetAccess = private, GetAccess = public)
-    points (3, :) double;
+    points_ (3, :) double;
   end
   properties (SetAccess = private, GetAccess = private)
-    line_style (1, 1) string;
-    color      (1, 3) double;
-    width      (1, 1) double;
-    line       (1, 1) matlab.graphics.animation.AnimatedLine;
+    line_style_ (1, 1) string;
+    color_      (1, 3) double;
+    width_      (1, 1) double;
+    line_       (1, 1) matlab.graphics.animation.AnimatedLine;
   end
 
   %% Public Methods
@@ -20,11 +20,11 @@ classdef TrajectoryHistory
 
     function trajectory = TrajectoryHistory()
     % TrajectoryHistory() Constructor
-      trajectory.points = double.empty;
+      trajectory.points_ = double.empty;
 
-      trajectory.line_style = "none";
-      trajectory.color = [0.0, 0.0, 0.0];
-      trajectory.width = 0.0;
+      trajectory.line_style_ = "none";
+      trajectory.color_ = [0.0, 0.0, 0.0];
+      trajectory.width_ = 0.0;
     end
 
     function trajectory = addPoint(trajectory, point)
@@ -33,16 +33,16 @@ classdef TrajectoryHistory
         point (3, 1) {mustBeA(point, "double")};
       end
 
-      trajectory.points = horzcat(trajectory.points, point);
+      trajectory.points_ = horzcat(trajectory.points_, point);
 
-      if (trajectory.line_style == "none")
+      if (trajectory.line_style_ == "none")
         return;
       end
-      addpoints(trajectory.line, point(1, 1), point(2, 1), point(3, 1));
+      addpoints(trajectory.line_, point(1, 1), point(2, 1), point(3, 1));
     end
 
     function visualize(trajectory)
-      trajectory.line.Visible = "on";
+      trajectory.line_.Visible = "on";
     end
 
   end
@@ -57,18 +57,18 @@ classdef TrajectoryHistory
         width      (1, 1) {mustBeA(width,      "double")} = 0.0;
       end
 
-      trajectory.line_style = line_style;
-      trajectory.color = validatecolor(color);
-      trajectory.width = width;
+      trajectory.line_style_ = line_style;
+      trajectory.color_ = validatecolor(color);
+      trajectory.width_ = width;
 
       if (line_style == "none")
         return;
       end
 
-      trajectory.line = animatedline( ...
-        LineStyle = trajectory.line_style, ...
-        Color = trajectory.color, ...
-        LineWidth = trajectory.width, ...
+      trajectory.line_ = animatedline( ...
+        LineStyle = trajectory.line_style_, ...
+        Color = trajectory.color_, ...
+        LineWidth = trajectory.width_, ...
         MaximumNumPoints = Inf, ...
         Visible = "off");
     end
@@ -77,7 +77,7 @@ classdef TrajectoryHistory
   %% Getter
   methods (Access = public)
     function points = getPoints(trajectory)
-      points = trajectory.points;
+      points = trajectory.points_;
     end
   end
 

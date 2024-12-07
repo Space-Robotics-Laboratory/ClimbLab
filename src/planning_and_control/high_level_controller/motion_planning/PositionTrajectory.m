@@ -1,9 +1,15 @@
 classdef PositionTrajectory
+% PositionTrajectory
+% Plan position trajectory and calculate desired position at current time step
+%
+% Created     : 2024.05.20 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
+
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    planner;
-    desired_position   (3, 1) double;  % [m]
-    planned_trajectory (1, 1) TrajectoryHistory;
+    planner_;
+    desired_position_   (3, 1) double;  % [m]
+    planned_trajectory_ (1, 1) TrajectoryHistory;
   end
 
   %% Public Methods
@@ -17,17 +23,17 @@ classdef PositionTrajectory
 
       switch (type)
         case "5th_order_bezier"
-          position_trajectory.planner = FifthOrderBezier();
+          position_trajectory.planner_ = FifthOrderBezier();
         case "7th_order_bezier"
-          position_trajectory.planner = SeventhOrderBezier();
+          position_trajectory.planner_ = SeventhOrderBezier();
         case "7th_order_spline"
-          position_trajectory.planner = SeventhOrderSpline();
+          position_trajectory.planner_ = SeventhOrderSpline();
         otherwise
-          error("Invalid position trajectory type is specified!!");
+          error("Invalid position trajectory type is specified.");
       end
 
-      position_trajectory.desired_position = [0.0; 0.0; 0.0];
-      position_trajectory.planned_trajectory = TrajectoryHistory();
+      position_trajectory.desired_position_ = [0.0; 0.0; 0.0];
+      position_trajectory.planned_trajectory_ = TrajectoryHistory();
     end
 
     function position_trajectory = plan(position_trajectory, ...
@@ -40,7 +46,7 @@ classdef PositionTrajectory
         acceleration_constraints (3, :) {mustBeA(acceleration_constraints, "double")};
       end
 
-      position_trajectory.planner = position_trajectory.planner.calcCoefficients( ...
+      position_trajectory.planner_ = position_trajectory.planner_.calcCoefficients( ...
         time_constraints, position_constraints, velocity_constraints, acceleration_constraints);
     end
 
@@ -52,13 +58,13 @@ classdef PositionTrajectory
         final_time (1, 1) {mustBeA(final_time, "double")};
       end
 
-      time_step = 0.01;
-      for time = 0.0 : time_step : final_time
-        desired_position_ = position_trajectory.planner.calcDesiredPositionForCurrentTimeStep( ...
+      kTimeStep = 0.01;
+      for time = 0.0 : kTimeStep : final_time
+        desired_position = position_trajectory.planner_.calcDesiredPositionForCurrentTimeStep( ...
           time, start_time, final_time);
 
-        position_trajectory.planned_trajectory = ...
-          position_trajectory.planned_trajectory.addPoint(desired_position_);
+        position_trajectory.planned_trajectory_ = ...
+          position_trajectory.planned_trajectory_.addPoint(desired_position);
       end
     end
 
@@ -70,13 +76,13 @@ classdef PositionTrajectory
         final_time   (1, 1) {mustBeA(final_time, "double")};
       end
 
-      position_trajectory.desired_position = ...
-        position_trajectory.planner.calcDesiredPositionForCurrentTimeStep( ...
+      position_trajectory.desired_position_ = ...
+        position_trajectory.planner_.calcDesiredPositionForCurrentTimeStep( ...
           current_time, start_time, final_time);
     end
 
     function position_trajectory = stay(position_trajectory, current_EE_position)
-      position_trajectory.desired_position = current_EE_position;
+      position_trajectory.desired_position_ = current_EE_position;
     end
 
     function position_trajectory = setVisualSettings(position_trajectory, line_style, color, width)
@@ -87,8 +93,8 @@ classdef PositionTrajectory
         width      (1, 1) {mustBeA(width,      "double")};
       end
 
-      position_trajectory.planned_trajectory = ...
-        position_trajectory.planned_trajectory.setVisualSettings(line_style, color, width);
+      position_trajectory.planned_trajectory_ = ...
+        position_trajectory.planned_trajectory_.setVisualSettings(line_style, color, width);
     end
 
   end
@@ -96,9 +102,8 @@ classdef PositionTrajectory
   %% Getter
   methods (Access = public)
     function desired_position = getDesiredPosition(position_trajectory)
-      desired_position = position_trajectory.desired_position;
+      desired_position = position_trajectory.desired_position_;
     end
   end
 
-end
-% EOF
+end  % PositionTrajectory

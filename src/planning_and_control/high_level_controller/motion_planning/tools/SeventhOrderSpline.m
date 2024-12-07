@@ -1,15 +1,24 @@
 classdef SeventhOrderSpline
+% SeventhOrderSpline
+% Calculate seventh order spline trajectory coefficients
+%
+% Created     : 2021.06.16 by Warley Ribeiro
+% Last updated: 2024.12.07 by Masazumi Imai
 
+  %% Properties
   properties (SetAccess = private, GetAccess = public)
-    coefficients  % (3, 8) double;
-      % 1st dim: x-y-z coordinates
-      % 2nd dim: coefficient index
+    % Coefficients
+    %   1st dim: x-y-z coordinates
+    %   2nd dim: coefficient index
+    coefficients_ (3, 8) double;
   end
 
+  %% Public Methods
   methods (Access = public)
-    % Constructor
+
     function seventh_order_spline = SeventhOrderSpline()
-      seventh_order_spline.coefficients = zeros(3, 8);
+    % SeventhOrderSpline() Constructor
+      seventh_order_spline.coefficients_ = zeros(3, 8);
     end
 
     function seventh_order_spline = calcCoefficients(seventh_order_spline, ...
@@ -53,7 +62,7 @@ classdef SeventhOrderSpline
             0,   0,  2     ,  6*ts  ,  12*ts^2,  20*ts^3,  30*ts^4,  42*ts^5;
             0,   0,  2     ,  6*tf  ,  12*tf^2,  20*tf^3,  30*tf^4,  42*tf^5];
 
-      seventh_order_spline.coefficients = (TT \ XX)';
+      seventh_order_spline.coefficients_ = (TT \ XX)';
     end
 
     function desired_position = calcDesiredPositionForCurrentTimeStep(seventh_order_spline, ...
@@ -65,16 +74,16 @@ classdef SeventhOrderSpline
         ~;
       end
       desired_position = ...
-          seventh_order_spline.coefficients(:, 1) ...
-        + seventh_order_spline.coefficients(:, 2) * (current_time - start_time) ...
-        + seventh_order_spline.coefficients(:, 3) * (current_time - start_time).^2 ...
-        + seventh_order_spline.coefficients(:, 4) * (current_time - start_time).^3 ...
-        + seventh_order_spline.coefficients(:, 5) * (current_time - start_time).^4 ...
-        + seventh_order_spline.coefficients(:, 6) * (current_time - start_time).^5 ...
-        + seventh_order_spline.coefficients(:, 7) * (current_time - start_time).^6 ...
-        + seventh_order_spline.coefficients(:, 8) * (current_time - start_time).^7;
+          seventh_order_spline.coefficients_(:, 1) ...
+        + seventh_order_spline.coefficients_(:, 2) * (current_time - start_time) ...
+        + seventh_order_spline.coefficients_(:, 3) * (current_time - start_time).^2 ...
+        + seventh_order_spline.coefficients_(:, 4) * (current_time - start_time).^3 ...
+        + seventh_order_spline.coefficients_(:, 5) * (current_time - start_time).^4 ...
+        + seventh_order_spline.coefficients_(:, 6) * (current_time - start_time).^5 ...
+        + seventh_order_spline.coefficients_(:, 7) * (current_time - start_time).^6 ...
+        + seventh_order_spline.coefficients_(:, 8) * (current_time - start_time).^7;
     end
 
   end
 
-end
+end  % SeventhOrderSpline

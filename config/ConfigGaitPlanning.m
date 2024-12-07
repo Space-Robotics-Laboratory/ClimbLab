@@ -41,7 +41,7 @@ classdef ConfigGaitPlanning
         error("ERROR: The specified config file does NOT exist.");
       end
 
-      kConfigFile = str2func(config_file_name);
+      kConfigFile = str2func(kConfigFileName);
       kUserConfig = feval(kConfigFile);
 
       kDefaultConfigPropName = properties(config_gait_planning);
@@ -62,7 +62,7 @@ classdef ConfigGaitPlanning
               "default config property name.");
           end
 
-          config_gait_planning.(kUserConfigPropName) = user_config.(kUserConfigPropName);
+          config_gait_planning.(kUserConfigPropName) = kUserConfig.(kUserConfigPropName);
         end
       end
     end
