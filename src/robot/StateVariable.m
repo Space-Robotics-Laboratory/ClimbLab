@@ -2,30 +2,30 @@ classdef StateVariable
   % State Variable
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    q   (:, 1) double % Joint angle
-    qd  (:, 1) double % Joint angular velocity
-    qdd (:, 1) double % Joint angular acceleration
-    v0  (3, 1) double % Base linear velocity
-    w0  (3, 1) double % Base angular velocity
-    vd0 (3, 1) double % Base linear acceleration
-    wd0 (3, 1) double % Base angular acceleration
-    vv  (3, :) double % Linear velocity of each link CoM
-    ww  (3, :) double % Angular velocity of each link CoM
-    vd  (3, :) double % Linear acceleration of each link CoM
-    wd  (3, :) double % Angular acceleration of each link CoM
-    R0  (3, 1) double % Base position
-    Q0  (3, 1) double % Base orientation (Euler)
-    A0  (3, 3) double % Base orientation (DCM)
-    Qtn0  (4, 1) double % Base orientation (Quaternion)
-    dQtn0 (4, 1) double % Devision of base quaternion
-    Fe  (3, :) double % External force applied to end point
-    Te  (3, :) double % External torque applied to end point
-    F0  (3, 1) double % External force applied to base
-    T0  (3, 1) double % External torque applied to base
-    tau (:, 1) double % Torque applied to each joint
+    q     (:, 1) double  % Joint angle
+    qd    (:, 1) double  % Joint angular velocity
+    qdd   (:, 1) double  % Joint angular acceleration
+    v0    (3, 1) double  % Base linear velocity
+    w0    (3, 1) double  % Base angular velocity
+    vd0   (3, 1) double  % Base linear acceleration
+    wd0   (3, 1) double  % Base angular acceleration
+    vv    (3, :) double  % Linear velocity of each link CoM
+    ww    (3, :) double  % Angular velocity of each link CoM
+    vd    (3, :) double  % Linear acceleration of each link CoM
+    wd    (3, :) double  % Angular acceleration of each link CoM
+    R0    (3, 1) double  % Base position
+    Q0    (3, 1) double  % Base orientation (Euler)
+    A0    (3, 3) double  % Base orientation (DCM)
+    Qtn0  (4, 1) double  % Base orientation (Quaternion)
+    dQtn0 (4, 1) double  % Division of base quaternion
+    Fe    (3, :) double  % External force applied to end point
+    Te    (3, :) double  % External torque applied to end point
+    F0    (3, 1) double  % External force applied to base
+    T0    (3, 1) double  % External torque applied to base
+    tau   (:, 1) double  % Torque applied to each joint
 
-    RR  (3, :) double % Link positions
-    AA  (3, :) double % Link orientations (DCM)
+    RR    (3, :) double  % Link positions
+    AA    (3, :) double  % Link orientations (DCM)
   end
 
   %% Methods called only from Robot
@@ -95,7 +95,7 @@ classdef StateVariable
       end
       field_name = fieldnames(state_variables);
       prop_name = properties(SV);
-      if ~all(strcmp(prop_name, field_name))
+      if (~all(strcmp(prop_name, field_name)))
         error("ERROR: Failed to overwrite state variables.");
       end
 

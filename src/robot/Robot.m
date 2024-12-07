@@ -90,7 +90,7 @@ classdef Robot
       end
       robot = robot.createRobotBaseModel(config);
       robot = robot.createRobotLimbModel(config);
-      if (robot.LP.getMaxEdurableGrippingForce() > 0.0)
+      if (robot.LP.getMaxEndurableGrippingForce() > 0.0)
         robot = robot.createRobotGripperModel(config);
       end
     end
@@ -239,7 +239,7 @@ classdef Robot
         case "max_holding_force"
           num_limb = robot.LP.getNumberOfLimb();
           ground_reaction_force = robot.SV.getGroundReactionForce(robot.LP);
-          F_grip = robot.LP.getMaxEdurableGrippingForce();
+          F_grip = robot.LP.getMaxEndurableGrippingForce();
 
           robot.contact_state = robot.contact_state.detectEECollision(robot, terrain);
           EE_in_contact = robot.contact_state.getInContact();
@@ -294,7 +294,7 @@ classdef Robot
     function robot = visualize(robot, config)
       robot = robot.visualizeBase();
       robot = robot.visualizeLimbs();
-      if (robot.LP.getMaxEdurableGrippingForce() == 0.0)
+      if (robot.LP.getMaxEndurableGrippingForce() == 0.0)
         return;
       end
       robot = robot.visualizeGrippers(config);

@@ -21,7 +21,7 @@ classdef LinkParameters
 
     joint_allocation_type (1, 1) string % State the type of the joint configuration
     F_grip (1, 1) double                % Max. endurable gripping force
-    joint_limit (:, 2) double           % % Movable limitation of joint
+    joint_limit (:, 2) double           % Movable limitation of joint
 
     num_limb (1, 1) uint8              % Total number of limbs
     joints (:, :) uint8
@@ -36,9 +36,12 @@ classdef LinkParameters
       arguments (Input)
         LP_file_name (1, 1) {mustBeA(LP_file_name, "string")};
       end
-      if (~isfile("src\robot\LP\" + LP_file_name + ".m"))
+
+      kPathToLPFile = "src" + filesep + "robot" + filesep + "LP" + filesep + LP_file_name + ".m";
+      if (~isfile(kPathToLPFile))
         error("ERROR: Invalid robot type is specified. LP file dose not exist.");
       end
+
       LP_file = str2func(LP_file_name);
       LP_tmp = LP_file();
 
@@ -117,7 +120,7 @@ classdef LinkParameters
     function num_joints_per_limb = getNumberOfJointsPerLimb(LinkParameters)
       num_joints_per_limb = LinkParameters.num_joints_per_limb;
     end
-    function F_grip = getMaxEdurableGrippingForce(LinkParameters)
+    function F_grip = getMaxEndurableGrippingForce(LinkParameters)
       F_grip = LinkParameters.F_grip;
     end
   end

@@ -1,0 +1,30 @@
+{
+  "cSpell.words": [
+    "addpath",
+    "fieldnames",
+    "filesep",
+    "fullpath",
+    "genpath",
+    "ICRA",
+    "iSAIRAS",
+    "isfile",
+    "isfolder",
+    "ISTS",
+    "mfilename",
+    "strcmp"
+  ],"cSpell.ignoreWords": [
+    // Name and Proper noun
+    "Keigo",
+    "Masazumi",
+    "Imai",
+  ],
+  "MATLAB.installPath": "/usr/local/MATLAB/R2024b",
+  // "editor.defaultFormatter": "MathWorks.language-matlab",
+  // "editor.defaultFormatter": "AffenWiesel.matlab-formatter",
+  // "editor.formatOnSave": true,
+  // "matlab-formatter.addSpaces": "all_operators",
+  // "matlab-formatter.indentMode": "all_functions",
+  // "matlab-formatter.indentwidth": 2,
+  // "matlab-formatter.matrixIndent": "aligned",
+  // "matlab-formatter.separateBlocks": true,
+}
