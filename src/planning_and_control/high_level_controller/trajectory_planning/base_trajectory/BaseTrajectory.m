@@ -18,13 +18,13 @@ classdef BaseTrajectory
     kFinalAcceleration_ (3, 1) double = [0.0; 0.0; 0.0];  % [m/s^s]
   end
 
-  %% Methods called only from MotionPlanning
-  methods (Access = ?MotionPlanning)
+  %% Methods called only from TrajectoryPlanning
+  methods (Access = ?TrajectoryPlanning)
 
     % Constructor
     function base_trajectory = BaseTrajectory(config)
       arguments (Input)
-        config (1, 1) {mustBeA(config, "ConfigMotionPlanning")};
+        config (1, 1) {mustBeA(config, "ConfigTrajectoryPlanning")};
       end
       [type, ~] = config.getTrajectoryType();
 

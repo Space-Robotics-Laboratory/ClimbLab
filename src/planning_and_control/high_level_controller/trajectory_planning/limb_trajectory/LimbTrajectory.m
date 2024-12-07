@@ -23,26 +23,26 @@ classdef LimbTrajectory
     mid_velocity (3, 1) double;  % [m/s]
   end
 
-  %% Methods called only from MotionPlanning
-  methods (Access = ?MotionPlanning)
+  %% Methods called only from TrajectoryPlanning
+  methods (Access = ?TrajectoryPlanning)
 
-    function limb_trajectory = LimbTrajectory(config_motion_planning)
+    function limb_trajectory = LimbTrajectory(config_trajectory_planning)
     % LimbTrajectory() Constructor
       arguments (Input)
-        config_motion_planning (1, 1) {mustBeA(config_motion_planning, "ConfigMotionPlanning")};
+        config_trajectory_planning (1, 1) {mustBeA(config_trajectory_planning, "ConfigTrajectoryPlanning")};
       end
-      [~, type] = config_motion_planning.getTrajectoryType();
+      [~, type] = config_trajectory_planning.getTrajectoryType();
 
       limb_trajectory.position_ = PositionTrajectory(type);
 
       % TODO: Implement
       limb_trajectory.orientation_ = [];
 
-      if (~config_motion_planning.getVisualizeLimbTrajectory())
+      if (~config_trajectory_planning.getVisualizeLimbTrajectory())
         return;
       end
 
-      [line_style, color, width] = config_motion_planning.getLimbTrajectoryVisualSettings();
+      [line_style, color, width] = config_trajectory_planning.getLimbTrajectoryVisualSettings();
       limb_trajectory.position_ = limb_trajectory.position_.setVisualSettings( ...
         line_style, color, width);
     end

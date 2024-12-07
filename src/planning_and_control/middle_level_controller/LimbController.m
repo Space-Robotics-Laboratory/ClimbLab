@@ -11,14 +11,14 @@ classdef LimbController
     end
 
     function robot = control(limb_controller, ...
-        time, robot, foothold_planning, gait_planning, motion_planning, terrain)
+        time, robot, foothold_planning, gait_planning, trajectory_planning, terrain)
       arguments (Input)
         limb_controller;
         time              (1, 1) {mustBeA(time, "double")};
         robot             (1, 1) {mustBeA(robot, "Robot")};
         foothold_planning (1, 1) {mustBeA(foothold_planning, "FootholdPlanning")};
         gait_planning     (1, 1) {mustBeA(gait_planning, "GaitPlanning")};
-        motion_planning   (1, 1) {mustBeA(motion_planning, "MotionPlanning")};
+        trajectory_planning   (1, 1) {mustBeA(trajectory_planning, "TrajectoryPlanning")};
         terrain       (1, 1) {mustBeA(terrain, "Terrain")};
       end
       global d_time;
@@ -26,9 +26,9 @@ classdef LimbController
       des_SV_tmp = des_SV_last;
       LP_tmp = robot.LP.clone();
 
-      desired_base_position = motion_planning.getDesiredBasePosition();
+      desired_base_position = trajectory_planning.getDesiredBasePosition();
       desired_base_orientation_dcm = robot.des_SV.getBaseOrientationDCM();  % TODO: Get from motion planning
-      desired_EE_positions = motion_planning.getDesiredEEPositions();
+      desired_EE_positions = trajectory_planning.getDesiredEEPositions();
 
       desired_joint_angles = robot.kinematics.computeInverse( ...
         desired_base_position, desired_base_orientation_dcm, desired_EE_positions);

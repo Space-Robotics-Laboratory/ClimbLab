@@ -3,7 +3,7 @@
 ```mermaid
 classDiagram
 
-  class ConfigMotionPlanning {
+  class ConfigTrajectoryPlanning {
     + base_trajectory_type: string
     + limb_trajectory_type: string
     + visualize_limb_trajectory: logical
@@ -11,19 +11,19 @@ classDiagram
     + limb_trajectory_color:
     + limb_trajectory_width: double
 
-    + ConfigMotionPlanning()
+    + ConfigTrajectoryPlanning()
     + getTrajectoryType()
     + getVisualizeLimbTrajectory()'
     + getLimbTrajectoryVisualSettings()
   }
 
-  class MotionPlanning {
+  class TrajectoryPlanning {
     + kBaseTrajectoryType_: string
     + kLimbTrajectoryType_: string
     + base_trajectory_: BaseTrajectory
     + limb_trajectory_: LimbTrajectory
 
-    + MotionPlanning()
+    + TrajectoryPlanning()
     + plan()
     + visualize()
     - planTrajectories()
@@ -31,8 +31,8 @@ classDiagram
     + getDesiredBasePosition()
     + getDesiredEEPositions()
   }
-  MotionPlanning *-- BaseTrajectory
-  MotionPlanning *-- "1.." LimbTrajectory
+  TrajectoryPlanning *-- BaseTrajectory
+  TrajectoryPlanning *-- "1.." LimbTrajectory
 
   class BaseTrajectory {
     + position_: PositionTrajectory

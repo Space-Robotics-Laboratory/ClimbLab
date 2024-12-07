@@ -8,7 +8,7 @@ robot = robot.visualize(config_robot);
 
 animation = animation.setLight();
 
-motion_planning = motion_planning.visualize(time);
+trajectory_planning = trajectory_planning.visualize(time);
 
 visualizeVectors();
 

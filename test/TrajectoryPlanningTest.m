@@ -1,9 +1,9 @@
-classdef MotionPlanningTest < matlab.unittest.TestCase
-  % motion_planning_test = MotionPlanningTest; result = motion_planning_test.run
+classdef TrajectoryPlanningTest < matlab.unittest.TestCase
+  % trajectory_planning_test = TrajectoryPlanningTest; result = trajectory_planning_test.run
   % result = path_planning_test.run
 
   methods (Test)
-    function testBezier(motion_planning_test)
+    function testBezier(trajectory_planning_test)
       num_limb = uint8(4);
       base_trajectory_type = "5th_order_bezier";
       limb_trajectory_type = "7th_order_bezier";
@@ -33,22 +33,22 @@ classdef MotionPlanningTest < matlab.unittest.TestCase
 
       figure(1); hold on;
 
-      motion_planning = MotionPlanning(base_trajectory_type, limb_trajectory_type, num_limb);
-      motion_planning = ...
-        motion_planning.initializeTrajectories(current_EE_position, line_style, color, width);
+      trajectory_planning = TrajectoryPlanning(base_trajectory_type, limb_trajectory_type, num_limb);
+      trajectory_planning = ...
+        trajectory_planning.initializeTrajectories(current_EE_position, line_style, color, width);
 
       for time = 0.0 : 0.001 : 1.0
         if time == 0.0
-          motion_planning = motion_planning.planTrajectories( ...
+          trajectory_planning = trajectory_planning.planTrajectories( ...
               swing_duration, current_EE_position, desired_EE_position, step_height);
         end
 
-        motion_planning = motion_planning.updateForCurrentTimeStep( ...
+        trajectory_planning = trajectory_planning.updateForCurrentTimeStep( ...
           time, swing_duration);
       end
 
       for limb_id = 1:num_limb
-        motion_planning.limb_trajectory(limb_id, 1).position.planned_trajectory.visualize();
+        trajectory_planning.limb_trajectory(limb_id, 1).position.planned_trajectory.visualize();
       end
       axis equal; grid on;
       xlabel("x"); ylabel("y");
@@ -56,7 +56,7 @@ classdef MotionPlanningTest < matlab.unittest.TestCase
       hold off;
     end
 
-    function testSpline(motion_planning_test)
+    function testSpline(trajectory_planning_test)
       num_limb = uint8(4);
       base_trajectory_type = "5th_order_bezier";
       limb_trajectory_type = "7th_order_spline";
@@ -86,22 +86,22 @@ classdef MotionPlanningTest < matlab.unittest.TestCase
 
       figure(2); hold on;
 
-      motion_planning = MotionPlanning(base_trajectory_type, limb_trajectory_type, num_limb);
-      motion_planning = ...
-        motion_planning.initializeTrajectories(current_EE_position, line_style, color, width);
+      trajectory_planning = TrajectoryPlanning(base_trajectory_type, limb_trajectory_type, num_limb);
+      trajectory_planning = ...
+        trajectory_planning.initializeTrajectories(current_EE_position, line_style, color, width);
 
       for time = 0.0 : 0.001 : 1.0
         if time == 0.0
-          motion_planning = motion_planning.planTrajectories( ...
+          trajectory_planning = trajectory_planning.planTrajectories( ...
               swing_duration, current_EE_position, desired_EE_position, step_height);
         end
 
-        motion_planning = motion_planning.updateForCurrentTimeStep( ...
+        trajectory_planning = trajectory_planning.updateForCurrentTimeStep( ...
           time, swing_duration);
       end
 
       for limb_id = 1:num_limb
-        motion_planning.limb_trajectory(limb_id, 1).position.planned_trajectory.visualize();
+        trajectory_planning.limb_trajectory(limb_id, 1).position.planned_trajectory.visualize();
       end
       axis equal; grid on;
       xlabel("x"); ylabel("y");

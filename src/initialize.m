@@ -7,7 +7,7 @@ config_robot = ConfigRobot(config);
 config_path_planning = ConfigPathPlanning(config);
 config_foothold_planning = ConfigFootholdPlanning(config);
 config_gait_planning = ConfigGaitPlanning(config);
-config_motion_planning = ConfigMotionPlanning(config);
+config_trajectory_planning = ConfigTrajectoryPlanning(config);
 config_joint_controller = ConfigJointController(config);
 config_animation_settings = ConfigAnimationSettings(config);
 save_settings = ConfigSaveSettings(config, config_world);
@@ -36,7 +36,7 @@ foothold_planning = FootholdPlanning(config_foothold_planning, robot);
 gait_planning = GaitPlanning(config_gait_planning);
 
 % Trajectory Planning
-motion_planning = MotionPlanning(config_motion_planning, robot);
+trajectory_planning = TrajectoryPlanning(config_trajectory_planning, robot);
 
 % Limb Controller
 limb_controller = LimbController();

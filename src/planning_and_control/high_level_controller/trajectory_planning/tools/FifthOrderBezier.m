@@ -54,7 +54,7 @@ classdef FifthOrderBezier
       AA(:, 3)     = start_acceleration ./ (n * (n - 1)) - AA(:, 1) + 2 * AA(:, 2);
       AA(:, n - 1) = final_acceleration ./ (n * (n - 1)) - AA(:, n + 1) + 2 * AA(:, n);
 
-      % Unpacking coefficients to motion_planning struct
+      % Unpacking coefficients to trajectory_planning struct
       for k = 1 : n + 1
         fifth_order_bezier.coefficients_(1:3, k) = AA(:, k);
       end

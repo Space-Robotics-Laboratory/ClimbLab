@@ -1,4 +1,4 @@
-classdef ConfigMotionPlanning
+classdef ConfigTrajectoryPlanning
   %% Properties
   properties (SetAccess = private, GetAccess = public)
     base_trajectory_type (1, 1) string = "5th_order_bezier";
@@ -15,12 +15,13 @@ classdef ConfigMotionPlanning
   %% Constructor
   methods (Access = public)
 
-    function config_motion_planning = ConfigMotionPlanning(config)
-    % ConfigMotionPlanning() Constructor
+    function config_trajectory_planning = ConfigTrajectoryPlanning(config)
+    % ConfigTrajectoryPlanning() Constructor
     %   Override properties value based on specified config file if config is not "default"
       arguments (Input)
         config (1, 1) {mustBeA(config, "string")};
       end
+
       if (config == "default")
         return;
       end
@@ -34,7 +35,7 @@ classdef ConfigMotionPlanning
       kConfigFile = str2func(kConfigFileName);
       kUserConfig = feval(kConfigFile);
 
-      kDefaultConfigPropName = properties(config_motion_planning);
+      kDefaultConfigPropName = properties(config_trajectory_planning);
 
       meta_class = metaclass(kUserConfig);
       meta_props = meta_class.PropertyList;
@@ -42,7 +43,7 @@ classdef ConfigMotionPlanning
       for i = 1 : length(meta_props)
         get_access_authorization = meta_props(i, 1).GetAccess{1, 1}.Name;
 
-        if (strcmp(get_access_authorization, "ConfigMotionPlanning"))
+        if (strcmp(get_access_authorization, "ConfigTrajectoryPlanning"))
           kUserConfigPropName = meta_props(i, 1).Name;
 
           if (~any(strcmp(kDefaultConfigPropName, kUserConfigPropName)))
@@ -52,7 +53,7 @@ classdef ConfigMotionPlanning
               "default config property name.");
           end
 
-          config_motion_planning.(kUserConfigPropName) = kUserConfig.(kUserConfigPropName);
+          config_trajectory_planning.(kUserConfigPropName) = kUserConfig.(kUserConfigPropName);
         end
       end
     end
@@ -61,18 +62,18 @@ classdef ConfigMotionPlanning
 
   %% Getter
   methods (Access = public)
-    function [base_trajectory_type, limb_trajectory_type] = getTrajectoryType(config_motion_planning)
-      base_trajectory_type = config_motion_planning.base_trajectory_type;
-      limb_trajectory_type = config_motion_planning.limb_trajectory_type;
+    function [base_trajectory_type, limb_trajectory_type] = getTrajectoryType(config_trajectory_planning)
+      base_trajectory_type = config_trajectory_planning.base_trajectory_type;
+      limb_trajectory_type = config_trajectory_planning.limb_trajectory_type;
     end
-    function boolean = getVisualizeLimbTrajectory(config_motion_planning)
-      boolean = config_motion_planning.visualize_limb_trajectory;
+    function boolean = getVisualizeLimbTrajectory(config_trajectory_planning)
+      boolean = config_trajectory_planning.visualize_limb_trajectory;
     end
-    function [line_style, color, width] = getLimbTrajectoryVisualSettings(config_motion_planning)
-      line_style = config_motion_planning.limb_trajectory_line_style;
-      color = config_motion_planning.limb_trajectory_color;
-      width = config_motion_planning.limb_trajectory_width;
+    function [line_style, color, width] = getLimbTrajectoryVisualSettings(config_trajectory_planning)
+      line_style = config_trajectory_planning.limb_trajectory_line_style;
+      color = config_trajectory_planning.limb_trajectory_color;
+      width = config_trajectory_planning.limb_trajectory_width;
     end
   end
 
-end  % ConfigMotionPlanning
+end  % ConfigTrajectoryPlanning
