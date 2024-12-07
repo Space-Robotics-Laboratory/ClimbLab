@@ -3,7 +3,7 @@ classdef PositionTrajectory
   properties (SetAccess = private, GetAccess = public)
     planner;
     desired_position   (3, 1) double;  % [m]
-    planned_trajectory (1, 1) Trajectory;
+    planned_trajectory (1, 1) TrajectoryHistory;
   end
 
   %% Public Methods
@@ -27,7 +27,7 @@ classdef PositionTrajectory
       end
 
       position_trajectory.desired_position = [0.0; 0.0; 0.0];
-      position_trajectory.planned_trajectory = Trajectory();
+      position_trajectory.planned_trajectory = TrajectoryHistory();
     end
 
     function position_trajectory = plan(position_trajectory, ...

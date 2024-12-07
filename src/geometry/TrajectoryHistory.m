@@ -1,5 +1,10 @@
-classdef Trajectory
-  %% Properties
+classdef TrajectoryHistory
+% TrajectoryHistory
+%
+% Created     : 2024.10.22 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
+
+%% Properties
   properties (SetAccess = private, GetAccess = public)
     points (3, :) double;
   end
@@ -10,11 +15,11 @@ classdef Trajectory
     line       (1, 1) matlab.graphics.animation.AnimatedLine;
   end
 
-  %% Public methods
+  %% Public Methods
   methods (Access = public)
 
-    function trajectory = Trajectory()
-    % Trajectory() Constructor
+    function trajectory = TrajectoryHistory()
+    % TrajectoryHistory() Constructor
       trajectory.points = double.empty;
 
       trajectory.line_style = "none";
@@ -51,6 +56,7 @@ classdef Trajectory
         color = [0.0, 0.0, 0.0];
         width      (1, 1) {mustBeA(width,      "double")} = 0.0;
       end
+
       trajectory.line_style = line_style;
       trajectory.color = validatecolor(color);
       trajectory.width = width;
@@ -75,5 +81,4 @@ classdef Trajectory
     end
   end
 
-end
-% EOF
+end  % TrajectoryHistory

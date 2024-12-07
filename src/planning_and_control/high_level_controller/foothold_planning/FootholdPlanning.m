@@ -15,7 +15,7 @@ classdef FootholdPlanning
     swing_limb_id_history uint8;
 
     foothold_positions (3, :) double;
-    footholds_history  (:, 1) Trajectory;
+    footholds_history  (:, 1) TrajectoryHistory;
 
     step_length (1, 1) double;
     step_height (1, 1) double;  % TODO: should be in motion planning?
@@ -41,7 +41,7 @@ classdef FootholdPlanning
 
       foothold_planning.foothold_positions = current_EE_positions;
       for limb_id = 1 : num_limb
-        foothold_planning.footholds_history(limb_id, 1) = Trajectory();
+        foothold_planning.footholds_history(limb_id, 1) = TrajectoryHistory();
         foothold_planning.footholds_history(limb_id, 1) = ...
           foothold_planning.footholds_history(limb_id, 1).addPoint( ...
             current_EE_positions(:, limb_id));

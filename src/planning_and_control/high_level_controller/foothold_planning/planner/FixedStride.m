@@ -45,7 +45,7 @@ classdef FixedStride
       end
 
       graspable_points = terrain.getGraspablePoints();
-      moving_direction = path_planning.local_path.getMovingDirection();
+      moving_direction = path_planning.local_path_.getMovingDirection();
       swing_limb_id = foothold_planning.getSwingLimbID();
       current_foothold_positions = foothold_planning.getFootholdPositions();
       step_length = foothold_planning.getStepLength();

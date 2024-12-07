@@ -1,22 +1,27 @@
 {
   "cSpell.words": [
     "addpath",
+    "addpoints",
+    "animatedline",
     "fieldnames",
     "filesep",
     "fullpath",
     "genpath",
+    "horzcat",
     "ICRA",
     "iSAIRAS",
     "isfile",
     "isfolder",
     "ISTS",
     "mfilename",
-    "strcmp"
+    "strcmp",
+    "validatecolor"
   ],"cSpell.ignoreWords": [
     // Name and Proper noun
     "Keigo",
     "Masazumi",
     "Imai",
+    "Ribeiro",
   ],
   "MATLAB.installPath": "/usr/local/MATLAB/R2024b",
   // "editor.defaultFormatter": "MathWorks.language-matlab",
