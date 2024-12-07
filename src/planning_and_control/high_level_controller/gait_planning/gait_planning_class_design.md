@@ -15,28 +15,47 @@ classDiagram
   }
 
   class GaitPlanning {
-    + type: string
-    + base_pose_planner: BasePosePlanning
-    + scheduler: GaitScheduler
-    + swing_timings: double
-    + landing_timings: double
-    + transfer_duration: double
-    + swing_duration: double
-    + release_duration: double
-    + grasp_duration: double
-    + support_duration: double
-    + all_limb_support_duration: double
+    + kType_: string
+    + base_pose_planner_: BasePosePlanning
+    + scheduler_: GaitScheduler
+    + swing_timings_: double
+    + landing_timings_: double
+    + transfer_duration_: double
+    + swing_duration_: double
+    + foot_lift_up_duration_: double
+    + foot_lift_down_duration_: double
+    + support_duration_: double
+    + all_limb_support_duration_: double
+
+    + GaitPlanning()
+    + plan()
+    - isUpdateTiming()
+    - setScheduler()
+    + getType()
+    + getTransferDuration()
+    + getFootLiftUpDuration()
+    + getFootLiftDownDuration()
+    + getAllLimbSupportDuration()
+    + getSwingTimings()
+    + getLandingTimings()
   }
   GaitPlanning *-- BasePosePlanning
   GaitPlanning *-- GaitScheduler
 
   class BasePosePlanning {
-    + position_planning_type: string
-    + orientation_planning_type: string
-    + position_planner: PositionTrajectory
-    + orientation_planner: OrientationTrajectory
-    + desired_position: 3x1 double
-    + desired_orientation_dcm: 3x3 double
+    + kPositionPlanningType_: string
+    + kOrientationPlanningType_: string
+    + position_planner_: PositionTrajectory
+    + orientation_planner_: OrientationTrajectory
+    + desired_position_: 3x1 double
+    + desired_orientation_dcm_: 3x3 double
+
+    + BasePosePlanning()
+    + plan()
+    - setPositionPlanner()
+    - setOrientationPlanner()
+    + getDesiredBasePosition()
+    + getDesiredOrientationDCM()
   }
 
   class GaitScheduler {
@@ -46,10 +65,10 @@ classDiagram
   GaitScheduler <|-- NonPeriodicGait
 
   class PeriodicGait {
-    + gait_period: double
-    + duty_factor: double
-    + sequence: uint8
-    + num_limb_motion_starting_at_diff_timing: double
+    + kGaitPeriod_: double
+    + kDutyFactor_: double
+    + kSequence_: nxm uint8
+    + kNumLimbMotionStartingAtDiffTiming: double
 
     + PeriodicGait()
     + calcSupportDuration()

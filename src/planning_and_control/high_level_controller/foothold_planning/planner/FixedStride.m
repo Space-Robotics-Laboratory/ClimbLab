@@ -22,7 +22,7 @@ classdef FixedStride
         gait_planning          (1, 1) {mustBeA(gait_planning,          "GaitPlanning")};
       end
 
-      gait_sequence = gait_planning.scheduler.getSequence();
+      gait_sequence = gait_planning.scheduler_.getSequence();
 
       if (previous_swing_limb_id == 0 || ...  % Initial condition
           previous_swing_limb_id == gait_sequence(:, end))

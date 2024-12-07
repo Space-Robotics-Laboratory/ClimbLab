@@ -16,8 +16,17 @@
     "ISTS",
     "metaclass",
     "mfilename",
+    "nchoosek",
+    "numel",
     "strcmp",
-    "validatecolor"
+    "validatecolor",
+    "varargin",
+    "xlim",
+    "xline",
+    "xticks",
+    "ylim",
+    "yticklabels",
+    "yticks"
   ],"cSpell.ignoreWords": [
     // Name and Proper Noun
     "Keigo",

@@ -1,4 +1,10 @@
 classdef IntersectionOfDiagonalLines
+% IntersectionOfDiagonalLines
+% Calculate the robot base position based on the intersection of diagonal lines formed by diagonal foothold positions
+%
+% Created     : 2024.09.29 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
+
   %% Public Methods
   methods (Access = public)
 
@@ -27,24 +33,27 @@ classdef IntersectionOfDiagonalLines
       current_base_position_in_World = robot.SV.getBasePosition();
       current_base_orientation_in_World = robot.SV.getBaseOrientationDCM();
 
-      num_limb = robot.LP.getNumberOfLimb();
+      kNumLimb = robot.LP.getNumberOfLimb();
+
       current_EE_positions_in_World = robot.getEEPosition();
       desired_EE_positions_in_World = foothold_planning.getFootholdPositions();
-      current_EE_positions_in_Base = zeros(3, num_limb);
-      desired_EE_positions_in_Base = zeros(3, num_limb);
-      for limb_id = 1 : num_limb
+
+      current_EE_positions_in_Base = zeros(3, kNumLimb);
+      desired_EE_positions_in_Base = zeros(3, kNumLimb);
+      for limb_id = 1 : kNumLimb
         current_EE_positions_in_Base(:, limb_id) = current_base_orientation_in_World' * ...
           (current_EE_positions_in_World(:, limb_id) - current_base_position_in_World);
         desired_EE_positions_in_Base(:, limb_id) = current_base_orientation_in_World' * ...
           (desired_EE_positions_in_World(:, limb_id) - current_base_position_in_World);
       end
-      current_EE_positions_in_Base_xy = [current_EE_positions_in_Base(1:2, :); zeros(1, num_limb)];
-      desired_EE_positions_in_Base_xy = [desired_EE_positions_in_Base(1:2, :); zeros(1, num_limb)];
+
+      current_EE_positions_in_Base_xy = [current_EE_positions_in_Base(1:2, :); zeros(1, kNumLimb)];
+      desired_EE_positions_in_Base_xy = [desired_EE_positions_in_Base(1:2, :); zeros(1, kNumLimb)];
 
       swing_limb_id = foothold_planning.getSwingLimbID();
 
       [diagonal_lines, comb_diag_limb] = planner.calcDiagonalLines( ...
-        current_EE_positions_in_Base_xy, desired_EE_positions_in_Base_xy, num_limb, swing_limb_id);
+        current_EE_positions_in_Base_xy, desired_EE_positions_in_Base_xy, kNumLimb, swing_limb_id);
 
       intersection_in_Base_xy = planner.calcIntersectionInBaseXYPlane( ...
         diagonal_lines, comb_diag_limb);
@@ -59,7 +68,7 @@ classdef IntersectionOfDiagonalLines
   methods (Access = private)
 
     function [diagonal_lines, comb_diag_limb] = calcDiagonalLines(~, ...
-        current_EE_positions_in_Base_xy, desired_EE_positions_in_Base_xy, num_limb, swing_limb_id)
+        current_EE_positions_in_Base_xy, desired_EE_positions_in_Base_xy, kNumLimb, swing_limb_id)
     % calcDiagonalLines()
     %   Calculate diagonal lines formed by non-adjacent limbs
       arguments (Input)
@@ -68,16 +77,16 @@ classdef IntersectionOfDiagonalLines
                       (3, :) {mustBeA(current_EE_positions_in_Base_xy, "double")};
         desired_EE_positions_in_Base_xy ...
                       (3, :) {mustBeA(desired_EE_positions_in_Base_xy, "double")};
-        num_limb      (1, 1) {mustBeA(num_limb, "uint8")};
+        kNumLimb      (1, 1) {mustBeA(kNumLimb, "uint8")};
         swing_limb_id (1, 1) {mustBeA(swing_limb_id, "uint8")};
       end
 
       % EE2EE_line (3, 2, i, j): Start and end positions of line connecting i-th and j-th EE
       %   EE2EE_line(:, 1, i, j): Position of i-th EE to form a line with j-th EE
       %   EE2EE_line(:, 2, i, j): Position of j-th EE to form a line with i-th EE
-      EE2EE_line = zeros(3, 2, num_limb, num_limb);
+      EE2EE_line = zeros(3, 2, kNumLimb, kNumLimb);
       % Combination of 2 limbs selected from all limbs
-      comb_limbs = nchoosek(1:num_limb, 2);
+      comb_limbs = nchoosek(1:kNumLimb, 2);
       % Combination of limbs forming a diagonal line
       %   1st dim: Number of combinations
       %   2nd dim: Limb ID to form a diagonal line
@@ -88,7 +97,7 @@ classdef IntersectionOfDiagonalLines
       % diagonal_lines(3, 2, i, j): Start and end positions of line connecting i-th and j-th EE
       %   diagonal_lines(:, 1, i, j): Position of i-th EE to form a diagonal line with j-th EE
       %   diagonal_lines(:, 2, i, j): Position of j-th EE to form a diagonal line with i-th EE
-      diagonal_lines = zeros(3, 2, num_limb, num_limb);
+      diagonal_lines = zeros(3, 2, kNumLimb, kNumLimb);
 
       % Calculation of lines with limbs that form combinations
       for k = 1 : size(comb_limbs, 1)
@@ -96,18 +105,18 @@ classdef IntersectionOfDiagonalLines
         j = comb_limbs(k, 2);
         % Limb ID before and after i (i-1, i+1)
         if (i == 1)
-          i_minus_1 = num_limb;
+          i_minus_1 = kNumLimb;
         else
           i_minus_1 = i - 1;
         end
         i_plus_1 = i + 1;
         % Limb ID before and after j (j-1, j+1)
         if (j == 1)
-          j_minus_1 = num_limb;
+          j_minus_1 = kNumLimb;
         else
           j_minus_1 = j - 1;
         end
-        if (j == num_limb)
+        if (j == kNumLimb)
           j_plus_1 = 1;
         else
           j_plus_1 = j + 1;
@@ -172,6 +181,7 @@ classdef IntersectionOfDiagonalLines
 
       % Ratio from start point of "vec_diag_line_1" to the intersection
       ratio = - cross(vec_diag_line_2, vec_diag_line_1) \ cross(vec_diag_line_2, vec_1s_to_2s);
+
       % Intersection point in x-y plane of Base frame
       intersection_in_Base_xy = ...
         diagonal_lines(:, 1, comb_diag_limb(1, 1), comb_diag_limb(1, 2)) + vec_diag_line_1 * ratio;
@@ -179,5 +189,4 @@ classdef IntersectionOfDiagonalLines
 
   end
 
-end
-% EOF
+end  % IntersectionOfDiagonalLines

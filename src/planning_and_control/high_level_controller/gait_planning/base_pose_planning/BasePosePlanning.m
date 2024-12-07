@@ -3,17 +3,17 @@ classdef BasePosePlanning
 % Plan the desired base pose
 %
 % Created     : 2020.04.10 by Warley Ribeiro
-% Last updated: 2024.10.22 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    position_planning_type (1, 1) string;
-    orientation_planning_type (1, 1) string;
-    position_planner;
-    orientation_planner;
+    kPositionPlanningType_    (1, 1) string;
+    kOrientationPlanningType_ (1, 1) string;
+    position_planner_;
+    orientation_planner_;
 
-    desired_position (3, 1) double;  % [m] at landing time of swing limb
-    desired_orientation_dcm  (3, 3) double;  % at landing time of swing limb
+    desired_position_        (3, 1) double;  % [m] at landing time of swing limb
+    desired_orientation_dcm_ (3, 3) double;  % at landing time of swing limb
   end
 
   %% Public Methods
@@ -24,11 +24,11 @@ classdef BasePosePlanning
       arguments (Input)
         type (2, 1) {mustBeA(type, "string")};
       end
-      base_pose_planning.position_planning_type = type(1, 1);
-      base_pose_planning.orientation_planning_type = type(2, 1);
+      base_pose_planning.kPositionPlanningType_ = type(1, 1);
+      base_pose_planning.kOrientationPlanningType_ = type(2, 1);
 
-      base_pose_planning.position_planner = base_pose_planning.setPositionPlanner();
-      base_pose_planning.orientation_planner = base_pose_planning.setOrientationPlanner();
+      base_pose_planning.position_planner_ = base_pose_planning.setPositionPlanner();
+      base_pose_planning.orientation_planner_ = base_pose_planning.setOrientationPlanner();
     end
 
     function base_pose_planning = plan(base_pose_planning, robot, path_planning, foothold_planning)
@@ -41,15 +41,15 @@ classdef BasePosePlanning
         foothold_planning (1, 1) {mustBeA(foothold_planning, "FootholdPlanning")};
       end
 
-      if (base_pose_planning.position_planning_type == "do_nothing")
-        base_pose_planning.desired_position = robot.des_SV.getBasePosition();
+      if (base_pose_planning.kPositionPlanningType_ == "do_nothing")
+        base_pose_planning.desired_position_ = robot.des_SV.getBasePosition();
       else
-        base_pose_planning.desired_position = base_pose_planning.position_planner.plan( ...
+        base_pose_planning.desired_position_ = base_pose_planning.position_planner_.plan( ...
           robot, path_planning, foothold_planning);
       end
 
-      if (base_pose_planning.orientation_planning_type == "do_nothing")
-        base_pose_planning.desired_orientation_dcm = robot.des_SV.getBaseOrientationDCM();
+      if (base_pose_planning.kOrientationPlanningType_ == "do_nothing")
+        base_pose_planning.desired_orientation_dcm_ = robot.des_SV.getBaseOrientationDCM();
       else
         % TODO: Implement orientation_planner.plan
       end
@@ -62,7 +62,7 @@ classdef BasePosePlanning
   methods (Access = private)
 
     function position_planner = setPositionPlanner(base_pose_planning)
-      switch (base_pose_planning.position_planning_type)
+      switch (base_pose_planning.kPositionPlanningType_)
         case "do_nothing"
           position_planner = [];
         case "intersection_of_diagonal_lines"
@@ -75,7 +75,7 @@ classdef BasePosePlanning
     end
 
     function orientation_planner = setOrientationPlanner(base_pose_planning)
-      switch (base_pose_planning.orientation_planning_type)
+      switch (base_pose_planning.kOrientationPlanningType_)
         case "do_nothing"
           orientation_planner = [];
         otherwise
@@ -88,12 +88,11 @@ classdef BasePosePlanning
   %% Getter
   methods (Access = public)
     function desired_position = getDesiredBasePosition(base_pose_planning)
-      desired_position = base_pose_planning.desired_position;
+      desired_position = base_pose_planning.desired_position_;
     end
-    function desired_orientation_dcm = getDisiredOrientationDCM(base_pose_planning)
-      desired_orientation_dcm = base_pose_planning.desired_orientation_dcm;
+    function desired_orientation_dcm = getDesiredOrientationDCM(base_pose_planning)
+      desired_orientation_dcm = base_pose_planning.desired_orientation_dcm_;
     end
   end
 
-end
-% EOF
+end  % BasePosePlanning

@@ -40,7 +40,7 @@ classdef BaseTrajectory
       end
 
       current_base_position = robot.SV.getBasePosition();  % previous desired position?
-      desired_base_position = gait_planning.base_pose_planner.getDesiredBasePosition();
+      desired_base_position = gait_planning.base_pose_planner_.getDesiredBasePosition();
       motion_duration = gait_planning.getTransferDuration();
 
       time_constraints = [base_trajectory.start_time, motion_duration];

@@ -12,13 +12,13 @@ classdef ConfigGaitPlanning
       % 1st dim: Limb number(s) starting at same timing during gait cycle
       % 2nd dim: Limb number(s) starting at different timing during gait cycle
 
-    gripper_release_duration (1, 1) double = 0.0;  % [s]
-    gripper_grasp_duration   (1, 1) double = 0.0;  % [s]
+    foot_lift_up_duration   (1, 1) double = 0.0;  % [s]
+    foot_lift_down_duration (1, 1) double = 0.0;  % [s]
   end
   properties (SetAccess = private, GetAccess = public)
     % "do_nothing", "intersection_of_diagonal_lines",
     % "intersection_of_diagonal_line_and_moving_direction"
-    base_position_planning_type (1, 1) string = "intersection_of_diagonal_lines";
+    base_position_planning_type    (1, 1) string = "intersection_of_diagonal_lines";
     base_orientation_planning_type (1, 1) string = "do_nothing";
   end
 
@@ -35,33 +35,34 @@ classdef ConfigGaitPlanning
         return;
       end
 
-      config_file_name = "config_" + config;
-      if (~isfile("config\preset\" + config_file_name + ".m"))
+      kConfigFileName = "config_" + config;
+      kPathToConfigFile = "config" + filesep + "preset" + filesep + kConfigFileName + ".m";
+      if (~isfile(kPathToConfigFile))
         error("ERROR: The specified config file does NOT exist.");
       end
 
-      config_file = str2func(config_file_name);
-      user_config = feval(config_file);
+      kConfigFile = str2func(config_file_name);
+      kUserConfig = feval(kConfigFile);
 
-      this_config_prop_name = properties(config_gait_planning);
+      kDefaultConfigPropName = properties(config_gait_planning);
 
-      meta_class = metaclass(user_config);
+      meta_class = metaclass(kUserConfig);
       meta_props = meta_class.PropertyList;
 
       for i = 1 : length(meta_props)
         get_access_authorization = meta_props(i, 1).GetAccess{1, 1}.Name;
 
         if (strcmp(get_access_authorization, "ConfigGaitPlanning"))
-          user_config_prop_name = meta_props(i, 1).Name;
+          kUserConfigPropName = meta_props(i, 1).Name;
 
-          if (~any(strcmp(this_config_prop_name, user_config_prop_name)))
+          if (~any(strcmp(kDefaultConfigPropName, kUserConfigPropName)))
             error("ERROR: Invalid property name is specified in user customized config file. " + ...
-              "That property name is """ + user_config_prop_name + """. " + ...
+              "That property name is """ + kUserConfigPropName + """. " + ...
               "Property name defined in user customized config file have to match " + ...
               "default config property name.");
           end
 
-          config_gait_planning.(user_config_prop_name) = user_config.(user_config_prop_name);
+          config_gait_planning.(kUserConfigPropName) = user_config.(kUserConfigPropName);
         end
       end
     end
@@ -82,10 +83,10 @@ classdef ConfigGaitPlanning
     function sequence = getGaitSequence(config_gait_planning)
       sequence = config_gait_planning.sequence;
     end
-    function [gripper_release_duration, gripper_grasp_duration] = ...
-        getGripperReleaseAndGraspDuration(config_gait_planning)
-      gripper_release_duration = config_gait_planning.gripper_release_duration;
-      gripper_grasp_duration = config_gait_planning.gripper_grasp_duration;
+    function [foot_lift_up_duration, foot_lift_down_duration] = ...
+      getFootLiftUpAndDownDuration(config_gait_planning)
+      foot_lift_up_duration = config_gait_planning.foot_lift_up_duration;
+      foot_lift_down_duration = config_gait_planning.foot_lift_down_duration;
     end
 
     function base_pose_planning_type = getBasePosePlaningType(config_gait_planning)
@@ -94,5 +95,4 @@ classdef ConfigGaitPlanning
     end
   end
 
-end
-% EOF
+end  % ConfigGaitPlanning

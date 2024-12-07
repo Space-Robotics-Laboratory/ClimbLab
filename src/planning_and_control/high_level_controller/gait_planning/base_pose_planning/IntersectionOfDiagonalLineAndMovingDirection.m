@@ -1,4 +1,11 @@
 classdef IntersectionOfDiagonalLineAndMovingDirection
+% IntersectionOfDiagonalLines
+% Calculate the robot base position based on the intersection of a diagonal line formed by diagonal foothold positions and moving direction vector
+%
+% Created     : 2024.09.29 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
+% TODO: Need to be improved (coordinate is not good maybe), refer to IntersectionOfDiagonalLines
+
   %% Properties
   properties (SetAccess = private, GetAccess = public)
   end
