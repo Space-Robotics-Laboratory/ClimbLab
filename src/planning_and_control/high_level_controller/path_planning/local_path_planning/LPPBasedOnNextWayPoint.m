@@ -4,7 +4,7 @@ classdef LPPBasedOnNextWayPoint
 % way point
 %
 % Created     : 2024.10.22 by Masazumi Imai
-% Last updated: 2024.10.22 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
 
   %% Public Methods
   methods (Access = public)
@@ -32,5 +32,4 @@ classdef LPPBasedOnNextWayPoint
 
   end
 
-end
-% EOF
+end  % LPPBasedOnNextWayPoint

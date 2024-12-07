@@ -4,7 +4,7 @@ classdef StraightTowardGoalDirection
 % position
 %
 % Created     : 2024.10.22 by Masazumi Imai
-% Last updated: 2024.10.22 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
 
   %% Public Methods
   methods (Access = public)
@@ -18,7 +18,7 @@ classdef StraightTowardGoalDirection
     %   Calculate way points from current position to goal position
       arguments (Input)
         ~;
-        goal_position    (3, 1) {mustBeA(goal_position, "double")};
+        goal_position (3, 1) {mustBeA(goal_position, "double")};
       end
 
       way_points = goal_position;
@@ -26,5 +26,4 @@ classdef StraightTowardGoalDirection
 
   end
 
-end
-% EOF
+end  % StraightTowardGoalDirection

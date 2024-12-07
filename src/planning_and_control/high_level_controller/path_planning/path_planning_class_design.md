@@ -13,17 +13,17 @@ classDiagram
   }
 
   class PathPlanning {
-    + global_path: GlobalPathPlanning
-    + local_path: LocalPathPlanning
+    + global_path_: GlobalPathPlanning
+    + local_path_: LocalPathPlanning
   }
   PathPlanning *-- GlobalPathPlanning
   PathPlanning *--  LocalPathPlanning
 
   class GlobalPathPlanning {
-    + type: string
-    + planner: GlobalPathPlanner
-    + goal_position: 3x1 double
-    + path: Trajectory
+    + kType_: string
+    + planner_: GlobalPathPlanner
+    + kGoalPosition_: 3x1 double
+    + path_: TrajectoryHistory
 
     + GlobalPathPlanning()
     + plan()
@@ -32,6 +32,7 @@ classDiagram
     + getGlobalPath()
   }
   GlobalPathPlanning *-- GlobalPathPlanner
+  GlobalPathPlanning *-- TrajectoryHistory
 
   class GlobalPathPlanner {
     <<Abstract>>
@@ -54,10 +55,24 @@ classDiagram
     + plan()
   }
 
+  class TrajectoryHistory {
+    + points_: 3xn double
+    - line_style: string
+    - color_: 1x3 double
+    - width_: string
+    - line_: AnimatedLine
+
+    + TrajectoryHistory()
+    + addPoint()
+    + visualize()
+    + setVisualSettings()
+    + getPoints()
+  }
+
   class LocalPathPlanning {
-    + type: string
-    + planner: LocalPathPlanner
-    + moving_direction: 3x1 double
+    + kType_: string
+    + planner_: LocalPathPlanner
+    + moving_direction_: 3x1 double
 
     + LocalPathPlanning()
     + plan()

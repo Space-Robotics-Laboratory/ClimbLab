@@ -5,27 +5,27 @@ classdef PathPlanning
 %   Local path : Path to the way point (next goal position) at current time
 %
 % Created     : 2021.06.28 by Keigo Haji
-% Last updated: 2024.10.22 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    global_path GlobalPathPlanning;
-    local_path  LocalPathPlanning;
+    global_path_ GlobalPathPlanning;
+    local_path_  LocalPathPlanning;
   end
 
   %% Public Methods
   methods (Access = public)
 
-    function path_planning = PathPlanning(config, robot, terrain)
+    function path_planning = PathPlanning(config_path_planning, robot, terrain)
     % PathPlanning() Constructor
       arguments (Input)
-        config  (1, 1) {mustBeA(config, "ConfigPathPlanning")};
+        config_path_planning  (1, 1) {mustBeA(config_path_planning, "ConfigPathPlanning")};
         robot   (1, 1) {mustBeA(robot, "Robot")};
         terrain (1, 1) {mustBeA(terrain, "Terrain")};
       end
 
-      path_planning.global_path = GlobalPathPlanning(config, robot, terrain);
-      path_planning.local_path = LocalPathPlanning(config);
+      path_planning.global_path_ = GlobalPathPlanning(config_path_planning, robot, terrain);
+      path_planning.local_path_ = LocalPathPlanning(config_path_planning);
     end
 
     function path_planning = plan(path_planning, robot)
@@ -36,12 +36,11 @@ classdef PathPlanning
         robot (1, 1) {mustBeA(robot, "Robot")};
       end
 
-      path_planning.global_path = path_planning.global_path.plan();
+      path_planning.global_path_ = path_planning.global_path_.plan();
 
-      path_planning.local_path = path_planning.local_path.plan(robot, path_planning.global_path);
+      path_planning.local_path_ = path_planning.local_path_.plan(robot, path_planning.global_path_);
     end
 
   end
 
-end
-% EOF
+end  % PathPlanning
