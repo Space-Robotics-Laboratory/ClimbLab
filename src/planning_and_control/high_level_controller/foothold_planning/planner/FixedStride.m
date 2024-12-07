@@ -4,7 +4,7 @@ classdef FixedStride
 % and foothold positions based on the moving direction and graspable points.
 %
 % Created     : 2020.04.13 by Warley Ribeiro
-% Last updated: 2024.10.22 by Masazumi Imai
+% Last updated: 2024.12.07 by Masazumi Imai
 
   %% Public Methods
   methods (Access = public)
@@ -19,7 +19,7 @@ classdef FixedStride
       arguments (Input)
         ~;
         previous_swing_limb_id (:, 1) {mustBeA(previous_swing_limb_id, "uint8")};
-        gait_planning (1, 1) {mustBeA(gait_planning, "GaitPlanning")};
+        gait_planning          (1, 1) {mustBeA(gait_planning,          "GaitPlanning")};
       end
 
       gait_sequence = gait_planning.scheduler.getSequence();
@@ -39,8 +39,8 @@ classdef FixedStride
     %   Update next foothold positions based on moving direction and graspable points.
       arguments (Input)
         ~;
-        terrain (1, 1) {mustBeA(terrain, "Terrain")};
-        path_planning (1, 1) {mustBeA(path_planning, "PathPlanning")};
+        terrain           (1, 1) {mustBeA(terrain,           "Terrain")};
+        path_planning     (1, 1) {mustBeA(path_planning,     "PathPlanning")};
         foothold_planning (1, 1) {mustBeA(foothold_planning, "FootholdPlanning")};
       end
 
@@ -48,18 +48,19 @@ classdef FixedStride
       moving_direction = path_planning.local_path_.getMovingDirection();
       swing_limb_id = foothold_planning.getSwingLimbID();
       current_foothold_positions = foothold_planning.getFootholdPositions();
-      step_length = foothold_planning.getStepLength();
+      max_allowable_stride = foothold_planning.getMaxAllowableStride();
 
-      num_limb = uint8(size(current_foothold_positions, 2));
-      ideal_next_EE_positions = zeros(3, num_limb);
-      next_foothold_positions = zeros(3, num_limb);
+      kNumLimb = uint8(size(current_foothold_positions, 2));
+      ideal_next_EE_positions = zeros(3, kNumLimb);
+      next_foothold_positions = zeros(3, kNumLimb);
 
-      for limb_id = 1 : num_limb
+      for limb_id = 1 : kNumLimb
         if (any(limb_id ~= swing_limb_id))
           next_foothold_positions(:, limb_id) = current_foothold_positions(:, limb_id);
           continue;
         end
-        step_to_goal = moving_direction * step_length;
+
+        step_to_goal = moving_direction * max_allowable_stride;
         ideal_next_EE_positions(:, limb_id) = current_foothold_positions(:, limb_id) + step_to_goal;
 
         next_foothold_positions(:, limb_id) = graspable_points.getNearestPoint( ...
@@ -69,5 +70,4 @@ classdef FixedStride
 
   end
 
-end
-% EOF
+end  % FixedStride

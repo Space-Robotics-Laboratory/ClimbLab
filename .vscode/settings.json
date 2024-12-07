@@ -3,6 +3,7 @@
     "addpath",
     "addpoints",
     "animatedline",
+    "feval",
     "fieldnames",
     "filesep",
     "fullpath",
@@ -13,11 +14,12 @@
     "isfile",
     "isfolder",
     "ISTS",
+    "metaclass",
     "mfilename",
     "strcmp",
     "validatecolor"
   ],"cSpell.ignoreWords": [
-    // Name and Proper noun
+    // Name and Proper Noun
     "Keigo",
     "Masazumi",
     "Imai",

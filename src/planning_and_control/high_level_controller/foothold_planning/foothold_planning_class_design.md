@@ -5,18 +5,18 @@ classDiagram
 
   class ConfigFootholdPlanning {
     + foothold_selection_type: string
-    + step_length: double
+    + max_allowable_stride: double
     + step_height: double
   }
 
   class FootholdPlanning {
-    + type: string
-    + planner: FootholdPlanner
-    + swing_limb_id: uint8
-    + swing_limb_id_history: uint8
-    + foothold_positions: 3xn double
-    + footholds_history: nx1 Trajectory
-    + step_length: double
+    + kType_: string
+    + planner_: FootholdPlanner
+    + swing_limb_id_: uint8
+    + swing_limb_id_history_: uint8
+    + foothold_positions_: 3xn double
+    + footholds_history_: nx1 TrajectoryHistory
+    + max_allowable_stride_: double
     + step_height: double
 
     + FootholdPlanning()
@@ -24,10 +24,11 @@ classDiagram
     - setPlanner()
     + getSwingLimbID()
     + getFootholdPositions()
-    + getStepLength()
+    + getMaxAllowableStride()
     + getStepHeight()
   }
   FootholdPlanning *-- FootholdPlanner
+  FootholdPlanning *-- TrajectoryHistory
 
   class FootholdPlanner {
     <<Abstract>>
@@ -39,16 +40,15 @@ classDiagram
   + updateSwingLimbNumber()
   + updateFootholdPositions()
   }
-  FixedStride *-- Trajectory
 
-  class Trajectory {
-    + points: 3xn double
-    - line_style: string
-    - color: 1x3 double
-    - width: double
-    - line: matlab.graphics.animation.AnimatedLine
+  class TrajectoryHistory {
+    + points_: 3xn double
+    - line_style_: string
+    - color_: 1x3 double
+    - width_: double
+    - line_: AnimatedLine
 
-    + Trajectory()
+    + TrajectoryHistory()
     + addPoint()
     + visualize()
   }
