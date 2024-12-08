@@ -1,17 +1,18 @@
 classdef config_example_demo_1
 
   % Environment Parameters
-  properties (SetAccess = private, GetAccess = {?ConfigWorld})
+  properties (SetAccess = private, GetAccess = {?ConfigWorld, ?Configuration})
     max_simulation_time (1, 1) double = 1.0;  % [s]
     gravity (1, 1) double = 1;  % [G]
   end
-  properties (SetAccess = private, GetAccess = {?ConfigTerrain})
+
+  properties (SetAccess = private, GetAccess = {?ConfigTerrain, ?Configuration})
     surface_type (1, 1) string = "uneven";
     inclination (3, 1) double = [0.0; -120.0; 0.0];  % [deg] (-110: Robot keeps holding on to wall)
   end
 
   % Robot Parameters
-  properties (SetAccess = private, GetAccess = {?ConfigRobot})
+  properties (SetAccess = private, GetAccess = {?ConfigRobot, ?Configuration})
     robot_type (1, 1) string = "HubRobo_v3_2_grip_to_palm_Fgrip10N";
 
     % Initial robot base position in Ground frame
@@ -26,4 +27,4 @@ classdef config_example_demo_1
     gripper_detachment_detection_method (1, 1) string = "max_holding_force";
   end
 
-end
+end  % config_example_demo_1

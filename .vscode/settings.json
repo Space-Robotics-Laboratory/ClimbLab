@@ -1,5 +1,6 @@
 {
-  "cSpell.words": [
+  "cSpell.ignoreWords": [
+    // MATLAB Function Name
     "addpath",
     "addpoints",
     "animatedline",
@@ -9,15 +10,13 @@
     "fullpath",
     "genpath",
     "horzcat",
-    "ICRA",
-    "iSAIRAS",
     "isfile",
     "isfolder",
-    "ISTS",
     "metaclass",
     "mfilename",
     "nchoosek",
     "numel",
+    "repmat",
     "strcmp",
     "validatecolor",
     "varargin",
@@ -26,12 +25,16 @@
     "xticks",
     "ylim",
     "yticklabels",
-    "yticks"
-  ],"cSpell.ignoreWords": [
+    "yticks",
     // Name and Proper Noun
+    "HubRobo",
     "Keigo",
+    "Kentaro",
     "Masazumi",
+    "ICRA",
     "Imai",
+    "iSAIRAS",
+    "ISTS",
     "Ribeiro",
   ],
   "MATLAB.installPath": "/usr/local/MATLAB/R2024b",

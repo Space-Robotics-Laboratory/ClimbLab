@@ -1,7 +1,7 @@
-classdef ConfigAnimationSettings
+classdef ConfigAnimationSettings < Configuration
 
   %% Properties
-  properties (SetAccess = private, GetAccess = public)
+  properties (SetAccess = {?ConfigAnimationSettings, ?Configuration}, GetAccess = public)
     % General settings
     display_animation    (1, 1) logical = true;
     save_video           (1, 1) logical = false;
@@ -46,42 +46,14 @@ classdef ConfigAnimationSettings
       arguments (Input)
         config (1, 1) {mustBeA(config, "string")};
       end
+
       if (config == "default")
         return;
       end
 
-      config_file_name = "config_" + config;
-      if (~isfile("config\preset\" + config_file_name + ".m"))
-        error("ERROR: The specified config file does NOT exist.");
-      end
-
-      config_file = str2func(config_file_name);
-      user_config = feval(config_file);
-
-      this_config_prop_name = properties(config_animation_settings);
-
-      meta_class = metaclass(user_config);
-      meta_props = meta_class.PropertyList;
-
-      for i = 1 : length(meta_props)
-        get_access_authorization = meta_props(i, 1).GetAccess{1, 1}.Name;
-
-        if (strcmp(get_access_authorization, "ConfigAnimationSettings"))
-          user_config_prop_name = meta_props(i, 1).Name;
-
-          if (~any(strcmp(this_config_prop_name, user_config_prop_name)))
-            error("ERROR: Invalid property name is specified in user customized config file. " + ...
-              "That property name is """ + user_config_prop_name + """. " + ...
-              "Property name defined in user customized config file have to match " + ...
-              "default config property name.");
-          end
-
-          config_animation_settings.(user_config_prop_name) = user_config.(user_config_prop_name);
-        end
-      end
+      config_animation_settings = config_animation_settings.override(config);
     end
 
   end
 
-end
-% EOF
+end  % ConfigAnimationSettings

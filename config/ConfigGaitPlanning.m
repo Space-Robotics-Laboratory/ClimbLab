@@ -1,7 +1,7 @@
-classdef ConfigGaitPlanning
+classdef ConfigGaitPlanning < Configuration
 
   %% Properties
-  properties (SetAccess = private, GetAccess = public)
+  properties (SetAccess = {?ConfigGaitPlanning, ?Configuration}, GetAccess = public)
     gait_type (1, 1) string = "periodic_crawl";
       % "periodic_crawl", "periodic_trot"
 
@@ -15,7 +15,7 @@ classdef ConfigGaitPlanning
     foot_lift_up_duration   (1, 1) double = 0.0;  % [s]
     foot_lift_down_duration (1, 1) double = 0.0;  % [s]
   end
-  properties (SetAccess = private, GetAccess = public)
+  properties (SetAccess = {?ConfigGaitPlanning, ?Configuration}, GetAccess = public)
     % "do_nothing", "intersection_of_diagonal_lines",
     % "intersection_of_diagonal_line_and_moving_direction"
     base_position_planning_type    (1, 1) string = "intersection_of_diagonal_lines";
@@ -31,40 +31,12 @@ classdef ConfigGaitPlanning
       arguments (Input)
         config (1, 1) {mustBeA(config, "string")};
       end
+
       if (config == "default")
         return;
       end
 
-      kConfigFileName = "config_" + config;
-      kPathToConfigFile = "config" + filesep + "preset" + filesep + kConfigFileName + ".m";
-      if (~isfile(kPathToConfigFile))
-        error("ERROR: The specified config file does NOT exist.");
-      end
-
-      kConfigFile = str2func(kConfigFileName);
-      kUserConfig = feval(kConfigFile);
-
-      kDefaultConfigPropName = properties(config_gait_planning);
-
-      meta_class = metaclass(kUserConfig);
-      meta_props = meta_class.PropertyList;
-
-      for i = 1 : length(meta_props)
-        get_access_authorization = meta_props(i, 1).GetAccess{1, 1}.Name;
-
-        if (strcmp(get_access_authorization, "ConfigGaitPlanning"))
-          kUserConfigPropName = meta_props(i, 1).Name;
-
-          if (~any(strcmp(kDefaultConfigPropName, kUserConfigPropName)))
-            error("ERROR: Invalid property name is specified in user customized config file. " + ...
-              "That property name is """ + kUserConfigPropName + """. " + ...
-              "Property name defined in user customized config file have to match " + ...
-              "default config property name.");
-          end
-
-          config_gait_planning.(kUserConfigPropName) = kUserConfig.(kUserConfigPropName);
-        end
-      end
+      config_gait_planning = config_gait_planning.override(config);
     end
 
   end

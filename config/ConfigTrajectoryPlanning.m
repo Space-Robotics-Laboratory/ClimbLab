@@ -1,6 +1,7 @@
-classdef ConfigTrajectoryPlanning
+classdef ConfigTrajectoryPlanning < Configuration
+
   %% Properties
-  properties (SetAccess = private, GetAccess = public)
+  properties (SetAccess = {?ConfigTrajectoryPlanning, ?Configuration}, GetAccess = public)
     base_trajectory_type (1, 1) string = "5th_order_bezier";
     limb_trajectory_type (1, 1) string = "7th_order_bezier";
       % "7th_order_bezier", "7th_order_spline"
@@ -26,36 +27,7 @@ classdef ConfigTrajectoryPlanning
         return;
       end
 
-      kConfigFileName = "config_" + config;
-      kPathToConfigFile = "config" + filesep + "preset" + filesep + kConfigFileName + ".m";
-      if (~isfile(kPathToConfigFile))
-        error("ERROR: The specified config file does NOT exist.");
-      end
-
-      kConfigFile = str2func(kConfigFileName);
-      kUserConfig = feval(kConfigFile);
-
-      kDefaultConfigPropName = properties(config_trajectory_planning);
-
-      meta_class = metaclass(kUserConfig);
-      meta_props = meta_class.PropertyList;
-
-      for i = 1 : length(meta_props)
-        get_access_authorization = meta_props(i, 1).GetAccess{1, 1}.Name;
-
-        if (strcmp(get_access_authorization, "ConfigTrajectoryPlanning"))
-          kUserConfigPropName = meta_props(i, 1).Name;
-
-          if (~any(strcmp(kDefaultConfigPropName, kUserConfigPropName)))
-            error("ERROR: Invalid property name is specified in user customized config file. " + ...
-              "That property name is """ + kUserConfigPropName + """. " + ...
-              "Property name defined in user customized config file have to match " + ...
-              "default config property name.");
-          end
-
-          config_trajectory_planning.(kUserConfigPropName) = kUserConfig.(kUserConfigPropName);
-        end
-      end
+      config_trajectory_planning = config_trajectory_planning.override(config);
     end
 
   end

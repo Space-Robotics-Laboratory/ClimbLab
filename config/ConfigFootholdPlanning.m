@@ -1,7 +1,7 @@
-classdef ConfigFootholdPlanning
+classdef ConfigFootholdPlanning < Configuration
 
   %% Properties
-  properties (SetAccess = private, GetAccess = public)
+  properties (SetAccess = {?ConfigFootholdPlanning, ?Configuration}, GetAccess = public)
     % Foothold selection type
     % ("do_nothing", "fixed_stride")
     foothold_selection_type (1, 1) string = "fixed_stride";
@@ -25,36 +25,8 @@ classdef ConfigFootholdPlanning
         return;
       end
 
-      kConfigFileName = "config_" + config;
-      kPathToConfigFile = "config" + filesep + "preset" + filesep + kConfigFileName + ".m";
-      if (~isfile(kPathToConfigFile))
-        error("ERROR: The specified config file does NOT exist.");
-      end
 
-      kConfigFile = str2func(kConfigFileName);
-      kUserConfig = feval(kConfigFile);
-
-      kDefaultConfigPropName = properties(config_foothold_planning);
-
-      meta_class = metaclass(kUserConfig);
-      meta_props = meta_class.PropertyList;
-
-      for i = 1 : length(meta_props)
-        get_access_authorization = meta_props(i, 1).GetAccess{1, 1}.Name;
-
-        if (strcmp(get_access_authorization, "ConfigFootholdPlanning"))
-          kUserConfigPropName = meta_props(i, 1).Name;
-
-          if (~any(strcmp(kDefaultConfigPropName, kUserConfigPropName)))
-            error("ERROR: Invalid property name is specified in user customized config file. " + ...
-              "That property name is """ + kUserConfigPropName + """. " + ...
-              "Property name defined in user customized config file have to match " + ...
-              "default config property name.");
-          end
-
-          config_foothold_planning.(kUserConfigPropName) = kUserConfig.(kUserConfigPropName);
-        end
-      end
+      config_foothold_planning = config_foothold_planning.override(config);
 
       % TODO: This should be delete
       if (config_foothold_planning.foothold_selection_type ~= "fixed_stride")

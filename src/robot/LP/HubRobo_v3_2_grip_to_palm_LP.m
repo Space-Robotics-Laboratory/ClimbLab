@@ -84,9 +84,9 @@ LP.inertia = [ 4.17250591050379E-05 -3.280237461361E-07   -3.28017174197894E-07 
 % Position vector from each link CoM to i-th joint
 LP.cc = zeros( 3, LP.num_q, LP.num_q );
 
-% Postion vector from link 1 CoM to joint 1
+% Position vector from link 1 CoM to joint 1
 LP.cc(:, 1, 1)   = [ -0.014224  0.00045844232 -0.0087645  ]';
-% Postion vector from link 1 CoM to joint 2
+% Position vector from link 1 CoM to joint 2
 LP.cc(:, 1, 2)   = [  0.014224 -0.00045844232  0.0087645  ]';
 LP.cc(:, 2, 2)   = [ -0.053575  0              0          ]';
 LP.cc(:, 2, 3)   = [  0.053575  0              0          ]';
@@ -119,5 +119,4 @@ LP.Qe = [ 0  0  0  0  0  0  0  0  0  0  0  0 ;
           0  0  0  0  0  0  0  0  0  0  0  0 ;
           0  0  0  0  0  0  0  0  0  0  0  0 ];
 
-end
-% EOF
+end  % HubRobo_v3_2_grip_to_palm_LP

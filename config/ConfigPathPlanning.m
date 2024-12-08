@@ -1,6 +1,7 @@
-classdef ConfigPathPlanning
+classdef ConfigPathPlanning < Configuration
+
   %% Properties
-  properties (SetAccess = private, GetAccess = public)
+  properties (SetAccess = {?ConfigPathPlanning, ?Configuration}, GetAccess = public)
     goal_position (3, 1) double = [1.0; 0.0; 0.0];  % [m]
 
     % Global Path Planning method
@@ -21,8 +22,13 @@ classdef ConfigPathPlanning
         config (1, 1) {mustBeA(config, "string")};
       end
 
+      if (config == "default")
+        return;
+      end
+
       config_path_planning = config_path_planning.override(config);
 
+      % TODO: This should be delete
       config_path_planning = config_path_planning.isValidPathPlanningMethod();
     end
 
@@ -30,45 +36,6 @@ classdef ConfigPathPlanning
 
   %% Private Methods
   methods (Access = private)
-
-    function config_path_planning = override(config_path_planning, config)
-    % override()
-    %   Override properties value based on specified config file if config is not "default"
-      if (config == "default")
-        return;
-      end
-
-      kConfigFileName = "config_" + config;
-      kPathToConfigFile = "config" + filesep + "preset" + filesep + kConfigFileName + ".m";
-      if (~isfile(kPathToConfigFile))
-        error("ERROR: The specified config file does NOT exist.");
-      end
-
-      kConfigFile = str2func(kConfigFileName);
-      kUserConfig = feval(kConfigFile);
-
-      kDefaultConfigPropName = properties(config_path_planning);
-
-      meta_class = metaclass(kUserConfig);
-      meta_props = meta_class.PropertyList;
-
-      for i = 1 : length(meta_props)
-        get_access_authorization = meta_props(i, 1).GetAccess{1, 1}.Name;
-
-        if (strcmp(get_access_authorization, "ConfigPathPlanning"))
-          kUserConfigPropName = meta_props(i, 1).Name;
-
-          if (~any(strcmp(kDefaultConfigPropName, kUserConfigPropName)))
-            error("ERROR: Invalid property name is specified in user customized config file. " + ...
-              "That property name is """ + kUserConfigPropName + """. " + ...
-              "Property name defined in user customized config file have to match " + ...
-              "default config property name.");
-          end
-
-          config_path_planning.(kUserConfigPropName) = kUserConfig.(kUserConfigPropName);
-        end
-      end
-    end
 
     function config_path_planning = isValidPathPlanningMethod(config_path_planning)
       if (config_path_planning.global_path_plan_type ~= "do_nothing" && ...
