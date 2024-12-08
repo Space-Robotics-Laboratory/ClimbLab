@@ -24,14 +24,14 @@ classdef Configuration
       default_config_class_name = class(default_config);
       default_config_prop_name = properties(default_config);
 
-      meta_class = metaclass(kUserConfig);
-      meta_props = meta_class.PropertyList;
+      user_config_class = metaclass(kUserConfig);
+      user_config_prop_list = user_config_class.PropertyList;
 
-      for i = 1 : length(meta_props)
-        get_access_authorization = meta_props(i, 1).GetAccess{1, 2}.Name;
+      for i = 1 : length(user_config_prop_list)
+        get_access_authorization = user_config_prop_list(i, 1).GetAccess{1, 2}.Name;
 
         if (strcmp(get_access_authorization, default_config_class_name))
-          user_config_prop_name = meta_props(i, 1).Name;
+          user_config_prop_name = user_config_prop_list(i, 1).Name;
 
           if (~any(strcmp(default_config_prop_name, user_config_prop_name)))
             error("ERROR: Invalid property name is specified in user customized config file. " + ...
