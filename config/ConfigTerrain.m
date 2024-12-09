@@ -23,6 +23,8 @@ classdef ConfigTerrain  < Configuration
     % "all"
     graspable_points_detection_type (1, 1) string = "all";
 
+    % Visualization
+    visualize_graspable_points    (1, 1) logical = false;  % true/false
     graspable_points_marker_style (1, 1) string = "o";
     graspable_points_marker_size  (1, 1) double = 10.0;
     graspable_points_color                      = [0.0, 0.0, 0.3];  % RGB or color code
@@ -44,6 +46,8 @@ classdef ConfigTerrain  < Configuration
       end
 
       config_terrain = config_terrain.override(config);
+
+      config_terrain.surface_grid_color = validatecolor(config_terrain.surface_grid_color);
     end
 
   end

@@ -8,7 +8,7 @@ classdef ConfigAnimationSettings < Configuration
     video_file_extension (1, 1) string  = ".avi";      % (".avi", ".mp4")
     frame_rate           (1, 1) double  = 20;          % [frames/s] (positive value)
     resolution           (1, 2) double  = [640, 480];  % [px]
-    show_elapsed_time    (1, 1) logical = true;
+    show_elapsed_time    (1, 1) logical = true;        % true/false
 
     font_name (1, 1) string = "Times New Roman";
     font_size (1, 1) double = 25;

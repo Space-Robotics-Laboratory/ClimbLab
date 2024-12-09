@@ -2,9 +2,11 @@ classdef ConfigTrajectoryPlanning < Configuration
 
   %% Properties
   properties (SetAccess = {?ConfigTrajectoryPlanning, ?Configuration}, GetAccess = public)
+    % Base CoM trajectory type
     base_trajectory_type (1, 1) string = "5th_order_bezier";
+    % Limb end-effector trajectory type
+    % "7th_order_bezier", "7th_order_spline"
     limb_trajectory_type (1, 1) string = "7th_order_bezier";
-      % "7th_order_bezier", "7th_order_spline"
 
     % Visualization settings
     visualize_limb_trajectory (1, 1) logical = true;  % true/false
