@@ -56,7 +56,7 @@ classdef TrajectoryPlanning
         trajectory_planning = trajectory_planning.planTrajectories(robot, foothold_planning, gait_planning);
       end
 
-      contact_EE_positions = robot.contact_state.getPosition();
+      contact_EE_positions = robot.SV.contact_state_.getPosition();
       motion_start_time = swing_time(1, swing_limb_id);
       motion_final_time = landing_time(1, swing_limb_id);
 

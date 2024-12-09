@@ -17,13 +17,7 @@ classdef Robot
 
     base_height_in_Surface (1, 1) double;
 
-    contact_state ContactState;
-
-    is_supporting (1, :) logical;
-    desired_support_limb_id (1, :) logical;
     gripper_detachment_detection_method (1, 1) string;
-    is_grasping (1, :) logical;
-    is_slipping (1, :) logical;
 
     graphics;
     graphics_obj_GRF_vec;
@@ -42,23 +36,23 @@ classdef Robot
       robot.type = config_robot.getRobotType();
       robot.LP = LinkParameters(robot.type + "_LP");
 
-      robot.SV = StateVariable(robot.LP.getNumberOfJoints());
+      kNumLimb = robot.LP.getNumberOfLimb();
+      robot.SV = StateVariable(robot.LP.getNumberOfJoints(), kNumLimb);
       robot = robot.initializeBasePose(config_robot, terrain);
-      robot.des_SV = StateVariable(robot.LP.getNumberOfJoints());
+      robot.des_SV = StateVariable(robot.LP.getNumberOfJoints(), kNumLimb);
 
-      num_limb = robot.LP.getNumberOfLimb();
-      robot.EE_position = zeros(3, num_limb);
+      robot.EE_position = zeros(3, kNumLimb);
       robot.EE_position = robot.initializeEEPosition(config_robot, terrain);
-      robot.EE_orientation_dcm = zeros(3, 3 * num_limb);
-      % robot.EE_orientation_euler_rad = zeros(3, num_limb);
-      % robot.EE_orientation_euler_deg = zeros(3, num_limb);
+      robot.EE_orientation_dcm = zeros(3, 3 * kNumLimb);
+      % robot.EE_orientation_euler_rad = zeros(3, kNumLimb);
+      % robot.EE_orientation_euler_deg = zeros(3, kNumLimb);
 
       robot.kinematics = Kinematics(robot);
       base_position = robot.SV.getBasePosition();
       base_orientation_dcm = robot.SV.getBaseOrientationDCM();
       joint_angles = robot.kinematics.computeInverse(base_position, base_orientation_dcm, ...
         robot.getEEPosition());
-      robot.SV = robot.SV.setJointAnglularPositions(joint_angles);
+      robot.SV = robot.SV.setJointAngularPositions(joint_angles);
       robot.SV = robot.SV.calcLinkPose(robot.LP);
       robot = robot.forwardKinematics();
 
@@ -66,15 +60,9 @@ classdef Robot
 
       robot.des_SV = robot.des_SV.overwrite(robot.SV.clone());
 
-      robot.contact_state = ContactState(num_limb);
-
-      robot.is_supporting = false(1, num_limb);
-      robot.desired_support_limb_id = true(1, num_limb);
       robot.gripper_detachment_detection_method = config_robot.getGripperDetachmentDetectionMethod();
-      robot.is_grasping = false(1, num_limb);
-      robot.is_slipping = false(1, num_limb);
-      robot.contact_state = robot.contact_state.detectEECollision(robot, terrain);
-
+      robot = robot.detectCollision(terrain);
+      robot.des_SV = robot.des_SV.setIsSupporting(1 : kNumLimb, true);
       robot = robot.updateGripperState(terrain);
 
       if (~config_robot.getVisualizeRobot())
@@ -104,11 +92,12 @@ classdef Robot
         robot;
         terrain (1, 1) {mustBeA(terrain, "Terrain")};
       end
-      robot.contact_state = robot.contact_state.detectEECollision(robot, terrain);
+      robot.des_SV = robot.des_SV.detectEECollision(terrain, robot.EE_position, robot.EE_orientation_dcm);
+      robot.SV = robot.SV.detectEECollision(terrain, robot.EE_position, robot.EE_orientation_dcm);
     end
 
-    function robot = calcGraundReactionForces(robot, terrain)
-    % calcGraundReactionForces()
+    function robot = calcGroundReactionForces(robot, terrain)
+    % calcGroundReactionForces()
     %   Calculate external forces and moments on each limb based on a spring-damper model for the
     %   contact, which is based on the first contact point between the robot end-effector and the
     %   ground surface.
@@ -123,20 +112,21 @@ classdef Robot
         terrain (1, 1) {mustBeA(terrain, "Terrain")};
       end
 
-      num_limb = robot.LP.getNumberOfLimb();
-      num_joints = robot.LP.getNumberOfJoints();
+      kNumLimb = robot.LP.getNumberOfLimb();
+      kNumJoints = robot.LP.getNumberOfJoints();
       [~, EndEffectors] = find(robot.LP.getEndLink() == 1);
-      EE_in_contact = robot.contact_state.getInContact();
-      contact_position = robot.contact_state.getPosition();
+      EE_in_contact = robot.SV.contact_state_.getInContact();
+      contact_position = robot.SV.contact_state_.getPosition();
+      EE_is_grasping = robot.SV.getIsGrasping();
       [Kf, Df, Km, Dm] = terrain.getGroundCoefficients();
 
-      GJ = zeros(6, num_joints, num_limb);
+      GJ = zeros(6, kNumJoints, kNumLimb);
       GRF = zeros(3, robot.LP.getNumberOfJoints());
 
-      for limb_id = 1 : num_limb
+      for limb_id = 1 : kNumLimb
         EE = EndEffectors(1, limb_id);
 
-        if (robot.is_grasping(1, limb_id) || EE_in_contact(1, limb_id))
+        if (EE_is_grasping(1, limb_id) || EE_in_contact(1, limb_id))
           GJ(:, :, limb_id) = calc_gj(robot.LP.clone(), robot.SV.clone(), limb_id);
           EE_velocity(:, limb_id) = GJ(:, :, limb_id) * robot.SV.getJointAngularVelocity();
 
@@ -174,12 +164,14 @@ classdef Robot
 
         % Release gripper of swing limb at swing motion start time
         if (abs(time - swing_timings(1, limb_id)) < eps)
-          robot.desired_support_limb_id(1, limb_id) = false;
+          robot.des_SV = robot.des_SV.setIsSupporting(limb_id, false);
         end
+
+        desired_support_limb_id = robot.des_SV.getIsSupporting();
 
         % Determining whether to close the gripper
         if (time < (swing_timings(1, limb_id) + landing_timings(1, limb_id)) / 2 ...
-            || robot.desired_support_limb_id(1, limb_id) ~= false)
+            || desired_support_limb_id(1, limb_id) ~= false)
           continue;
         end
 
@@ -200,7 +192,7 @@ classdef Robot
 
         velocity_threshold = 0.01;  % TODO: should be set in config
         if (norm_EE_linear_velocity <= velocity_threshold)
-          robot.desired_support_limb_id(1, limb_id) = true;
+          robot.des_SV = robot.des_SV.setIsSupporting(limb_id, true);
         end
       end
 
@@ -225,21 +217,22 @@ classdef Robot
       switch (robot.gripper_detachment_detection_method)
         case "none"
         case "max_holding_force"
-          num_limb = robot.LP.getNumberOfLimb();
+          kNumLimb = robot.LP.getNumberOfLimb();
           ground_reaction_force = robot.SV.getGroundReactionForce(robot.LP);
           F_grip = robot.LP.getMaxEndurableGrippingForce();
 
-          robot.contact_state = robot.contact_state.detectEECollision(robot, terrain);
-          EE_in_contact = robot.contact_state.getInContact();
-          contact_EE_position = robot.contact_state.getPosition();
-          contact_EE_orientation_dcm = robot.contact_state.getOrientationDCM();
+          robot = robot.detectCollision(terrain);
+          EE_in_contact = robot.SV.contact_state_.getInContact();
+          contact_EE_position = robot.SV.contact_state_.getPosition();
+          contact_EE_orientation_dcm = robot.SV.contact_state_.getOrientationDCM();
 
-          for limb_id = 1 : num_limb
+          for limb_id = 1 : kNumLimb
             % Swing limb EE is not grasping and does not cause slip
-            if (~robot.desired_support_limb_id(1, limb_id))
-              robot.is_supporting(1, limb_id) = false;
-              robot.is_grasping(1, limb_id) = false;
-              robot.is_slipping(1, limb_id) = false;
+            desired_support_limb_id = robot.des_SV.getIsSupporting();
+            if (~desired_support_limb_id(1, limb_id))
+              robot.SV = robot.SV.setIsSupporting(limb_id, false);
+              robot.SV = robot.SV.setIsGrasping(limb_id, false);
+              robot.SV = robot.SV.setIsSlipping(limb_id, false);
               if (~EE_in_contact(1, limb_id))
                 contact_EE_position(:, limb_id) = NaN(3, 1);
                 contact_EE_orientation_dcm(:, 3*limb_id-2 : 3*limb_id) = NaN;
@@ -248,25 +241,25 @@ classdef Robot
             end
             % Gripper detachment is NOT caused
             if (norm(ground_reaction_force(:, limb_id)) <= F_grip || EE_in_contact(1, limb_id))
-              if (~robot.is_supporting(1, limb_id))
-                robot.is_supporting(1, limb_id) = true;
+              EE_is_supporting = robot.SV.getIsSupporting();
+              if (~EE_is_supporting(1, limb_id))
+                robot.SV = robot.SV.setIsSupporting(limb_id, true);
                 contact_EE_position(:, limb_id) = ...
                   terrain.getNearestPointInWorldFrame(robot.EE_position(:, limb_id));
                 contact_EE_orientation_dcm(:, 3*limb_id-2 : 3*limb_id) = ...
                   robot.EE_orientation_dcm(:, 3*limb_id-2 : 3*limb_id);
               end
-              robot.is_grasping(1, limb_id) = true;
-              robot.is_slipping(1, limb_id) = false;
+              robot.SV = robot.SV.setIsGrasping(limb_id, true);
+              robot.SV = robot.SV.setIsSlipping(limb_id, false);
             % Gripper detachment is caused when the Ground Reaction Force acting on End-Effector in
             % the pulling direction exceeded the maximum tolerable grasping force
             else
-              robot.is_supporting(1, limb_id) = false;
-              robot.is_grasping(1, limb_id) = false;
-              robot.is_slipping(1, limb_id) = true;
+              robot.SV = robot.SV.setIsSupporting(limb_id, false);
+              robot.SV = robot.SV.setIsGrasping(limb_id, false);
+              robot.SV = robot.SV.setIsSlipping(limb_id, true);
             end
           end
-          robot.contact_state = robot.contact_state.setContactPose( ...
-            contact_EE_position, contact_EE_orientation_dcm);
+          robot.SV = robot.SV.setContactPose(contact_EE_position, contact_EE_orientation_dcm);
         otherwise
           error("ERROR: Invalid gripper detachment detection method is specified.");
       end
@@ -419,10 +412,6 @@ classdef Robot
     end
     function base_height_in_Surface = getBaseHeightInSurfaceFrame(robot)
       base_height_in_Surface = robot.base_height_in_Surface;
-    end
-
-    function EE_is_grasping = getEEIsGrasping(robot)
-      EE_is_grasping = robot.is_grasping;
     end
   end
 

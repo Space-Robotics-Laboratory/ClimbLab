@@ -17,7 +17,7 @@ classdef LinkParameters
     mass     (1, 1) double     % Total mass
     inertia0 (3, 3) double     % Moment of inertia of base
     inertia  (3, :) double     % Moment of inertia of each link
-    num_q    (1, 1) double     % Number of links/joints
+    num_q    (1, 1) uint8      % Number of links/joints
 
     joint_allocation_type (1, 1) string % State the type of the joint configuration
     F_grip (1, 1) double                % Max. endurable gripping force

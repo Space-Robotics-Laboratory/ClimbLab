@@ -20,7 +20,7 @@ robot = joint_controller.control(robot);
 
 % Interaction between robot and environment
 robot = robot.updateGripperState(terrain);
-robot = robot.calcGraundReactionForces(terrain);
+robot = robot.calcGroundReactionForces(terrain);
 
 % Forward Dynamics
 robot = robot.forwardDynamics();

@@ -1,9 +1,10 @@
 classdef ContactState
+
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    in_contact (1, :) logical;
-    position (3, :) double;
-    orientation_dcm (3, :) double;
+    in_contact_ (1, :) logical;
+    position_ (3, :) double;
+    orientation_dcm_ (3, :) double;
   end
 
   %% Public Methods
@@ -14,42 +15,43 @@ classdef ContactState
       arguments (Input)
         num_contact_points (1, 1) {mustBeA(num_contact_points, "uint8")};
       end
-      contact_state.in_contact = false(1, num_contact_points);
-      contact_state.position = zeros(3, num_contact_points);
-      contact_state.orientation_dcm = zeros(3, 3 * num_contact_points);
+
+      contact_state.in_contact_ = false(1, num_contact_points);
+      contact_state.position_ = zeros(3, num_contact_points);
+      contact_state.orientation_dcm_ = zeros(3, 3 * num_contact_points);
     end
 
-    function contact_state = detectEECollision(contact_state, robot, terrain)
+    function contact_state = detectEECollision(contact_state, ...
+      terrain, EE_positions, EE_orientations_dcm, EE_is_grasping)
     % detectEECollision()
     %   Detect a new contact (or losing an old one) between the robot end-effector and the ground
     %   surface, and save contact pose of End-Effectors.
       arguments (Input)
         contact_state;
-        robot (1, 1) {mustBeA(robot, "Robot")};
-        terrain (1, 1) {mustBeA(terrain, "Terrain")};
+        terrain             (1, 1) {mustBeA(terrain, "Terrain")};
+        EE_positions        (3, :) {mustBeA(EE_positions, "double")};
+        EE_orientations_dcm (3, :) {mustBeA(EE_orientations_dcm, "double")};
+        EE_is_grasping      (1, :) {mustBeA(EE_is_grasping, "logical")};
       end
 
-      num_limb = robot.LP.getNumberOfLimb();
-      EE_positions = robot.getEEPosition();
-      EE_orientations_dcm = robot.getEEOrientationDCM();
-      EE_is_grasping = robot.getEEIsGrasping();
+      kNumLimb = size(contact_state.in_contact_, 2);
 
-      for limb_id = 1 : num_limb
+      for limb_id = 1 : kNumLimb
         nearest_point = terrain.getNearestPointInWorldFrame(EE_positions(:, limb_id));
         norm_vector_at_nearest_point = terrain.getNormVectorAtPoint(nearest_point);
         % Vector from nearest point to EE position
         vec_np2EE = EE_positions(:, limb_id) - nearest_point;
         theta = acos(dot(vec_np2EE, norm_vector_at_nearest_point));
         if (theta >= pi / 2)
-          contact_state.in_contact(1, limb_id) = true;
+          contact_state.in_contact_(1, limb_id) = true;
           if (EE_is_grasping(1, limb_id))
             continue;
           end
-          contact_state.position(:, limb_id) = nearest_point;
-          contact_state.orientation_dcm(:, 3*limb_id-2 : 3*limb_id) = ...
+          contact_state.position_(:, limb_id) = nearest_point;
+          contact_state.orientation_dcm_(:, 3*limb_id-2 : 3*limb_id) = ...
             EE_orientations_dcm(:, 3*limb_id-2 : 3*limb_id);
         else
-          contact_state.in_contact(1, limb_id) = false;
+          contact_state.in_contact_(1, limb_id) = false;
           % contact_state.position(:, limb_id) = NaN;
           % contact_state.orientation_dcm(:, 3*limb_id-2 : 3*limb_id) = NaN;
         end
@@ -62,13 +64,13 @@ classdef ContactState
   methods (Access = public)
 
     function contact_state = setInContact(contact_state)
-      contact_state.in_contact
+      contact_state.in_contact_
     end
 
     function contact_state = setContactPose(contact_state, ...
         contact_position, contact_orientation_dcm)
-      contact_state.position = contact_position;
-      contact_state.orientation_dcm = contact_orientation_dcm;
+      contact_state.position_ = contact_position;
+      contact_state.orientation_dcm_ = contact_orientation_dcm;
     end
 
   end
@@ -76,15 +78,14 @@ classdef ContactState
   %% Getter
   methods (Access = public)
     function in_contact = getInContact(contact_state)
-      in_contact = contact_state.in_contact;
+      in_contact = contact_state.in_contact_;
     end
     function contact_position = getPosition(contact_state)
-      contact_position = contact_state.position;
+      contact_position = contact_state.position_;
     end
     function contact_orientation_dcm = getOrientationDCM(contact_state)
-      contact_orientation_dcm = contact_state.orientation_dcm;
+      contact_orientation_dcm = contact_state.orientation_dcm_;
     end
   end
 
-end
-% EOF
+end  % ContactState
