@@ -8,10 +8,12 @@ classdef ConfigGaitPlanning < Configuration
     % Periodic gait settings
     gait_period (1, 1) double = 4.0;  % [s]
     duty_factor (1, 1) double = 0.75;  % [0, 1]
+    % Gait sequence
+    % 1st dim: Limb number(s) starting at same timing during gait cycle
+    % 2nd dim: Limb number(s) starting at different timing during gait cycle
     sequence uint8 = [2, 1, 3, 4];
-      % 1st dim: Limb number(s) starting at same timing during gait cycle
-      % 2nd dim: Limb number(s) starting at different timing during gait cycle
 
+    step_height (1, 1) double = 0.025;  % [m]
     foot_lift_up_duration   (1, 1) double = 0.0;  % [s]
     foot_lift_down_duration (1, 1) double = 0.0;  % [s]
   end
@@ -54,6 +56,9 @@ classdef ConfigGaitPlanning < Configuration
     end
     function sequence = getGaitSequence(config_gait_planning)
       sequence = config_gait_planning.sequence;
+    end
+    function step_height = getStepHeight(config_gait_planning)
+      step_height = config_gait_planning.step_height;
     end
     function [foot_lift_up_duration, foot_lift_down_duration] = ...
       getFootLiftUpAndDownDuration(config_gait_planning)

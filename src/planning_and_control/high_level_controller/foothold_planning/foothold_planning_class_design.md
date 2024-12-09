@@ -6,7 +6,6 @@ classDiagram
   class ConfigFootholdPlanning {
     + foothold_selection_type: string
     + max_allowable_stride: double
-    + step_height: double
   }
 
   class FootholdPlanning {
@@ -17,7 +16,6 @@ classDiagram
     + foothold_positions_: 3xn double
     + footholds_history_: nx1 TrajectoryHistory
     + max_allowable_stride_: double
-    + step_height: double
 
     + FootholdPlanning()
     + plan()

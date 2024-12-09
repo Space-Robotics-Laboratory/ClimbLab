@@ -18,10 +18,12 @@ classdef GaitPlanning
     swing_timings_   (1, :) double;  % [s]: Timing of limb transfer motion start for each limb (1xNumLimb)
     landing_timings_ (1, :) double;  % [s]: Timing of limb transfer motion end for each limb (1xNumLimb)
 
-    transfer_duration_       (1, 1) double;  % [s] including foot lift up, limb swing, foot lift down durations
-    swing_duration_          (1, 1) double;  % [s]
-    foot_lift_up_duration_   (1, 1) double;  % [s]
-    foot_lift_down_duration_ (1, 1) double;  % [s]
+    transfer_duration_ (1, 1) double;  % [s] including foot lift up, limb swing, foot lift down durations
+    swing_duration_    (1, 1) double;  % [s]
+
+    kStepHeight_           (1, 1) double;  % [m]
+    kFootLiftUpDuration_   (1, 1) double;  % [s]
+    kFootLiftDownDuration_ (1, 1) double;  % [s]
 
     support_duration_          (1, 1) double;  % [s]
     all_limb_support_duration_ (1, 1) double;  % [s]
@@ -30,22 +32,24 @@ classdef GaitPlanning
   %% Public Methods
   methods (Access = public)
 
-    function gait_planning = GaitPlanning(config)
+    function gait_planning = GaitPlanning(config_gait_planning)
     % GaitPlanning() Constructor
       arguments (Input)
-        config (1, 1) {mustBeA(config, "ConfigGaitPlanning")};
+        config_gait_planning (1, 1) {mustBeA(config_gait_planning, "ConfigGaitPlanning")};
       end
-      gait_planning.kType_ = config.getGaitType();
+      gait_planning.kType_ = config_gait_planning.getGaitType();
 
-      gait_planning.base_pose_planner_ = BasePosePlanning(config.getBasePosePlaningType());
+      gait_planning.base_pose_planner_ = BasePosePlanning(config_gait_planning.getBasePosePlaningType());
 
-      gait_planning.scheduler_ = gait_planning.setScheduler(config);
+      gait_planning.scheduler_ = gait_planning.setScheduler(config_gait_planning);
 
       gait_planning.support_duration_ = gait_planning.scheduler_.calcSupportDuration();
       gait_planning.transfer_duration_ = gait_planning.scheduler_.calcTransferDuration( ...
         gait_planning.support_duration_);
-      [gait_planning.foot_lift_up_duration_, gait_planning.foot_lift_down_duration_] = ...
-        config.getFootLiftUpAndDownDuration();
+
+      gait_planning.kStepHeight_ = config_gait_planning.getStepHeight();
+      [gait_planning.kFootLiftUpDuration_, gait_planning.kFootLiftDownDuration_] = ...
+        config_gait_planning.getFootLiftUpAndDownDuration();
       gait_planning.swing_duration_ = gait_planning.scheduler_.calcSwingDuration(gait_planning);
 
       gait_planning.all_limb_support_duration_ = ...
@@ -121,11 +125,14 @@ classdef GaitPlanning
     function transfer_duration = getTransferDuration(gait_planning)
       transfer_duration = gait_planning.transfer_duration_;
     end
+    function step_height = getStepHeight(gait_planning)
+      step_height = gait_planning.kStepHeight_;
+    end
     function foot_lift_up_duration = getFootLiftUpDuration(gait_planning)
-      foot_lift_up_duration = gait_planning.foot_lift_up_duration_;
+      foot_lift_up_duration = gait_planning.kFootLiftUpDuration_;
     end
     function foot_lift_down_duration = getFootLiftDownDuration(gait_planning)
-      foot_lift_down_duration = gait_planning.foot_lift_down_duration_;
+      foot_lift_down_duration = gait_planning.kFootLiftDownDuration_;
     end
     function all_limb_support_duration = getAllLimbSupportDuration(gait_planning)
       all_limb_support_duration = gait_planning.all_limb_support_duration_;

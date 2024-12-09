@@ -8,7 +8,6 @@ classdef ConfigFootholdPlanning < Configuration
 
     % For "fixed_stride"
     max_allowable_stride (1, 1) double = 0.05;  % [m]
-    step_height (1, 1) double = 0.025;  % [m]
   end
 
   %% Constructor
@@ -43,9 +42,6 @@ classdef ConfigFootholdPlanning < Configuration
     end
     function max_allowable_stride = getMaxAllowableStride(config_foothold_planning)
       max_allowable_stride = config_foothold_planning.max_allowable_stride;
-    end
-    function step_height = getStepHeight(config_foothold_planning)
-      step_height = config_foothold_planning.step_height;
     end
   end
 end  % ConfigFootholdPlanning

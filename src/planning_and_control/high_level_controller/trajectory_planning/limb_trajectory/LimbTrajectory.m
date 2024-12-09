@@ -61,7 +61,7 @@ classdef LimbTrajectory
 
       current_EE_position = robot.getEEPosition(1:3, limb_id);  % Contact position?
       desired_EE_position = foothold_planning.getFootholdPositions(1:3, limb_id);
-      step_height = foothold_planning.getStepHeight();
+      step_height = gait_planning.getStepHeight();
       motion_duration = gait_planning.getTransferDuration();
 
       limb_trajectory = limb_trajectory.calcMidTime(motion_duration);

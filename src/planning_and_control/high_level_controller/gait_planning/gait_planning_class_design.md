@@ -8,8 +8,9 @@ classDiagram
     + gait_period: double
     + duty_factor: double
     + sequence: uint8
-    + gripper_release_duration: double
-    + gripper_grasp_duration: double
+    + step_height: double
+    + foot_lift_up_duration: double
+    + foot_lift_down_duration_: double
     + base_position_planning_type: string
     + base_orientation_planning_type: string
   }
@@ -22,8 +23,9 @@ classDiagram
     + landing_timings_: double
     + transfer_duration_: double
     + swing_duration_: double
-    + foot_lift_up_duration_: double
-    + foot_lift_down_duration_: double
+    + kStepHeight_: double
+    + kFootLiftUpDuration_: double
+    + kFootLiftDownDuration_: double
     + support_duration_: double
     + all_limb_support_duration_: double
 

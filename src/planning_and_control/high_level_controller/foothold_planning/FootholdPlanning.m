@@ -18,7 +18,6 @@ classdef FootholdPlanning
     footholds_history_  (:, 1) TrajectoryHistory;
 
     max_allowable_stride_ (1, 1) double;
-    step_height (1, 1) double;  % TODO: should be in motion planning?
   end
 
   %% Public Methods
@@ -49,7 +48,6 @@ classdef FootholdPlanning
       end
 
       foothold_planning.max_allowable_stride_ = config_foothold_planning.getMaxAllowableStride();
-      foothold_planning.step_height = config_foothold_planning.getStepHeight();
     end
 
     function foothold_planning = plan(foothold_planning, ...
@@ -159,11 +157,6 @@ classdef FootholdPlanning
     end
     function max_allowable_stride = getMaxAllowableStride(foothold_planning)
       max_allowable_stride = foothold_planning.max_allowable_stride_;
-    end
-
-    % TODO: should be in motion planning?
-    function step_height = getStepHeight(foothold_planning)
-      step_height = foothold_planning.step_height;
     end
   end
 
