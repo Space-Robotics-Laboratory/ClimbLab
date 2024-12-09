@@ -2,7 +2,7 @@ classdef Robot
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    type (1, 1) string;
+    kType_ (1, 1) string;
     LP LinkParameters;
     SV StateVariable;
     des_SV StateVariable;
@@ -33,8 +33,8 @@ classdef Robot
         world (1, 1) {mustBeA(world, "World")};
         terrain (1, 1) {mustBeA(terrain, "Terrain")};
       end
-      robot.type = config_robot.getRobotType();
-      robot.LP = LinkParameters(robot.type + "_LP");
+      robot.kType_ = config_robot.getRobotType();
+      robot.LP = LinkParameters(robot.kType_ + "_LP");
 
       kNumLimb = robot.LP.getNumberOfLimb();
       robot.SV = StateVariable(robot.LP.getNumberOfJoints(), kNumLimb);
@@ -297,15 +297,15 @@ classdef Robot
   %% Private Methods
   methods (Access = private)
 
-    function robot = initializeBasePose(robot, config, terrain)
+    function robot = initializeBasePose(robot, config_robot, terrain)
       arguments (Input)
         robot;
-        config (1, 1) {mustBeA(config, "ConfigRobot")};
+        config_robot (1, 1) {mustBeA(config_robot, "ConfigRobot")};
         terrain (1, 1) {mustBeA(terrain, "Terrain")};
       end
-      initial_base_position_in_Surface = config.getInitialBasePosition();
+      initial_base_position_in_Surface = config_robot.getInitialBasePosition();
       robot.base_height_in_Surface = initial_base_position_in_Surface(3, 1);
-      initial_base_orientation_euler_in_map_frame = config.getInitialBaseOrientationDCM();
+      initial_base_orientation_euler_in_map_frame = config_robot.getInitialBaseOrientationDCM();
       surface_inclination = terrain.getSurfaceInclination();
 
       ini_base_pos_in_World = rpy2dc(deg2rad(surface_inclination))' * ...
@@ -320,24 +320,24 @@ classdef Robot
       robot.SV = robot.SV.setBaseOrientationEuler(ini_base_ori_euler_in_World);
     end
 
-    function EE_position = initializeEEPosition(robot, config, terrain)
+    function EE_position = initializeEEPosition(robot, config_robot, terrain)
 
-      num_limb = robot.LP.getNumberOfLimb();
-      desired_initial_EE_distance_xy_from_base_CoM = config.getInitialEEDistXYFromBaseCoM();
+      kNumLimb = robot.LP.getNumberOfLimb();
+      desired_initial_EE_distance_xy_from_base_CoM = config_robot.getInitialEEDistXYFromBaseCoM();
       EE_dist_x = desired_initial_EE_distance_xy_from_base_CoM(1, 1);
       EE_dist_y = desired_initial_EE_distance_xy_from_base_CoM(2, 1);
-      EE_position_in_base_frame = zeros(3, num_limb);
+      EE_position_in_base_frame = zeros(3, kNumLimb);
       sign_xy = sign(robot.LP.c0(1:2, robot.LP.S0 == 1));
-      for i = 1:num_limb
+      for i = 1 : kNumLimb
         EE_position_in_base_frame(:, i) = robot.SV.A0 * [sign_xy(1, i) * EE_dist_x;
                                                         sign_xy(2, i) * EE_dist_y;
                                                         -robot.SV.R0(3, 1)];
       end
       desired_EE_position_in_inertia_frame = robot.SV.R0 + EE_position_in_base_frame;
 
-      EE_position = zeros(3, num_limb);
+      EE_position = zeros(3, kNumLimb);
       graspable_points = terrain.getGraspablePoints();
-      for i = 1:num_limb
+      for i = 1 : kNumLimb
         EE_position(:, i) = graspable_points.getNearestPoint( ...
           desired_EE_position_in_inertia_frame(:, i));
       end
@@ -379,7 +379,7 @@ classdef Robot
   %% Getter
   methods (Access = public)
     function type = getType(robot)
-      type = robot.type;
+      type = robot.kType_;
     end
     function EE_position = getEEPosition(robot, xyz, limb_id)
       arguments (Input)
@@ -392,7 +392,7 @@ classdef Robot
         limb_id = 1 : size(robot.EE_position, 2);
       elseif ((isempty(xyz) || isempty(limb_id)))
         error("ERROR: Need to input both of ""xyz"" and ""limb_id"" " + ...
-          "if you want to get componet of ""EE_position"".");
+          "if you want to get component of ""EE_position"".");
       elseif (any(xyz < 1) || any(xyz > size(robot.EE_position, 1)))
         error("ERROR: First input ""xyz"" must be greater than or equal 1 and " + ...
           "less than or equal 3.");
