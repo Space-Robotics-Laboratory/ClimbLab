@@ -1,4 +1,5 @@
 classdef Robot
+
   %% Properties
   properties (SetAccess = private, GetAccess = public)
     type (1, 1) string;
@@ -24,39 +25,30 @@ classdef Robot
     is_grasping (1, :) logical;
     is_slipping (1, :) logical;
 
-    graphics_obj_base;
-    graphics_obj_limb_links (:, 3) matlab.graphics.Graphics;
-    graphics_obj_robot_gripper;
+    graphics;
     graphics_obj_GRF_vec;
-  end
-  properties (Access = private)
-    base_vertices    (:, 3) double;
-    base_faces       (:, 4) uint8;
-    limb_link_vertices (3, :, :) double;  % (xyz, nx4, num_limb)
-    gripper_vertices (8, 3) double;
-    gripper_faces    (6, 4) uint8;
   end
 
   %% Public methods
   methods (Access = public)
 
-    function robot = Robot(config, world, terrain)
+    function robot = Robot(config_robot, world, terrain)
     % Robot() Constructor
       arguments (Input)
-        config (1, 1) {mustBeA(config, "ConfigRobot")};
+        config_robot (1, 1) {mustBeA(config_robot, "ConfigRobot")};
         world (1, 1) {mustBeA(world, "World")};
         terrain (1, 1) {mustBeA(terrain, "Terrain")};
       end
-      robot.type = config.getRobotType();
+      robot.type = config_robot.getRobotType();
       robot.LP = LinkParameters(robot.type + "_LP");
 
       robot.SV = StateVariable(robot.LP.getNumberOfJoints());
-      robot = robot.initializeBasePose(config, terrain);
+      robot = robot.initializeBasePose(config_robot, terrain);
       robot.des_SV = StateVariable(robot.LP.getNumberOfJoints());
 
       num_limb = robot.LP.getNumberOfLimb();
       robot.EE_position = zeros(3, num_limb);
-      robot.EE_position = robot.initializeEEPosition(config, terrain);
+      robot.EE_position = robot.initializeEEPosition(config_robot, terrain);
       robot.EE_orientation_dcm = zeros(3, 3 * num_limb);
       % robot.EE_orientation_euler_rad = zeros(3, num_limb);
       % robot.EE_orientation_euler_deg = zeros(3, num_limb);
@@ -78,21 +70,17 @@ classdef Robot
 
       robot.is_supporting = false(1, num_limb);
       robot.desired_support_limb_id = true(1, num_limb);
-      robot.gripper_detachment_detection_method = config.getGripperDetachmentDetectionMethod();
+      robot.gripper_detachment_detection_method = config_robot.getGripperDetachmentDetectionMethod();
       robot.is_grasping = false(1, num_limb);
       robot.is_slipping = false(1, num_limb);
       robot.contact_state = robot.contact_state.detectEECollision(robot, terrain);
 
       robot = robot.updateGripperState(terrain);
 
-      if (~config.getVisualizeRobot())
+      if (~config_robot.getVisualizeRobot())
         return;
       end
-      robot = robot.createRobotBaseModel(config);
-      robot = robot.createRobotLimbModel(config);
-      if (robot.LP.getMaxEndurableGrippingForce() > 0.0)
-        robot = robot.createRobotGripperModel(config);
-      end
+      robot.graphics = RobotGraphics(config_robot, robot.LP, robot.SV);
     end
 
     function robot = forwardKinematics(robot)
@@ -291,13 +279,8 @@ classdef Robot
       % end
     end
 
-    function robot = visualize(robot, config)
-      robot = robot.visualizeBase();
-      robot = robot.visualizeLimbs();
-      if (robot.LP.getMaxEndurableGrippingForce() == 0.0)
-        return;
-      end
-      robot = robot.visualizeGrippers(config);
+    function robot = visualize(robot)
+      robot.graphics = robot.graphics.visualize(robot.LP, robot.SV, robot.EE_position, robot.EE_orientation_dcm);
     end
 
     function animation = visualizeForceVectors(robot, animation)
@@ -443,198 +426,4 @@ classdef Robot
     end
   end
 
-
-  %% Private Methods (for Visualization)
-  methods (Access = private)
-
-    function robot = createRobotBaseModel(robot, config)
-      num_limb = robot.LP.getNumberOfLimb();
-      [base_upper_thickness, base_lower_thickness, base_color, base_alpha] = ...
-        config.getBaseVisualSettings();
-      if (num_limb == 1)
-      else
-        % Create robot base
-        j = robot.LP.getNumberOfJointsPerLimb();
-        c0 = robot.LP.getPositionVectorFromBaseCoMToJoint();
-
-        base_upper_V = zeros(num_limb, 3);
-        base_lower_V = zeros(num_limb, 3);
-        for i = 1:num_limb
-          base_upper_V(i, :) = [c0(1:2, j(1, i)*(i-1)+1)',  base_upper_thickness];
-          base_lower_V(i, :) = [c0(1:2, j(1, i)*(i-1)+1)', -base_lower_thickness];
-        end
-        robot.base_vertices = [base_upper_V; base_lower_V];
-
-        robot.base_faces(1, 1:num_limb) = 1 : num_limb;
-        robot.base_faces(2, 1:num_limb) = num_limb + 1 : num_limb * 2;
-        for i = 1:num_limb
-          if (i ~= num_limb)
-            robot.base_faces(i + 2, :) = [i, i + 1, i + 1 + num_limb, i + num_limb];
-          else
-            robot.base_faces(i + 2, :) = [i, 1, 1 + num_limb, i + num_limb];
-          end
-        end
-      end
-
-      current_base_position = robot.SV.getBasePosition();
-      current_base_orientation_dcm = robot.SV.getBaseOrientationDCM();
-
-      current_base_vertices = robot.base_vertices * current_base_orientation_dcm' + ...
-        ones(size(robot.base_vertices, 1), 1) * current_base_position';
-      current_base_faces = robot.base_faces;
-
-      robot.graphics_obj_base = patch( ...
-        'Vertices', current_base_vertices, 'Faces', current_base_faces, ...
-        'FaceColor', base_color, 'EdgeColor', 'none', 'FaceAlpha', base_alpha, ...
-        'Visible', "off");
-    end
-
-    function robot = createRobotLimbModel(robot, config)
-      BB = robot.LP.getLinkConnectionRelationship();
-      SE = robot.LP.getEndLink();
-      cc = robot.LP.getPositionVectorFromLinkCoMToJoint();
-      ce = robot.LP.getPositionVectorFromEndLinkCoMToEndPoint();
-      [link_radius, limb_color, limb_alpha] = config.getLimbVisualSettings();
-      joints = 1 : robot.LP.getNumberOfJoints();
-      [joint_position, joint_orientation] = f_kin_j(robot.LP, robot.SV, joints);
-      r = link_radius;
-      n = 7;
-      closed = 1;
-      lines = 0;
-      k = 1;
-      robot.limb_link_vertices = zeros(3, n * 4, length(joints));
-      for i = joints
-        % Create links, which are NOT connected with the end-effector
-        if (SE(1, i) == 0)
-          [~, col] = find(BB == i);
-          [cylinder, end_plate_1, end_plate_2] = ...
-            vis_cylinder(zeros(3, 1), cc(:, i, col) - cc(:, i, i), ...
-            r, n, limb_color, limb_alpha, closed, lines);
-        % Create links, which are connected with the end-effector
-        else
-          [cylinder, end_plate_1, end_plate_2] = ...
-            vis_cylinder(zeros(3, 1), ce(:, i) - cc(:, i, i), ...
-            r, n, limb_color, limb_alpha, closed, lines);
-          k = k + 1;
-        end
-        robot.graphics_obj_limb_links(i, 1:3) = [cylinder, end_plate_1, end_plate_2];
-
-        limb_link_vertices_x = [robot.graphics_obj_limb_links(i, 1).XData, ...
-                                robot.graphics_obj_limb_links(i, 2).Vertices(:, 1), ...
-                                robot.graphics_obj_limb_links(i, 3).Vertices(:, 1)];
-        limb_link_vertices_y = [robot.graphics_obj_limb_links(i, 1).YData, ...
-                                robot.graphics_obj_limb_links(i, 2).Vertices(:, 2), ...
-                                robot.graphics_obj_limb_links(i, 3).Vertices(:, 2)];
-        limb_link_vertices_z = [robot.graphics_obj_limb_links(i, 1).ZData, ...
-                                robot.graphics_obj_limb_links(i, 2).Vertices(:, 3), ...
-                                robot.graphics_obj_limb_links(i, 3).Vertices(:, 3)];
-        robot.limb_link_vertices(:, :, i) = [reshape(limb_link_vertices_x, 1, []);
-          reshape(limb_link_vertices_y, 1, []);
-          reshape(limb_link_vertices_z, 1, [])];
-
-        current_limb_link_vertices = ...
-          joint_orientation(:, 3*i-2:3*i) * robot.limb_link_vertices(:, :, i) + ...
-          joint_position(:, i);
-
-        current_limb_link_vertices_x = reshape(current_limb_link_vertices(1, :), [], 4);
-        current_limb_link_vertices_y = reshape(current_limb_link_vertices(2, :), [], 4);
-        current_limb_link_vertices_z = reshape(current_limb_link_vertices(3, :), [], 4);
-
-        robot.graphics_obj_limb_links(i, 1).XData = current_limb_link_vertices_x(:, 1:2);
-        robot.graphics_obj_limb_links(i, 1).YData = current_limb_link_vertices_y(:, 1:2);
-        robot.graphics_obj_limb_links(i, 1).ZData = current_limb_link_vertices_z(:, 1:2);
-        robot.graphics_obj_limb_links(i, 2).Vertices = [current_limb_link_vertices_x(:, 3), ...
-                                                        current_limb_link_vertices_y(:, 3), ...
-                                                        current_limb_link_vertices_z(:, 3)];
-        robot.graphics_obj_limb_links(i, 3).Vertices = [current_limb_link_vertices_x(:, 4), ...
-                                                        current_limb_link_vertices_y(:, 4), ...
-                                                        current_limb_link_vertices_z(:, 4)];
-      end
-    end
-
-    function robot = createRobotGripperModel(robot, config)
-      % Create gripper if robot has grippers
-      [link_radius, ~, ~] = config.getLimbVisualSettings();
-      finger_length = 1.75 * link_radius;
-      finger_thickness = 0.75 * link_radius;
-      robot.gripper_vertices = [
-        -finger_length,  finger_thickness / 2,  0.8 * finger_thickness;
-         finger_length,  finger_thickness / 2,  0.8 * finger_thickness;
-         finger_length, -finger_thickness / 2,  0.8 * finger_thickness;
-        -finger_length, -finger_thickness / 2,  0.8 * finger_thickness;
-        -finger_length,  finger_thickness / 2, -0.2 * finger_thickness;
-         finger_length,  finger_thickness / 2, -0.2 * finger_thickness;
-         finger_length, -finger_thickness / 2, -0.2 * finger_thickness;
-        -finger_length, -finger_thickness / 2, -0.2 * finger_thickness];
-      robot.gripper_faces = [ 1, 2, 3, 4;  1, 2, 6, 5;  2, 3, 7, 6;  3, 4, 8, 7;
-                              1, 4, 8, 5;  5, 6, 7, 8];
-    end
-
-    function robot = visualizeBase(robot)
-      current_base_position = robot.SV.getBasePosition();
-      current_base_orientation_dcm = robot.SV.getBaseOrientationDCM();
-
-      current_base_vertices = robot.base_vertices * current_base_orientation_dcm' + ...
-        ones(size(robot.base_vertices, 1), 1) * current_base_position';
-
-      robot.graphics_obj_base.Vertices = current_base_vertices;
-      robot.graphics_obj_base.Visible = "on";
-    end
-
-    function robot = visualizeLimbs(robot)
-      joints = 1 : robot.LP.getNumberOfJoints();
-      [joint_position, joint_orientation] = f_kin_j(robot.LP, robot.SV, joints);
-      for i = joints
-        current_limb_link_vertices = ...
-          joint_orientation(:, 3*i-2:3*i) * robot.limb_link_vertices(:, :, i) + ...
-          joint_position(:, i);
-
-        current_limb_link_vertices_x = reshape(current_limb_link_vertices(1, :), [], 4);
-        current_limb_link_vertices_y = reshape(current_limb_link_vertices(2, :), [], 4);
-        current_limb_link_vertices_z = reshape(current_limb_link_vertices(3, :), [], 4);
-
-        robot.graphics_obj_limb_links(i, 1).XData = current_limb_link_vertices_x(:, 1:2);
-        robot.graphics_obj_limb_links(i, 1).YData = current_limb_link_vertices_y(:, 1:2);
-        robot.graphics_obj_limb_links(i, 1).ZData = current_limb_link_vertices_z(:, 1:2);
-        robot.graphics_obj_limb_links(i, 2).Vertices = [current_limb_link_vertices_x(:, 3), ...
-                                                        current_limb_link_vertices_y(:, 3), ...
-                                                        current_limb_link_vertices_z(:, 3)];
-        robot.graphics_obj_limb_links(i, 3).Vertices = [current_limb_link_vertices_x(:, 4), ...
-                                                        current_limb_link_vertices_y(:, 4), ...
-                                                        current_limb_link_vertices_z(:, 4)];
-
-        robot.graphics_obj_limb_links(i, 1).Visible = "on";
-        robot.graphics_obj_limb_links(i, 2).Visible = "on";
-        robot.graphics_obj_limb_links(i, 3).Visible = "on";
-      end
-    end
-
-    function robot = visualizeGrippers(robot, config)
-      [~, limb_color, limb_alpha] = config.getLimbVisualSettings();
-      num_limb = robot.LP.getNumberOfLimb();
-      current_gripper_vertices = zeros(8, 3, num_limb, 2);
-      for g = 1:num_limb
-        % Rotation matrix to direct the z-direction of the gripper frame in the longitudinal
-        % direction of the link
-        % NOTE: If visualization of gripper orientation is not work well, you need to check
-        % definition of the end-effector frame in LP file
-        rot_grip = robot.EE_orientation_dcm(:, 3*g-2:3*g) * rpy2dc([0; pi/2; 0]);
-        current_gripper_vertices(:, :, g, 1) = robot.gripper_vertices * rot_grip' ...
-          + ones(size(robot.gripper_vertices, 1), 1) * robot.EE_position(:, g)';
-        current_gripper_vertices(:, :, g, 2) = robot.gripper_vertices * rpy2dc([0; 0; pi/2]) * ...
-          rot_grip' ...
-          + ones(size(robot.gripper_vertices, 1), 1) * robot.EE_position(:, g)';
-
-        robot.graphics_obj_robot_gripper(1, g) = patch(...
-          'Vertices', current_gripper_vertices(:, :, g, 1), 'Faces', robot.gripper_faces, ...
-          'FaceColor', limb_color, 'EdgeColor', 'none', 'FaceAlpha', limb_alpha);
-        robot.graphics_obj_robot_gripper(2, g) = patch(...
-          'Vertices', current_gripper_vertices(:, :, g, 2), 'Faces', robot.gripper_faces, ...
-          'FaceColor', limb_color, 'EdgeColor', 'none', 'FaceAlpha', limb_alpha);
-      end
-    end
-
-  end
-
-end
-% EOF
+end  % Robot
