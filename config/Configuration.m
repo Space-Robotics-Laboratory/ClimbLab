@@ -28,9 +28,14 @@ classdef Configuration
       user_config_prop_list = user_config_class.PropertyList;
 
       for i = 1 : length(user_config_prop_list)
-        get_access_authorization = user_config_prop_list(i, 1).GetAccess{1, 2}.Name;
+        kNumGetAccess = length(user_config_prop_list(i, 1).GetAccess);
+        get_access_authorizations = strings(kNumGetAccess, 1);
 
-        if (strcmp(get_access_authorization, default_config_class_name))
+        for j = 1 : kNumGetAccess
+          get_access_authorizations(j, 1) = user_config_prop_list(i, 1).GetAccess{1, j}.Name;
+        end
+
+        if (any(get_access_authorizations == default_config_class_name))
           user_config_prop_name = user_config_prop_list(i, 1).Name;
 
           if (~any(strcmp(default_config_prop_name, user_config_prop_name)))
