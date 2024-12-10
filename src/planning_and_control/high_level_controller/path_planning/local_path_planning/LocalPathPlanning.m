@@ -1,4 +1,4 @@
-classdef LocalPathPlanning
+classdef LocalPathPlanning < handle
 % LocalPathPlanning
 % Plan the local path from the current robot base position to the goal position
 %
@@ -28,12 +28,12 @@ classdef LocalPathPlanning
       local_path.moving_direction_ = zeros(3, 1);
     end
 
-    function local_path = plan(local_path, robot, global_path)
+    function plan(local_path, robot, global_path)
     % plan()
     %   Plan the local path (next moving direction) to the next waypoint
       arguments (Input)
         local_path;
-        robot       (1, 1) {mustBeA(robot, "Robot")};
+        robot       (1, 1) {mustBeA(robot,       "Robot")};
         global_path (1, 1) {mustBeA(global_path, "GlobalPathPlanning")};
       end
 

@@ -63,8 +63,7 @@ classdef PositionTrajectory
         desired_position = position_trajectory.planner_.calcDesiredPositionForCurrentTimeStep( ...
           time, start_time, final_time);
 
-        position_trajectory.planned_trajectory_ = ...
-          position_trajectory.planned_trajectory_.addPoint(desired_position);
+        position_trajectory.planned_trajectory_.addPoint(desired_position);
       end
     end
 
@@ -93,8 +92,7 @@ classdef PositionTrajectory
         width      (1, 1) {mustBeA(width,      "double")};
       end
 
-      position_trajectory.planned_trajectory_ = ...
-        position_trajectory.planned_trajectory_.setVisualSettings(line_style, color, width);
+      position_trajectory.planned_trajectory_.setVisualSettings(line_style, color, width);
     end
 
   end

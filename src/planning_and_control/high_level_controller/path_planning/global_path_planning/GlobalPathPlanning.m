@@ -1,4 +1,4 @@
-classdef GlobalPathPlanning
+classdef GlobalPathPlanning < handle
 % GlobalPathPlanning
 % Plan the global path from the current robot base position to the goal position
 %
@@ -21,9 +21,9 @@ classdef GlobalPathPlanning
     function global_path_planning = GlobalPathPlanning(config_path_planning, robot, terrain)
     % GlobalPathPlanning() Constructor
       arguments
-        config_path_planning  (1, 1) {mustBeA(config_path_planning, "ConfigPathPlanning")};
-        robot   (1, 1) {mustBeA(robot, "Robot")};
-        terrain (1, 1) {mustBeA(terrain, "Terrain")};
+        config_path_planning (1, 1) {mustBeA(config_path_planning, "ConfigPathPlanning")};
+        robot                (1, 1) {mustBeA(robot,                "Robot")};
+        terrain              (1, 1) {mustBeA(terrain,              "Terrain")};
       end
 
       global_path_planning.kType_ = config_path_planning.getGlobalPathPlanningType();
@@ -37,7 +37,7 @@ classdef GlobalPathPlanning
       global_path_planning.path_ = TrajectoryHistory();
     end
 
-    function global_path_planning = plan(global_path_planning)
+    function plan(global_path_planning)
     % plan()
     %   Plan the global path from robot position to goal position
       arguments (Input)
@@ -49,7 +49,7 @@ classdef GlobalPathPlanning
       end
 
       way_points = global_path_planning.planner_.plan(global_path_planning.kGoalPosition_);
-      global_path_planning.path_ = global_path_planning.path_.addPoint(way_points);
+      global_path_planning.path_.addPoint(way_points);
     end
 
   end

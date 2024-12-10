@@ -1,4 +1,4 @@
-classdef StraightTowardGoalDirection
+classdef StraightTowardGoalDirection < handle
 % StraightTowardGoalDirection
 % Global path planning method that computes a path straight toward the goal from the current robot
 % position

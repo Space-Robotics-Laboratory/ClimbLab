@@ -27,7 +27,7 @@ initialize();
 
 figure(animation.getFigure());
 
-for time = 0.0 : d_time : max_sim_time
+for time = 0.0 : d_time : kMaxSimTime
   update();
 
   if (rem(time, 1 / animation.getFrameRate()) == 0)

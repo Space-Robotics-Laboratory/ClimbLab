@@ -1,4 +1,4 @@
-classdef PathPlanning
+classdef PathPlanning < handle
 % PathPlanning
 % Plan the global and local path from the current robot base position to the goal position
 %   Global path: Path to the destination (final goal position)
@@ -28,7 +28,7 @@ classdef PathPlanning
       path_planning.local_path_ = LocalPathPlanning(config_path_planning);
     end
 
-    function path_planning = plan(path_planning, robot)
+    function plan(path_planning, robot)
     % plan()
     %   Plan the global and local path
       arguments (Input)
@@ -36,9 +36,9 @@ classdef PathPlanning
         robot (1, 1) {mustBeA(robot, "Robot")};
       end
 
-      path_planning.global_path_ = path_planning.global_path_.plan();
+      path_planning.global_path_.plan();
 
-      path_planning.local_path_ = path_planning.local_path_.plan(robot, path_planning.global_path_);
+      path_planning.local_path_.plan(robot, path_planning.global_path_);
     end
 
   end

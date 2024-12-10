@@ -42,9 +42,7 @@ classdef FootholdPlanning
       foothold_planning.foothold_positions_ = current_EE_positions;
       for limb_id = 1 : kNumLimb
         foothold_planning.footholds_history_(limb_id, 1) = TrajectoryHistory();
-        foothold_planning.footholds_history_(limb_id, 1) = ...
-          foothold_planning.footholds_history_(limb_id, 1).addPoint( ...
-            current_EE_positions(:, limb_id));
+        foothold_planning.footholds_history_(limb_id, 1).addPoint(current_EE_positions(:, limb_id));
       end
 
       foothold_planning.max_allowable_stride_ = config_foothold_planning.getMaxAllowableStride();
@@ -85,8 +83,7 @@ classdef FootholdPlanning
         if (any(limb_id ~= foothold_planning.swing_limb_id_))
           continue;  % Do not update foothold history for support limb
         end
-        foothold_planning.footholds_history_(limb_id, 1) = ...
-          foothold_planning.footholds_history_(limb_id, 1).addPoint( ...
+        foothold_planning.footholds_history_(limb_id, 1).addPoint( ...
           foothold_planning.foothold_positions_(:, limb_id));
       end
     end

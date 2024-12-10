@@ -18,7 +18,7 @@ animation.createVideoFile(run_cod, run_id, run_date);
 
 % Environment
 world = World(config_world);
-max_sim_time = world.getMaxSimulationTime();
+kMaxSimTime = world.getMaxSimulationTime();
 terrain = Terrain(config_terrain);
 
 % Robot
@@ -26,7 +26,7 @@ robot = Robot(config_robot, world, terrain);
 
 % Path Planning
 path_planning = PathPlanning(config_path_planning, robot, terrain);
-path_planning = path_planning.plan(robot);
+path_planning.plan(robot);
 
 % Foothold Planning
 foothold_planning = FootholdPlanning(config_foothold_planning, robot);

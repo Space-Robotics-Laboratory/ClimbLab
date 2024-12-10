@@ -1,4 +1,4 @@
-classdef TrajectoryHistory
+classdef TrajectoryHistory < handle
 % TrajectoryHistory
 %
 % Created     : 2024.05.20 by Masazumi Imai
@@ -9,9 +9,9 @@ classdef TrajectoryHistory
     points_ (3, :) double;
   end
   properties (SetAccess = private, GetAccess = private)
-    line_style_ (1, 1) string;
-    color_      (1, 3) double;
-    width_      (1, 1) double;
+    kLineStyle_ (1, 1) string;
+    kColor_      (1, 3) double;
+    kWidth_      (1, 1) double;
     line_       (1, 1) matlab.graphics.animation.AnimatedLine;
   end
 
@@ -22,12 +22,12 @@ classdef TrajectoryHistory
     % TrajectoryHistory() Constructor
       trajectory.points_ = double.empty;
 
-      trajectory.line_style_ = "none";
-      trajectory.color_ = [0.0, 0.0, 0.0];
-      trajectory.width_ = 0.0;
+      trajectory.kLineStyle_ = "none";
+      trajectory.kColor_ = [0.0, 0.0, 0.0];
+      trajectory.kWidth_ = 0.0;
     end
 
-    function trajectory = addPoint(trajectory, point)
+    function addPoint(trajectory, point)
       arguments (Input)
         trajectory;
         point (3, 1) {mustBeA(point, "double")};
@@ -35,9 +35,10 @@ classdef TrajectoryHistory
 
       trajectory.points_ = horzcat(trajectory.points_, point);
 
-      if (trajectory.line_style_ == "none")
+      if (trajectory.kLineStyle_ == "none")
         return;
       end
+
       addpoints(trajectory.line_, point(1, 1), point(2, 1), point(3, 1));
     end
 
@@ -49,7 +50,8 @@ classdef TrajectoryHistory
 
   %% Setter
   methods (Access = public)
-    function trajectory = setVisualSettings(trajectory, line_style, color, width)
+
+    function setVisualSettings(trajectory, line_style, color, width)
       arguments (Input)
         trajectory;
         line_style (1, 1) {mustBeA(line_style, "string")} = "none";
@@ -57,21 +59,22 @@ classdef TrajectoryHistory
         width      (1, 1) {mustBeA(width,      "double")} = 0.0;
       end
 
-      trajectory.line_style_ = line_style;
-      trajectory.color_ = validatecolor(color);
-      trajectory.width_ = width;
+      trajectory.kLineStyle_ = line_style;
+      trajectory.kColor_ = validatecolor(color);
+      trajectory.kWidth_ = width;
 
       if (line_style == "none")
         return;
       end
 
       trajectory.line_ = animatedline( ...
-        LineStyle = trajectory.line_style_, ...
-        Color = trajectory.color_, ...
-        LineWidth = trajectory.width_, ...
+        LineStyle = trajectory.kLineStyle_, ...
+        Color = trajectory.kColor_, ...
+        LineWidth = trajectory.kWidth_, ...
         MaximumNumPoints = Inf, ...
         Visible = "off");
     end
+
   end
 
   %% Getter
