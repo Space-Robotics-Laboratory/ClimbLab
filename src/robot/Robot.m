@@ -287,7 +287,7 @@ classdef Robot
 
       for limb_id = 1 : robot.LP.getNumberOfLimb()
         vec_magnitude = GRF(:, limb_id) * animation.getForceExpansionFactor();
-        animation = animation.visualizeVector(robot.EE_position(:, limb_id), ...
+        animation.visualizeVector(robot.EE_position(:, limb_id), ...
           vec_magnitude, vec_color, vec_width);
       end
     end

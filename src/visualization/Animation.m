@@ -1,4 +1,4 @@
-classdef Animation < dynamicprops
+classdef Animation < dynamicprops & handle
   %% Properties
   properties (SetAccess = private, GetAccess = public)
     fig (1, 1) % matlab.ui.Figure
@@ -48,7 +48,7 @@ classdef Animation < dynamicprops
       view(animation.camera_azimuth, animation.camera_elevation);
     end
 
-    function animation = setLight(animation)
+    function setLight(animation)
     % setLight()
     %   Set light object
       lighting gouraud;
@@ -56,7 +56,7 @@ classdef Animation < dynamicprops
       animation.graphics_obj_light = lightangle(-10, 15);
     end
 
-    function animation = visualizeVector(animation, origin, vec_magnitude, vec_color, vec_width)
+    function visualizeVector(animation, origin, vec_magnitude, vec_color, vec_width)
       arguments
         animation;
         origin (3, 1) {mustBeA(origin, "double")};
@@ -79,7 +79,7 @@ classdef Animation < dynamicprops
       animation.graphics_obj_vector(idx, 1) = arrow;
     end
 
-    function animation = resetGraphicsObjects(animation, time, robot)
+    function resetGraphicsObjects(animation, time, robot)
     % resetGraphicsObjects()
     %   Delete graphics objects from animation figure
       arguments (Input)
@@ -96,7 +96,7 @@ classdef Animation < dynamicprops
       delete(animation.graphics_obj_vector);
     end
 
-    function animation = createVideoFile(animation, run_cod, run_id, run_date)
+    function createVideoFile(animation, run_cod, run_id, run_date)
     % createVideoFile()
     %   Create file to save simulation video and define video parameters, such as quality and frame
     %   rate.
@@ -111,12 +111,12 @@ classdef Animation < dynamicprops
         run_date (1, 1) {mustBeA(run_date, "string")};
       end
       if (animation.save_video)
-        dir_name = "dat/" + run_cod + "/" + run_id;
+        dir_name = "dat" + filesep + run_cod + filesep + run_id;
         mkdir(dir_name);
-        animation.sim_video = VideoWriter(dir_name + "/" + run_date + "_video" + ...
+        animation.sim_video = VideoWriter(dir_name + filesep + run_date + "_video" + ...
           animation.video_file_extension);
       else
-        animation.sim_video = VideoWriter("dat/last_video" + animation.video_file_extension);
+        animation.sim_video = VideoWriter("dat" + filesep + "last_video" + animation.video_file_extension);
       end
       animation.sim_video.Quality = 100;
       animation.sim_video.FrameRate = animation.frame_rate;
