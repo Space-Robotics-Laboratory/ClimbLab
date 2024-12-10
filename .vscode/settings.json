@@ -5,6 +5,7 @@
     "addpath",
     "addpoints",
     "animatedline",
+    "clearvars",
     "disp",
     "drawnow",
     "eul2rotm",

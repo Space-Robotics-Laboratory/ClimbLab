@@ -23,7 +23,7 @@ variables_log.base_linear_acceleration(cnt, :) = robot.SV.getBaseLinearAccelerat
 variables_log.base_angular_acceleration(cnt, :) = robot.SV.getBaseAngularAcceleration()';
 variables_log.joint_angular_position(cnt, :) = robot.SV.getJointAngularPosition()';
 variables_log.joint_angular_velocity(cnt, :) = robot.SV.getJointAngularVelocity()';
-variables_log.joint_angylar_acceleration(cnt, :) = robot.SV.getJointAngularAcceleration()';
+variables_log.joint_angular_acceleration(cnt, :) = robot.SV.getJointAngularAcceleration()';
 variables_log.joint_torque(cnt, :) = robot.SV.getJointTorque()';
 
 Fe = robot.SV.getGroundReactionForce(robot.LP);
@@ -43,4 +43,5 @@ end
 
 
 clearvars('-except', variable_names{:});
-% EOF
+
+% saveVariables

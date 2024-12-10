@@ -64,12 +64,15 @@ classdef SeventhOrderBezier
       for i = 0 : n
         x = x + nchoosek(n, i) * (mid_time / final_time).^i ...
           .* ((final_time - mid_time) / final_time).^(n - i) .* AA(1:3, i + 1);
+        % x = x + seventh_order_bezier.calcBernsteinPolynomial(start_time, final_time, mid_time, i, n) .* AA(1:3, i + 1);
       end
       xd = zeros(3, 1);
       for j = 0 : n - 1
         xd = xd + nchoosek(n - 1, j) * (mid_time / final_time).^j ...
           .* ((final_time - mid_time) / final_time).^(n - 1 - j) * n / final_time ...
           .* (AA(1:3, j + 2) - AA(1:3, j + 1));
+        % xd = xd + seventh_order_bezier.calcBernsteinPolynomial(start_time, final_time, mid_time, j, n - 1) ...
+        %   * n / final_time .* (AA(1:3, j + 2) - AA(1:3, j + 1));
       end
 
       XX = [mid_position' - x';
