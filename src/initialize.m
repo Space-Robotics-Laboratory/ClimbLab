@@ -20,7 +20,6 @@ animation.createVideoFile(run_cod, run_id, run_date);
 world = World(config_world);
 max_sim_time = world.getMaxSimulationTime();
 terrain = Terrain(config_terrain);
-terrain = terrain.initialize();
 
 % Robot
 robot = Robot(config_robot, world, terrain);

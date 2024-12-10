@@ -1,62 +1,57 @@
-classdef Terrain
+classdef Terrain < handle
+
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    type        (1, 1) string;
-    inclination (3, 1) double;  % [deg]
+    kType_        (1, 1) string;
+    kInclination_ (3, 1) double;  % [deg]
 
-    raw_map_data (1, 1) struct;  % (x, y, z)
-    point_cloud_in_World (3, :) double;
-    norm_vectors;
+    kRawMapData_ (1, 1) struct;  % (x, y, z)
+    kPointCloudInWorld_ (3, :) double;
+    kNormVectors_;
 
-    stiffness_coefficient_for_GRF (1, 1) double;
-    damping_coefficient_for_GRF   (1, 1) double;
-    stiffness_coefficient_for_GRM (1, 1) double;
-    damping_coefficient_for_GRM   (1, 1) double;
+    kStiffnessCoefficientForGRF_ (1, 1) double;
+    kDampingCoefficientForGRF_   (1, 1) double;
+    kStiffnessCoefficientForGRM_ (1, 1) double;
+    kDampingCoefficientForGRM_   (1, 1) double;
 
-    graspable_points GraspablePoints;
+    graspable_points_ GraspablePoints;
   end
   properties (Access = private)
-    grid_color      (1, 3) double;
-    alpha           (1, 1) double;
-    graphical_model (1, 1) matlab.graphics.chart.primitive.Surface;
+    kGridColor_    (1, 3) double;
+    kTransparency_ (1, 1) double;
+    graphics_ (1, 1) matlab.graphics.chart.primitive.Surface;
   end
 
   %% Public Methods
   methods (Access = public)
 
-    % Constructor
-    function terrain = Terrain(config)
+    function terrain = Terrain(config_terrain)
+    % Terrain() Constructor
       arguments (Input)
-        config (1, 1) {mustBeA(config, "ConfigTerrain")};
+        config_terrain (1, 1) {mustBeA(config_terrain, "ConfigTerrain")};
       end
-      terrain.type = config.getSurfaceType();
-      terrain.inclination = config.getSurfaceInclination();
 
-      terrain.raw_map_data = terrain.loadSurfaceDataFromMatFile();
-      terrain.point_cloud_in_World = terrain.setPointCloud();
-      terrain.norm_vectors = terrain.setNormVectors();
+      terrain.kType_ = config_terrain.getSurfaceType();
+      terrain.kInclination_ = config_terrain.getSurfaceInclination();
 
-      [terrain.stiffness_coefficient_for_GRF, terrain.damping_coefficient_for_GRF, ...
-        terrain.stiffness_coefficient_for_GRM, terrain.damping_coefficient_for_GRM] = ...
-        config.getGroundCoefficients();
+      terrain.loadSurfaceDataFromMatFile();
+      terrain.setPointCloudInWorldFrame();
+      terrain.setNormVectors();
 
-      terrain.graspable_points = GraspablePoints(config);
+      terrain.setSurfaceCoefficients(config_terrain);
 
-      [terrain.grid_color, terrain.alpha] = config.getTerrainVisualSettings();
+      terrain.graspable_points_ = GraspablePoints(config_terrain);
+      terrain.graspable_points_.setGraspablePoints(terrain.kPointCloudInWorld_);
+
+      [terrain.kGridColor_, terrain.kTransparency_] = config_terrain.getTerrainVisualSettings();
+      terrain.createSurfaceGraphics();
     end
 
-    function terrain = initialize(terrain)
-      terrain.graspable_points = ...
-        terrain.graspable_points.initialize(terrain.point_cloud_in_World);
-
-      terrain = terrain.createSurfaceGraphics();
-    end
-
-    function terrain = visualize(terrain, time)
+    function visualize(terrain, time)
       if (time ~= 0.0)
         return;
       end
-      terrain.graphical_model.Visible = "on";
+      terrain.graphics_.Visible = "on";
     end
 
   end
@@ -64,58 +59,66 @@ classdef Terrain
   %% Private Methods
   methods (Access = private)
 
-    function raw_map_data = loadSurfaceDataFromMatFile(terrain)
+    function loadSurfaceDataFromMatFile(terrain)
       folder = "src/environment/map";
-      map_file_name = "map_" + terrain.type + ".mat";
+      map_file_name = "map_" + terrain.kType_ + ".mat";
       file_path = fullfile(folder, map_file_name);
-      if ~exist(file_path, "file")
+      if (~exist(file_path, "file"))
         error("Invalid surface type is specified" + newline ...
           + "Check ""type"" defined in config file.");
       end
       load(file_path, "x", "y", "z");
-      raw_map_data.x = x;
-      raw_map_data.y = y;
-      raw_map_data.z = z;
+      terrain.kRawMapData_.x = x;
+      terrain.kRawMapData_.y = y;
+      terrain.kRawMapData_.z = z;
     end
 
-    function point_cloud_in_World = setPointCloud(terrain)
-      x = terrain.raw_map_data.x;
-      y = terrain.raw_map_data.y;
-      z = terrain.raw_map_data.z;
+    function setPointCloudInWorldFrame(terrain)
+      x = terrain.kRawMapData_.x;
+      y = terrain.kRawMapData_.y;
+      z = terrain.kRawMapData_.z;
       point_cloud_in_Surface = [repelem(x, size(y, 2)); ...
                                 repmat(y, 1, size(x, 2)); ...
                                 reshape(z, 1, [])];
       % inclined_surface_point_cloud = ...
       %   eul2rotm(deg2rad(terrain.inclination)', "ZYX") * point_cloud_tmp;
-      inclined_surface_point_cloud = rpy2dc(deg2rad(terrain.inclination))' * ...
+      inclined_surface_point_cloud = rpy2dc(deg2rad(terrain.kInclination_))' * ...
         point_cloud_in_Surface;
-      point_cloud_in_World = [inclined_surface_point_cloud(1, :); ...
-                              inclined_surface_point_cloud(2, :); ...
-                              inclined_surface_point_cloud(3, :)];
+      terrain.kPointCloudInWorld_ = [ inclined_surface_point_cloud(1, :); ...
+                                      inclined_surface_point_cloud(2, :); ...
+                                      inclined_surface_point_cloud(3, :)];
     end
 
-    function norm_vector = setNormVectors(terrain)
-      [Nx, Ny, Nz] = surfnorm(terrain.raw_map_data.z);
+    function setNormVectors(terrain)
+      [Nx, Ny, Nz] = surfnorm(terrain.kRawMapData_.z);
       norm_vector_in_Surface = [reshape(Nx, 1, []); reshape(Ny, 1, []); reshape(Nz, 1, [])];
-      norm_vector = rpy2dc(deg2rad(terrain.inclination))' * norm_vector_in_Surface;
+      terrain.kNormVectors_ = rpy2dc(deg2rad(terrain.kInclination_))' * norm_vector_in_Surface;
     end
 
-    function terrain = createSurfaceGraphics(terrain)
-      [X, Y] = meshgrid(terrain.raw_map_data.x, terrain.raw_map_data.y);
-      Z = terrain.raw_map_data.z;
+    function setSurfaceCoefficients(terrain, config_terrain)
+      [Kf, Df, Km, Dm] = config_terrain.getGroundCoefficients();
+      terrain.kStiffnessCoefficientForGRF_ = Kf;
+      terrain.kDampingCoefficientForGRF_   = Df;
+      terrain.kStiffnessCoefficientForGRM_ = Km;
+      terrain.kDampingCoefficientForGRM_   = Dm;
+    end
+
+    function createSurfaceGraphics(terrain)
+      [X, Y] = meshgrid(terrain.kRawMapData_.x, terrain.kRawMapData_.y);
+      Z = terrain.kRawMapData_.z;
       map_vec(1, :) = reshape(X, 1, numel(X));
       map_vec(2, :) = reshape(Y, 1, numel(Y));
       map_vec(3, :) = reshape(Z, 1, numel(Z));
 
       % inclined_map_vec = eul2rotm(deg2rad(terrain.inclination)', "ZYX") * map_vec;
-      inclined_map_vec = rpy2dc(deg2rad(terrain.inclination))' * map_vec;
+      inclined_map_vec = rpy2dc(deg2rad(terrain.kInclination_))' * map_vec;
       inclined_X = reshape(inclined_map_vec(1, :), size(X, 1), size(X, 2));
       inclined_Y = reshape(inclined_map_vec(2, :), size(Y, 1), size(Y, 2));
       inclined_Z = reshape(inclined_map_vec(3, :), size(Z, 1), size(Z, 2));
 
-      terrain.graphical_model = mesh(inclined_X, inclined_Y, inclined_Z, ...
-        EdgeColor = terrain.grid_color, ...
-        EdgeAlpha = terrain.alpha, ...
+      terrain.graphics_ = mesh(inclined_X, inclined_Y, inclined_Z, ...
+        EdgeColor = terrain.kGridColor_, ...
+        EdgeAlpha = terrain.kTransparency_, ...
         Visible = "off");
     end
 
@@ -124,16 +127,16 @@ classdef Terrain
   %% Getter
   methods (Access = public)
     function inclination = getSurfaceInclination(terrain)
-      inclination = terrain.inclination;
+      inclination = terrain.kInclination_;
     end
     function [Kf, Df, Km, Dm] = getGroundCoefficients(terrain)
-      Kf = terrain.stiffness_coefficient_for_GRF;
-      Df = terrain.damping_coefficient_for_GRF;
-      Km = terrain.stiffness_coefficient_for_GRM;
-      Dm = terrain.damping_coefficient_for_GRM;
+      Kf = terrain.kStiffnessCoefficientForGRF_;
+      Df = terrain.kDampingCoefficientForGRF_;
+      Km = terrain.kStiffnessCoefficientForGRM_;
+      Dm = terrain.kDampingCoefficientForGRM_;
     end
     function graspable_points = getGraspablePoints(terrain)
-      graspable_points = terrain.graspable_points;
+      graspable_points = terrain.graspable_points_;
     end
 
     function nearest_point = getNearestPointInWorldFrame(terrain, original_point)
@@ -150,17 +153,17 @@ classdef Terrain
         original_point (3, 1) {mustBeA(original_point, "double")};
       end
 
-      original_point_in_Surface = rpy2dc(deg2rad(terrain.inclination)) * original_point;
+      original_point_in_Surface = rpy2dc(deg2rad(terrain.kInclination_)) * original_point;
 
-      [~, id_x] = min(abs(terrain.raw_map_data.x - original_point_in_Surface(1, 1)));
-      nearest_point_in_Surface(1, 1) = terrain.raw_map_data.x(1, id_x);
+      [~, id_x] = min(abs(terrain.kRawMapData_.x - original_point_in_Surface(1, 1)));
+      nearest_point_in_Surface(1, 1) = terrain.kRawMapData_.x(1, id_x);
 
-      [~, id_y] = min(abs(terrain.raw_map_data.y - original_point_in_Surface(2, 1)));
-      nearest_point_in_Surface(2, 1) = terrain.raw_map_data.y(1, id_y);
+      [~, id_y] = min(abs(terrain.kRawMapData_.y - original_point_in_Surface(2, 1)));
+      nearest_point_in_Surface(2, 1) = terrain.kRawMapData_.y(1, id_y);
 
-      nearest_point_in_Surface(3, 1) = terrain.raw_map_data.z(id_y, id_x);
+      nearest_point_in_Surface(3, 1) = terrain.kRawMapData_.z(id_y, id_x);
 
-      nearest_point = rpy2dc(deg2rad(terrain.inclination))' * nearest_point_in_Surface;
+      nearest_point = rpy2dc(deg2rad(terrain.kInclination_))' * nearest_point_in_Surface;
     end
 
     function norm_vector_at_point = getNormVectorAtPoint(terrain, point)
@@ -169,10 +172,9 @@ classdef Terrain
         point (3, 1) {mustBeA(point, "double")};
       end
 
-      [~, idx] = min(vecnorm(terrain.point_cloud_in_World - point));
-      norm_vector_at_point = terrain.norm_vectors(:, idx);
+      [~, idx] = min(vecnorm(terrain.kPointCloudInWorld_ - point));
+      norm_vector_at_point = terrain.kNormVectors_(:, idx);
     end
   end
 
-end
-% EOF
+end  % Terrain

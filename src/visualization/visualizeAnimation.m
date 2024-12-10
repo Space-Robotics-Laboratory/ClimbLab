@@ -2,7 +2,7 @@
 
 animation.resetGraphicsObjects(time, robot);
 
-terrain = terrain.visualize(time);
+terrain.visualize(time);
 
 robot = robot.visualize();
 
