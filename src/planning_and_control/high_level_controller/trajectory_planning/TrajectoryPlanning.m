@@ -49,7 +49,7 @@ classdef TrajectoryPlanning
         gait_planning     (1, 1) {mustBeA(gait_planning, "GaitPlanning")};
       end
 
-      swing_limb_id = foothold_planning.getSwingLimbID();
+      swing_limb_id = foothold_planning.planner_.output_.getSwingLimbId();
       swing_time = gait_planning.getSwingTimings();
       landing_time = gait_planning.getLandingTimings();
       if (current_time == 0.0 || any(current_time == swing_time(1, swing_limb_id)))
@@ -98,7 +98,7 @@ classdef TrajectoryPlanning
       trajectory_planning.base_trajectory_ = trajectory_planning.base_trajectory_.plan(robot, gait_planning);
 
       kNumLimb = uint8(size(trajectory_planning.limb_trajectory_, 1));
-      swing_limb_id = foothold_planning.getSwingLimbID();
+      swing_limb_id = foothold_planning.planner_.output_.getSwingLimbId();
       for limb_id = 1 : kNumLimb
         if (all(limb_id ~= swing_limb_id))
           continue;

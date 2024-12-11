@@ -1,27 +1,37 @@
-classdef FixedStride
+classdef FixedStride < handle
 % FixedStride
 % Foothold planning method. Select the next swing limb numbers based on the periodic gait sequence
 % and foothold positions based on the moving direction and graspable points.
 %
 % Created     : 2020.04.13 by Warley Ribeiro
-% Last updated: 2024.12.07 by Masazumi Imai
+% Last updated: 2024.12.12 by Masazumi Imai
+
+  properties (SetAccess = private, GetAccess = public)
+    output_ FootholdPlannerOutput;
+  end
 
   %% Public Methods
   methods (Access = public)
 
-    function fixed_stride = FixedStride()
+    function fixed_stride = FixedStride(kNumLimb)
     % FixedStride() Constructor
-    end
-
-    function next_swing_limb_id = updateSwingLimbNumber(~, previous_swing_limb_id, gait_planning)
-    % updateSwingLimbNumber()
-    %   Update the next swing limb ID(s) based on the periodic gait sequence.
       arguments (Input)
-        ~;
-        previous_swing_limb_id (:, 1) {mustBeA(previous_swing_limb_id, "uint8")};
-        gait_planning          (1, 1) {mustBeA(gait_planning,          "GaitPlanning")};
+        kNumLimb (1, 1) {mustBeA(kNumLimb, "uint8")};
       end
 
+      fixed_stride.output_ = FootholdPlannerOutput(kNumLimb);
+    end
+
+    function updateSwingLimbId(fixed_stride, gait_planning)
+    % updateSwingLimbId()
+    %   Update the next swing limb ID(s) based on the periodic gait sequence.
+      arguments (Input)
+        fixed_stride;
+        % previous_swing_limb_id (:, 1) {mustBeA(previous_swing_limb_id, "uint8")};
+        gait_planning (1, 1) {mustBeA(gait_planning, "GaitPlanning")};
+      end
+
+      previous_swing_limb_id = fixed_stride.output_.getSwingLimbId();
       gait_sequence = gait_planning.scheduler_.getSequence();
 
       if (previous_swing_limb_id == 0 || ...  % Initial condition
@@ -31,14 +41,18 @@ classdef FixedStride
         [~, pre_swing_limb_id] = find(gait_sequence == previous_swing_limb_id, 1);
         next_swing_limb_id = gait_sequence(:, pre_swing_limb_id + 1);
       end
+
+      % TODO: Create abstract class
+      fixed_stride.output_.setSwingLimbId(next_swing_limb_id);
+
+      fixed_stride.output_.setSwingLimbIdHistory(next_swing_limb_id);
     end
 
-    function next_foothold_positions = updateFootholdPositions(~, ...
-        terrain, path_planning, foothold_planning)
+    function updateFootholdPositions(fixed_stride, terrain, path_planning, foothold_planning)
     % updateFootholdPositions()
     %   Update next foothold positions based on moving direction and graspable points.
       arguments (Input)
-        ~;
+        fixed_stride;
         terrain           (1, 1) {mustBeA(terrain,           "Terrain")};
         path_planning     (1, 1) {mustBeA(path_planning,     "PathPlanning")};
         foothold_planning (1, 1) {mustBeA(foothold_planning, "FootholdPlanning")};
@@ -46,8 +60,8 @@ classdef FixedStride
 
       graspable_points = terrain.getGraspablePoints();
       moving_direction = path_planning.local_path_.getMovingDirection();
-      swing_limb_id = foothold_planning.getSwingLimbID();
-      current_foothold_positions = foothold_planning.getFootholdPositions();
+      swing_limb_id = fixed_stride.output_.getSwingLimbId();
+      current_foothold_positions = fixed_stride.output_.getFootholdPosition();
       max_allowable_stride = foothold_planning.getMaxAllowableStride();
 
       kNumLimb = uint8(size(current_foothold_positions, 2));
@@ -66,6 +80,18 @@ classdef FixedStride
         next_foothold_positions(:, limb_id) = graspable_points.getNearestPoint( ...
           ideal_next_EE_positions(:, limb_id));
       end
+
+      % TODO: Create abstract class
+      fixed_stride.output_.setFootholdPosition(next_foothold_positions);
+
+      for limb_id = 1 : kNumLimb
+        if (any(limb_id ~= swing_limb_id))
+          continue;  % Do not update foothold history for support limb
+        end
+
+        fixed_stride.output_.setFootholdHistory(limb_id);
+      end
+
     end
 
   end

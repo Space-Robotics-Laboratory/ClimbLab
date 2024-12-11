@@ -20,8 +20,8 @@ classDiagram
     + FootholdPlanning()
     + plan()
     - setPlanner()
-    + getSwingLimbID()
-    + getFootholdPositions()
+    + getSwingLimbId()
+    + getFootholdPosition()
     + getMaxAllowableStride()
     + getStepHeight()
   }
@@ -35,7 +35,7 @@ classDiagram
 
   class FixedStride {
   + FixedStride()
-  + updateSwingLimbNumber()
+  + updateSwingLimbId()
   + updateFootholdPositions()
   }
 

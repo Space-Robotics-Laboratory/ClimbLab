@@ -152,7 +152,7 @@ classdef Robot
       persistent EE_position_last;
 
       num_limb = robot.LP.getNumberOfLimb();
-      swing_limb_id = foothold_planning.getSwingLimbID();
+      swing_limb_id = foothold_planning.planner_.output_.getSwingLimbId();
 
       for limb_id = 1 : num_limb
         if (all(limb_id ~= swing_limb_id))

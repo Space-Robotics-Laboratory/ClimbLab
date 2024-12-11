@@ -28,8 +28,8 @@ classdef IntersectionOfDiagonalLineAndMovingDirection
       current_base_position_in_World = robot.SV.getBasePosition();
       moving_direction_vector = path_planning.local_path.getMovingDirection();
       current_EE_positions_in_World = robot.getEEPosition();
-      desired_EE_positions_in_World = foothold_planning.getFootholdPositions();
-      swing_limb_id = foothold_planning.getSwingLimbID();
+      desired_EE_positions_in_World = foothold_planning.planner_.output_.getFootholdPosition();
+      swing_limb_id = foothold_planning.planner_.output_.getSwingLimbId();
 
       [diagonal_lines, comb_diag_limb] = planner.calcDiagonalLines( ...
         current_EE_positions_in_World, desired_EE_positions_in_World, swing_limb_id);

@@ -36,7 +36,7 @@ classdef IntersectionOfDiagonalLines
       kNumLimb = robot.LP.getNumberOfLimb();
 
       current_EE_positions_in_World = robot.getEEPosition();
-      desired_EE_positions_in_World = foothold_planning.getFootholdPositions();
+      desired_EE_positions_in_World = foothold_planning.planner_.output_.getFootholdPosition();
 
       current_EE_positions_in_Base = zeros(3, kNumLimb);
       desired_EE_positions_in_Base = zeros(3, kNumLimb);
@@ -50,7 +50,7 @@ classdef IntersectionOfDiagonalLines
       current_EE_positions_in_Base_xy = [current_EE_positions_in_Base(1:2, :); zeros(1, kNumLimb)];
       desired_EE_positions_in_Base_xy = [desired_EE_positions_in_Base(1:2, :); zeros(1, kNumLimb)];
 
-      swing_limb_id = foothold_planning.getSwingLimbID();
+      swing_limb_id = foothold_planning.planner_.output_.getSwingLimbId();
 
       [diagonal_lines, comb_diag_limb] = planner.calcDiagonalLines( ...
         current_EE_positions_in_Base_xy, desired_EE_positions_in_Base_xy, kNumLimb, swing_limb_id);

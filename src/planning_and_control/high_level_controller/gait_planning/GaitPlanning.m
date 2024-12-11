@@ -71,7 +71,7 @@ classdef GaitPlanning
         foothold_planning (1, 1) {mustBeA(foothold_planning, "FootholdPlanning")};
       end
 
-      swing_limb_id = foothold_planning.getSwingLimbID();
+      swing_limb_id = foothold_planning.planner_.output_.getSwingLimbId();
       if (~gait_planning.isUpdateTiming(current_time, swing_limb_id))
         return;
       end

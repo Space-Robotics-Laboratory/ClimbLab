@@ -3,7 +3,7 @@
 disp(time);
 
 % Foothold Planning
-foothold_planning = foothold_planning.plan(time, terrain, path_planning, gait_planning);
+foothold_planning.plan(time, terrain, path_planning, gait_planning);
 
 % Gait Planning
 gait_planning = gait_planning.plan(time, robot, path_planning, foothold_planning);
