@@ -1,9 +1,9 @@
-classdef BasePosePlanning
+classdef BasePosePlanning < handle
 % BasePosePlanning
 % Plan the desired base pose
 %
 % Created     : 2020.04.10 by Warley Ribeiro
-% Last updated: 2024.12.07 by Masazumi Imai
+% Last updated: 2024.12.12 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -16,22 +16,23 @@ classdef BasePosePlanning
     desired_orientation_dcm_ (3, 3) double;  % at landing time of swing limb
   end
 
-  %% Public Methods
-  methods (Access = public)
+  %% Methods called only from GaitPlanning
+  methods (Access = ?GaitPlanning)
 
     function base_pose_planning = BasePosePlanning(type)
     % BasePosePlanning() Constructor
       arguments (Input)
         type (2, 1) {mustBeA(type, "string")};
       end
+
       base_pose_planning.kPositionPlanningType_ = type(1, 1);
       base_pose_planning.kOrientationPlanningType_ = type(2, 1);
 
-      base_pose_planning.position_planner_ = base_pose_planning.setPositionPlanner();
-      base_pose_planning.orientation_planner_ = base_pose_planning.setOrientationPlanner();
+      base_pose_planning.setPositionPlanner();
+      base_pose_planning.setOrientationPlanner();
     end
 
-    function base_pose_planning = plan(base_pose_planning, robot, path_planning, foothold_planning)
+    function plan(base_pose_planning, robot, path_planning, foothold_planning)
     % plan()
     %   Plan the desired robot base position and orientation at landing time of swing limb
       arguments (Input)
@@ -61,7 +62,7 @@ classdef BasePosePlanning
   %% Setter
   methods (Access = private)
 
-    function position_planner = setPositionPlanner(base_pose_planning)
+    function setPositionPlanner(base_pose_planning)
       switch (base_pose_planning.kPositionPlanningType_)
         case "do_nothing"
           position_planner = [];
@@ -72,15 +73,17 @@ classdef BasePosePlanning
         otherwise
           error("ERROR: Failed to set base position planner.")
       end
+      base_pose_planning.position_planner_ = position_planner;
     end
 
-    function orientation_planner = setOrientationPlanner(base_pose_planning)
+    function setOrientationPlanner(base_pose_planning)
       switch (base_pose_planning.kOrientationPlanningType_)
         case "do_nothing"
           orientation_planner = [];
         otherwise
           error("ERROR: Failed to set base orientation planner.")
       end
+      base_pose_planning.orientation_planner_ = orientation_planner;
     end
 
   end

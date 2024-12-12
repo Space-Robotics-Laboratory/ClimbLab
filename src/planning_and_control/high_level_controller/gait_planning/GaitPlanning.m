@@ -65,8 +65,7 @@ classdef GaitPlanning < handle
         return;
       end
 
-      gait_planning.base_pose_planner_ = gait_planning.base_pose_planner_.plan( ...
-        robot, path_planning, foothold_planning);
+      gait_planning.base_pose_planner_.plan(robot, path_planning, foothold_planning);
 
       gait_planning.scheduler_.updateSwingAndLandingTiming(current_time, swing_limb_id);
     end
