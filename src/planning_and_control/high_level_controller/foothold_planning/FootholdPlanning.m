@@ -51,7 +51,7 @@ classdef FootholdPlanning < handle
         return;
       end
 
-      if (~foothold_planning.isUpdateTiming(current_time, gait_planning.getLandingTimings()))
+      if (~foothold_planning.isUpdateTiming(current_time, gait_planning.scheduler_.output_.getLandingTimings()))
         return;  % Do not update if current time is during motion
       end
 

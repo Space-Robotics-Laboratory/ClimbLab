@@ -1,9 +1,9 @@
-classdef PeriodicGait
+classdef PeriodicGait < handle
 % PeriodicGait
 % Periodic gait scheduler
 %
 % Created     : 2021.04.20 by Warley Ribeiro
-% Last updated: 2024.12.07 by Masazumi Imai
+% Last updated: 2024.12.12 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -13,6 +13,8 @@ classdef PeriodicGait
     % 1st dim: Limb number(s) starting at same timing during gait cycle
     % 2nd dim: Limb number(s) starting at different timing during gait cycle
     kSequence_ uint8;
+
+    output_ GaitSchedulerOutput;
   end
   properties (Access = public)
     % Number of limb motions starting at different timing during gait cycle
@@ -22,70 +24,66 @@ classdef PeriodicGait
   %% Methods called only from GaitPlanning
   methods (Access = ?GaitPlanning)
 
-    function periodic_gait = PeriodicGait(config)
+    function periodic_gait = PeriodicGait(config_gait_planning)
     % PeriodicGait() Constructor
       arguments (Input)
-        config (1, 1) {mustBeA(config, "ConfigGaitPlanning")};
+        config_gait_planning (1, 1) {mustBeA(config_gait_planning, "ConfigGaitPlanning")};
       end
-      periodic_gait.kGaitPeriod_ = config.getGaitPeriod();
-      periodic_gait.kDutyFactor_ = config.getDutyFactor();
-      periodic_gait.kSequence_ = config.getGaitSequence();
+      periodic_gait.kGaitPeriod_ = config_gait_planning.getGaitPeriod();
+      periodic_gait.kDutyFactor_ = config_gait_planning.getDutyFactor();
+      periodic_gait.kSequence_ = config_gait_planning.getGaitSequence();
       periodic_gait.kNumLimbMotionStartingAtDiffTiming = size(periodic_gait.kSequence_, 2);
+
+      periodic_gait.output_ = GaitSchedulerOutput();
     end
 
-    function support_duration = calcSupportDuration(periodic_gait)
+    function calcSupportDuration(periodic_gait)
       support_duration = periodic_gait.kDutyFactor_ * periodic_gait.kGaitPeriod_;
+      periodic_gait.output_.setSupportDuration(support_duration);
     end
 
-    function transfer_duration = calcTransferDuration(periodic_gait, support_duration)
-      arguments (Input)
-        periodic_gait;
-        support_duration (1, 1) {mustBeA(support_duration, "double")};
-      end
+    function calcTransferDuration(periodic_gait)
+      support_duration = periodic_gait.output_.getSupportDuration();
       transfer_duration = periodic_gait.kGaitPeriod_ - support_duration;
+      periodic_gait.output_.setTransferDuration(transfer_duration);
     end
 
-    function swing_duration = calcSwingDuration(~, gait_planning)
-      arguments (Input)
-        ~;
-        gait_planning (1, 1) {mustBeA(gait_planning, "GaitPlanning")};
-      end
-      swing_duration = gait_planning.getTransferDuration() - ...
-        (gait_planning.getFootLiftUpDuration() + gait_planning.getFootLiftDownDuration());
-    end
-
-    function all_limb_support_duration = calcAllLimbSupportDuration(periodic_gait, gait_planning)
+    function calcSwingDuration(periodic_gait, foot_lift_up_duration, foot_lift_down_duration)
       arguments (Input)
         periodic_gait;
-        gait_planning (1, 1) {mustBeA(gait_planning, "GaitPlanning")};
+        foot_lift_up_duration   (1, 1) {mustBeA(foot_lift_up_duration, "double")};
+        foot_lift_down_duration (1, 1) {mustBeA(foot_lift_down_duration, "double")};
       end
 
-      gait_period = periodic_gait.kGaitPeriod_;
-      transfer_duration = gait_planning.getTransferDuration();
-      num_limb_motion = periodic_gait.kNumLimbMotionStartingAtDiffTiming;
+      transfer_duration = periodic_gait.output_.getTransferDuration();
 
-      if (transfer_duration * num_limb_motion >= gait_period)
+      swing_duration = transfer_duration - (foot_lift_up_duration + foot_lift_down_duration);
+      periodic_gait.output_.setSwingDuration(swing_duration);
+    end
+
+    function calcAllLimbSupportDuration(periodic_gait)
+      gait_period = periodic_gait.kGaitPeriod_;
+      transfer_duration = periodic_gait.output_.getTransferDuration();
+      kNumLimbMotion = periodic_gait.kNumLimbMotionStartingAtDiffTiming;
+
+      if (transfer_duration * kNumLimbMotion >= gait_period)
         all_limb_support_duration = 0.0;
       else
         all_limb_support_duration = ...
-          (gait_period - transfer_duration * num_limb_motion) / num_limb_motion;
+          (gait_period - transfer_duration * kNumLimbMotion) / kNumLimbMotion;
       end
+
+      periodic_gait.output_.setAllLimbSupportDuration(all_limb_support_duration);
     end
 
-    function [swing_timings, landing_timings] = initializeLimbMotionTimings(periodic_gait, ...
-        gait_planning)
-      arguments (Input)
-        periodic_gait;
-        gait_planning (1, 1) {mustBeA(gait_planning, "GaitPlanning")};
-      end
+    function initializeLimbMotionTimings(periodic_gait)
+      transfer_duration = periodic_gait.output_.getTransferDuration();
+      all_limb_support_duration = periodic_gait.output_.getAllLimbSupportDuration();
+      kNumLimbMotion = periodic_gait.kNumLimbMotionStartingAtDiffTiming;
+      kNumLimb = numel(periodic_gait.kSequence_);
 
-      transfer_duration = gait_planning.getTransferDuration();
-      all_limb_support_duration = gait_planning.getAllLimbSupportDuration();
-      num_limb_motion = periodic_gait.kNumLimbMotionStartingAtDiffTiming;
-      num_limb = numel(periodic_gait.kSequence_);
-
-      swing_timings = zeros(1, num_limb);
-      for i = 1 : num_limb_motion
+      swing_timings = zeros(1, kNumLimb);
+      for i = 1 : kNumLimbMotion
         limb_id = periodic_gait.kSequence_(:, i);
 
         swing_timings(1, limb_id) = 0.0 + ...
@@ -93,31 +91,34 @@ classdef PeriodicGait
       end
 
       landing_timings = swing_timings + transfer_duration;
+
+      periodic_gait.output_.setLimbMotionTimings(swing_timings, landing_timings);
     end
 
-    function [swing_timings, landing_timings] = updateSwingAndLandingTiming(periodic_gait, ...
-        current_time, gait_planning, swing_limb_id)
+    function updateSwingAndLandingTiming(periodic_gait, current_time, swing_limb_id)
       arguments (Input)
         periodic_gait;
         current_time  (1, 1) {mustBeA(current_time, "double")};
-        gait_planning (1, 1) {mustBeA(gait_planning, "GaitPlanning")};
         swing_limb_id (1, 1) {mustBeA(swing_limb_id, "uint8")};
       end
+
       [~, idx] = find(periodic_gait.kSequence_ == swing_limb_id(1, 1));
       sequence_tmp = [periodic_gait.kSequence_(:, idx:end), periodic_gait.kSequence_(:, 1:idx-1)];
 
-      transfer_duration = gait_planning.getTransferDuration();
-      all_limb_support_duration = gait_planning.getAllLimbSupportDuration();
-      num_limb_motion = periodic_gait.kNumLimbMotionStartingAtDiffTiming;
-      swing_timings = gait_planning.getSwingTimings();
+      transfer_duration = periodic_gait.output_.getTransferDuration();
+      all_limb_support_duration = periodic_gait.output_.getAllLimbSupportDuration();
+      kNumLimbMotion = periodic_gait.kNumLimbMotionStartingAtDiffTiming;
+      swing_timings = periodic_gait.output_.getSwingTimings();
 
-      for i = 1 : num_limb_motion
+      for i = 1 : kNumLimbMotion
         limb_id = sequence_tmp(:, i);
         swing_timings(1, limb_id) = current_time + ...
           (transfer_duration + all_limb_support_duration) * (i - 1);
       end
 
       landing_timings = swing_timings + transfer_duration;
+
+      periodic_gait.output_.setLimbMotionTimings(swing_timings, landing_timings);
     end
 
   end
@@ -128,7 +129,6 @@ classdef PeriodicGait
       sequence = periodic_gait.kSequence_;
     end
   end
-
 
   %% Methods for Visualization
   methods (Access = public)

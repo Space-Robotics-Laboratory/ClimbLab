@@ -50,8 +50,8 @@ classdef TrajectoryPlanning
       end
 
       swing_limb_id = foothold_planning.planner_.output_.getSwingLimbId();
-      swing_time = gait_planning.getSwingTimings();
-      landing_time = gait_planning.getLandingTimings();
+      swing_time = gait_planning.scheduler_.output_.getSwingTimings();
+      landing_time = gait_planning.scheduler_.output_.getLandingTimings();
       if (current_time == 0.0 || any(current_time == swing_time(1, swing_limb_id)))
         trajectory_planning = trajectory_planning.planTrajectories(robot, foothold_planning, gait_planning);
       end

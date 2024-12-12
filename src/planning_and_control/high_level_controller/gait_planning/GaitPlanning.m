@@ -1,9 +1,9 @@
-classdef GaitPlanning
+classdef GaitPlanning < handle
 % GaitPlanning
 % Plan desired base pose and gait schedule
 %
 % Created     : 2021.04.08 by Warley Ribeiro
-% Last updated: 2024.12.07 by Masazumi Imai
+% Last updated: 2024.12.12 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = immutable, GetAccess = public)
@@ -15,18 +15,10 @@ classdef GaitPlanning
   properties (SetAccess = private, GetAccess = public)
     scheduler_;
 
-    swing_timings_   (1, :) double;  % [s]: Timing of limb transfer motion start for each limb (1xNumLimb)
-    landing_timings_ (1, :) double;  % [s]: Timing of limb transfer motion end for each limb (1xNumLimb)
-
-    transfer_duration_ (1, 1) double;  % [s] including foot lift up, limb swing, foot lift down durations
-    swing_duration_    (1, 1) double;  % [s]
-
     kStepHeight_           (1, 1) double;  % [m]
+
     kFootLiftUpDuration_   (1, 1) double;  % [s]
     kFootLiftDownDuration_ (1, 1) double;  % [s]
-
-    support_duration_          (1, 1) double;  % [s]
-    all_limb_support_duration_ (1, 1) double;  % [s]
   end
 
   %% Public Methods
@@ -39,24 +31,21 @@ classdef GaitPlanning
       end
       gait_planning.kType_ = config_gait_planning.getGaitType();
 
-      gait_planning.base_pose_planner_ = BasePosePlanning(config_gait_planning.getBasePosePlaningType());
-
-      gait_planning.scheduler_ = gait_planning.setScheduler(config_gait_planning);
-
-      gait_planning.support_duration_ = gait_planning.scheduler_.calcSupportDuration();
-      gait_planning.transfer_duration_ = gait_planning.scheduler_.calcTransferDuration( ...
-        gait_planning.support_duration_);
-
       gait_planning.kStepHeight_ = config_gait_planning.getStepHeight();
+
       [gait_planning.kFootLiftUpDuration_, gait_planning.kFootLiftDownDuration_] = ...
         config_gait_planning.getFootLiftUpAndDownDuration();
-      gait_planning.swing_duration_ = gait_planning.scheduler_.calcSwingDuration(gait_planning);
 
-      gait_planning.all_limb_support_duration_ = ...
-        gait_planning.scheduler_.calcAllLimbSupportDuration(gait_planning);
+      gait_planning.base_pose_planner_ = BasePosePlanning(config_gait_planning.getBasePosePlaningType());
 
-      [gait_planning.swing_timings_, gait_planning.landing_timings_] = ...
-        gait_planning.scheduler_.initializeLimbMotionTimings(gait_planning);
+      gait_planning.setScheduler(config_gait_planning);
+
+      gait_planning.scheduler_.calcSupportDuration();
+      gait_planning.scheduler_.calcTransferDuration();
+      gait_planning.scheduler_.calcSwingDuration(gait_planning.kFootLiftUpDuration_, gait_planning.kFootLiftDownDuration_);
+      gait_planning.scheduler_.calcAllLimbSupportDuration();
+
+      gait_planning.scheduler_.initializeLimbMotionTimings();
     end
 
     function gait_planning = plan(gait_planning, ...
@@ -79,9 +68,7 @@ classdef GaitPlanning
       gait_planning.base_pose_planner_ = gait_planning.base_pose_planner_.plan( ...
         robot, path_planning, foothold_planning);
 
-      [gait_planning.swing_timings_, gait_planning.landing_timings_] = ...
-        gait_planning.scheduler_.updateSwingAndLandingTiming( ...
-        current_time, gait_planning, swing_limb_id);
+      gait_planning.scheduler_.updateSwingAndLandingTiming(current_time, swing_limb_id);
     end
 
   end
@@ -89,12 +76,12 @@ classdef GaitPlanning
   %% Private Methods
   methods (Access = private)
 
-    function boolean = isUpdateTiming(gait_planning, current_time, swing_limb_id)
-      swing_time = gait_planning.getSwingTimings();
+    function is_update_timing = isUpdateTiming(gait_planning, current_time, swing_limb_id)
+      swing_time = gait_planning.scheduler_.output_.getSwingTimings();
       if (current_time ~= 0.0 && any(current_time ~= swing_time(1, swing_limb_id)))
-        boolean = false;
+        is_update_timing = false;
       else
-        boolean = true;
+        is_update_timing = true;
       end
     end
 
@@ -103,15 +90,16 @@ classdef GaitPlanning
   %% Setter
   methods (Access = private)
 
-    function scheduler = setScheduler(gait_planning, config)
+    function setScheduler(gait_planning, config_gait_planning)
       if startsWith(gait_planning.kType_, "periodic")
-        scheduler = PeriodicGait(config);
+        scheduler = PeriodicGait(config_gait_planning);
       elseif startsWith(gait_planning.kType_, "non_periodic")
         scheduler = NonPeriodicGait();
       else
         error("ERROR: Failed to set gait scheduler. " + ...
           "Gait scheduler type starts with ""periodic"" or ""non_periodic"".");
       end
+      gait_planning.scheduler_ = scheduler;
     end
 
   end
@@ -122,9 +110,6 @@ classdef GaitPlanning
       type = gait_planning.kType_;
     end
 
-    function transfer_duration = getTransferDuration(gait_planning)
-      transfer_duration = gait_planning.transfer_duration_;
-    end
     function step_height = getStepHeight(gait_planning)
       step_height = gait_planning.kStepHeight_;
     end
@@ -133,15 +118,6 @@ classdef GaitPlanning
     end
     function foot_lift_down_duration = getFootLiftDownDuration(gait_planning)
       foot_lift_down_duration = gait_planning.kFootLiftDownDuration_;
-    end
-    function all_limb_support_duration = getAllLimbSupportDuration(gait_planning)
-      all_limb_support_duration = gait_planning.all_limb_support_duration_;
-    end
-    function swing_timings = getSwingTimings(gait_planning)
-      swing_timings = gait_planning.swing_timings_;
-    end
-    function landing_timings = getLandingTimings(gait_planning)
-      landing_timings = gait_planning.landing_timings_;
     end
   end
 

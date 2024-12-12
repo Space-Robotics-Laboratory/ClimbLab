@@ -159,8 +159,8 @@ classdef Robot
           continue;
         end
 
-        swing_timings = gait_planning.getSwingTimings();
-        landing_timings = gait_planning.getLandingTimings();
+        swing_timings = gait_planning.scheduler_.output_.getSwingTimings();
+        landing_timings = gait_planning.scheduler_.output_.getLandingTimings();
 
         % Release gripper of swing limb at swing motion start time
         if (abs(time - swing_timings(1, limb_id)) < eps)

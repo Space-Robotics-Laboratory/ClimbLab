@@ -1,10 +1,11 @@
-classdef NonPeriodicGait
+classdef NonPeriodicGait < handle
 
+  %% Properties
   properties (SetAccess = private, GetAccess = public)
   end
 
-  methods (Access = public)
+  %% Methods called only from GaitPlanning
+  methods (Access = ?GaitPlanning)
   end
 
-end
-% EOF
+end  % NonPeriodicGait
