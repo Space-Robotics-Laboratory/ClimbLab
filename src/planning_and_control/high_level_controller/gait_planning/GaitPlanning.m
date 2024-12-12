@@ -48,7 +48,7 @@ classdef GaitPlanning < handle
       gait_planning.scheduler_.initializeLimbMotionTimings();
     end
 
-    function gait_planning = plan(gait_planning, ...
+    function plan(gait_planning, ...
         current_time, robot, path_planning, foothold_planning)
     % plan()
     %   Plan the next base pose and the gait schedule
@@ -105,6 +105,7 @@ classdef GaitPlanning < handle
 
   %% Getter
   methods (Access = public)
+
     function type = getType(gait_planning)
       type = gait_planning.kType_;
     end
@@ -112,12 +113,14 @@ classdef GaitPlanning < handle
     function step_height = getStepHeight(gait_planning)
       step_height = gait_planning.kStepHeight_;
     end
+
     function foot_lift_up_duration = getFootLiftUpDuration(gait_planning)
       foot_lift_up_duration = gait_planning.kFootLiftUpDuration_;
     end
     function foot_lift_down_duration = getFootLiftDownDuration(gait_planning)
       foot_lift_down_duration = gait_planning.kFootLiftDownDuration_;
     end
+
   end
 
 end  % GaitPlanning

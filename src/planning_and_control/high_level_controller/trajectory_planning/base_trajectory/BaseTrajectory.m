@@ -1,11 +1,14 @@
-classdef BaseTrajectory
+classdef BaseTrajectory < handle
 % BaseTrajectory
 % Plan robot base pose trajectory and calculate desired pose at current time step
 %
 % Created     : 2024.05.20 by Masazumi Imai
-% Last updated: 2024.12.07 by Masazumi Imai
+% Last updated: 2024.12.12 by Masazumi Imai
 
   %% Properties
+  properties (SetAccess = immutable, GetAccess = public)
+    kType_ (1, 1) string;
+  end
   properties (SetAccess = private, GetAccess = public)
     position_ PositionTrajectory;
     orientation_;
@@ -22,21 +25,19 @@ classdef BaseTrajectory
   methods (Access = ?TrajectoryPlanning)
 
     % Constructor
-    function base_trajectory = BaseTrajectory(config)
+    function base_trajectory = BaseTrajectory(config_trajectory_planning)
       arguments (Input)
-        config (1, 1) {mustBeA(config, "ConfigTrajectoryPlanning")};
+        config_trajectory_planning (1, 1) {mustBeA(config_trajectory_planning, "ConfigTrajectoryPlanning")};
       end
-      [type, ~] = config.getTrajectoryType();
+      [base_trajectory.kType_, ~] = config_trajectory_planning.getTrajectoryType();
 
-      base_trajectory.position_ = PositionTrajectory(type);
+      base_trajectory.position_ = PositionTrajectory(base_trajectory.kType_);
 
-
-      line_style = "none"; color = [0.0, 0.0, 0.0]; width = 0.0;
-      base_trajectory.position_ = base_trajectory.position_.setVisualSettings( ...
-        line_style, color, width);
+      kLineStyle = "none"; kColor = [0.0, 0.0, 0.0]; kWidth = 0.0;
+      base_trajectory.position_.planned_trajectory_.setVisualSettings(kLineStyle, kColor, kWidth);
     end
 
-    function base_trajectory = plan(base_trajectory, robot, gait_planning)
+    function plan(base_trajectory, robot, gait_planning)
     % plan()
     %   Plan the trajectory from current to desired pose of the robot base
       arguments (Input)
@@ -47,31 +48,35 @@ classdef BaseTrajectory
 
       current_base_position = robot.SV.getBasePosition();  % previous desired position?
       desired_base_position = gait_planning.base_pose_planner_.getDesiredBasePosition();
+
       motion_duration = gait_planning.scheduler_.output_.getTransferDuration();
 
-      time_constraints = [base_trajectory.kStartTime_, motion_duration];
-      position_constraints = [current_base_position, desired_base_position];
-      velocity_constraints = [base_trajectory.kStartVelocity_, base_trajectory.kFinalVelocity_];
+      time_constraints = [base_trajectory.kStartTime_, ...
+                          motion_duration];
+
+      position_constraints = [current_base_position, ...
+                              desired_base_position];
+
+      velocity_constraints = [base_trajectory.kStartVelocity_,...
+                              base_trajectory.kFinalVelocity_];
+
       acceleration_constraints = [base_trajectory.kStartAcceleration_, ...
                                   base_trajectory.kFinalAcceleration_];
 
-      base_trajectory.position_ = base_trajectory.position_.plan( ...
-        time_constraints, position_constraints, velocity_constraints, acceleration_constraints);
+      base_trajectory.position_.plan(time_constraints, position_constraints, velocity_constraints, acceleration_constraints);
 
-      base_trajectory.position_ = base_trajectory.position_.storePlannedTrajectory( ...
-        base_trajectory.kStartTime_, motion_duration);
+      base_trajectory.position_.storePlannedTrajectory(base_trajectory.kStartTime_, motion_duration);
     end
 
-    function base_trajectory = update(base_trajectory, current_time, motion_start_time, motion_final_time)
+    function update(base_trajectory, current_time, motion_start_time, motion_final_time)
       arguments (Input)
         base_trajectory;
-        current_time    (1, 1) {mustBeA(current_time, "double")};
+        current_time      (1, 1) {mustBeA(current_time,      "double")};
         motion_start_time (1, 1) {mustBeA(motion_start_time, "double")};
         motion_final_time (1, 1) {mustBeA(motion_final_time, "double")};
       end
 
-      base_trajectory.position_ = base_trajectory.position_.update( ...
-        current_time, motion_start_time, motion_final_time);
+      base_trajectory.position_.update(current_time, motion_start_time, motion_final_time);
     end
 
   end

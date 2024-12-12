@@ -6,10 +6,10 @@ disp(time);
 foothold_planning.plan(time, terrain, path_planning, gait_planning);
 
 % Gait Planning
-gait_planning = gait_planning.plan(time, robot, path_planning, foothold_planning);
+gait_planning.plan(time, robot, path_planning, foothold_planning);
 
 % Trajectory Planning
-trajectory_planning = trajectory_planning.plan(time, robot, foothold_planning, gait_planning);
+trajectory_planning.plan(time, robot, foothold_planning, gait_planning);
 
 % Limb Controller
 robot = limb_controller.control(time, robot, foothold_planning, gait_planning, trajectory_planning, ...

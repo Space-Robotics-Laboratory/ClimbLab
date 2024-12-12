@@ -1,9 +1,9 @@
-classdef PositionTrajectory
+classdef PositionTrajectory < handle
 % PositionTrajectory
 % Plan position trajectory and calculate desired position at current time step
 %
 % Created     : 2024.05.20 by Masazumi Imai
-% Last updated: 2024.12.07 by Masazumi Imai
+% Last updated: 2024.12.12 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -36,7 +36,7 @@ classdef PositionTrajectory
       position_trajectory.planned_trajectory_ = TrajectoryHistory();
     end
 
-    function position_trajectory = plan(position_trajectory, ...
+    function plan(position_trajectory, ...
         time_constraints, position_constraints, velocity_constraints, acceleration_constraints)
       arguments (Input)
         position_trajectory;
@@ -46,11 +46,11 @@ classdef PositionTrajectory
         acceleration_constraints (3, :) {mustBeA(acceleration_constraints, "double")};
       end
 
-      position_trajectory.planner_ = position_trajectory.planner_.calcCoefficients( ...
+      position_trajectory.planner_.calcControlPoints( ...
         time_constraints, position_constraints, velocity_constraints, acceleration_constraints);
     end
 
-    function position_trajectory = storePlannedTrajectory(position_trajectory, ...
+    function storePlannedTrajectory(position_trajectory, ...
         start_time, final_time)
       arguments (Input)
         position_trajectory;
@@ -67,7 +67,7 @@ classdef PositionTrajectory
       end
     end
 
-    function position_trajectory = update(position_trajectory, current_time, start_time, final_time)
+    function update(position_trajectory, current_time, start_time, final_time)
       arguments (Input)
         position_trajectory;
         current_time (1, 1) {mustBeA(current_time, "double")};
@@ -80,19 +80,8 @@ classdef PositionTrajectory
           current_time, start_time, final_time);
     end
 
-    function position_trajectory = stay(position_trajectory, current_EE_position)
+    function stay(position_trajectory, current_EE_position)
       position_trajectory.desired_position_ = current_EE_position;
-    end
-
-    function position_trajectory = setVisualSettings(position_trajectory, line_style, color, width)
-      arguments (Input)
-        position_trajectory;
-        line_style (1, 1) {mustBeA(line_style, "string")};
-        color;
-        width      (1, 1) {mustBeA(width,      "double")};
-      end
-
-      position_trajectory.planned_trajectory_.setVisualSettings(line_style, color, width);
     end
 
   end

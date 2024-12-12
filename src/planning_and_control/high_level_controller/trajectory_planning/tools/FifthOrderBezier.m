@@ -1,20 +1,20 @@
-classdef FifthOrderBezier
+classdef FifthOrderBezier < handle
 % FifthOrderBezier
 % Calculate fifth order bezier trajectory coefficients
 %
 % Created     : 2022.01.19 by Warley Ribeiro
-% Last updated: 2024.12.07 by Masazumi Imai
+% Last updated: 2024.12.12 by Masazumi Imai
 
   %% Properties
   properties (Constant, GetAccess = private)
     % Order of the Bezier polynomial
-    kBezierPolynomialOrder_ (1, 1) uint8 = 5;
+    kOrder_ (1, 1) uint8 = 5;
   end
   properties (SetAccess = private, GetAccess = public)
-    % Coefficients (control points)
+    % Control points
     %   1st dim: x-y-z coordinates
-    %   2nd dim: coefficient index
-    coefficients_ (3, 6) double;
+    %   2nd dim: control points index
+    control_points_ (3, 6) double;
   end
 
   %% Public methods
@@ -22,10 +22,10 @@ classdef FifthOrderBezier
 
     function fifth_order_bezier = FifthOrderBezier()
     % FifthOrderBezier() Constructor
-      fifth_order_bezier.coefficients_ = zeros(3, fifth_order_bezier.kBezierPolynomialOrder_ + 1);
+      fifth_order_bezier.control_points_ = zeros(3, fifth_order_bezier.kOrder_ + 1);
     end
 
-    function fifth_order_bezier = calcCoefficients(fifth_order_bezier, ...
+    function calcControlPoints(fifth_order_bezier, ...
         time_constraints, position_constraints, velocity_constraints, acceleration_constraints)
       arguments (Input)
         fifth_order_bezier;
@@ -35,7 +35,7 @@ classdef FifthOrderBezier
         acceleration_constraints (3, :) {mustBeA(acceleration_constraints, "double")};
       end
 
-      n = double(fifth_order_bezier.kBezierPolynomialOrder_);
+      n = double(fifth_order_bezier.kOrder_);
       AA = zeros(3, n + 1);
       start_position = position_constraints(:, 1);
       final_position = position_constraints(:, 2);
@@ -56,7 +56,7 @@ classdef FifthOrderBezier
 
       % Unpacking coefficients to trajectory_planning struct
       for k = 1 : n + 1
-        fifth_order_bezier.coefficients_(1:3, k) = AA(:, k);
+        fifth_order_bezier.control_points_(1:3, k) = AA(:, k);
       end
     end
 
@@ -69,11 +69,11 @@ classdef FifthOrderBezier
         final_time   (1, 1) {mustBeA(final_time,   "double")};
       end
 
-      n = double(fifth_order_bezier.kBezierPolynomialOrder_);
+      n = double(fifth_order_bezier.kOrder_);
       x = zeros(3, 1);
       % Compute position from the Bezier curve equation
       for j = 0 : n
-        control_points = fifth_order_bezier.coefficients_(:, j + 1);
+        control_points = fifth_order_bezier.control_points_(:, j + 1);
         bernstein_polynomial = ...
           fifth_order_bezier.calcBernsteinPolynomial(start_time, final_time, current_time, j, n);
         x = x + control_points .* bernstein_polynomial;

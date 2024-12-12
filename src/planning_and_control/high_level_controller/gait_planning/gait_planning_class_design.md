@@ -47,8 +47,8 @@ classDiagram
   class BasePosePlanning {
     + kPositionPlanningType_: string
     + kOrientationPlanningType_: string
-    + position_planner_: PositionTrajectory
-    + orientation_planner_: OrientationTrajectory
+    + position_planner_:
+    + orientation_planner_:
     + desired_position_: 3x1 double
     + desired_orientation_dcm_: 3x3 double
 
