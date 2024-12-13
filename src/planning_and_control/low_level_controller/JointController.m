@@ -1,31 +1,38 @@
-classdef JointController
+classdef JointController < handle
+% JointController
+% Joint controller
+%
+% Created     : 2024.05.20 by Masazumi Imai
+% Last updated: 2024.12.13 by Masazumi Imai
+
   %% Properties
   properties (SetAccess = immutable, GetAccess = public)
-    type (1, 1) string;
-    controller;
+    kType_ (1, 1) string;
+  end
+  properties (SetAccess = public, GetAccess = public)
+    controller_;
   end
 
   %% Public Methods
   methods (Access = public)
 
-    function joint_controller = JointController(config)
+    function joint_controller = JointController(config_joint_controller)
       arguments (Input)
-        config (1, 1) {mustBeA(config, "ConfigJointController")};
+        config_joint_controller (1, 1) {mustBeA(config_joint_controller, "ConfigJointController")};
       end
 
-      joint_controller.type = config.getType();
-      joint_controller.controller = joint_controller.setController(config);
+      joint_controller.kType_ = config_joint_controller.getType();
+      joint_controller.setController(config_joint_controller);
     end
 
     function robot = control(joint_controller, robot)
-      desired_angular_position = robot.des_SV.getJointAngularPosition();
-      desired_angular_velocity = robot.des_SV.getJointAngularVelocity();
-      current_angular_position = robot.SV.getJointAngularPosition();
-      current_angular_velocity = robot.SV.getJointAngularVelocity();
+      arguments (Input)
+        joint_controller;
+        robot (1, 1) {mustBeA(robot, "Robot")};
+      end
 
-      joint_torque = joint_controller.controller.calcJointTorque( ...
-        desired_angular_position, desired_angular_velocity, ...
-        current_angular_position, current_angular_velocity);
+      joint_torque = joint_controller.controller_.calcJointTorque(robot);
+
       robot = robot.setJointTorque(joint_torque);
     end
 
@@ -34,17 +41,17 @@ classdef JointController
   %% Private Methods
   methods (Access = private)
 
-    function controller = setController(joint_controller, config)
-      switch (joint_controller.type)
+    function setController(joint_controller, config_joint_controller)
+      switch (joint_controller.kType_)
         case "PD_control"
-          [proportional_gain, derivative_gain] = config.getPDControllerGain();
-          controller = PDController(proportional_gain, derivative_gain);
+          controller = PDController(config_joint_controller);
         otherwise
           error("ERROR: Failed to set controller. Invalid controller type is specified.");
       end
+
+      joint_controller.controller_ = controller;
     end
 
   end
 
-end
-% EOF
+end  % JointController

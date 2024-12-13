@@ -1,4 +1,10 @@
-classdef LimbController
+classdef LimbController < handle
+% LimbController
+% Limb controller
+%
+% Created     : 2024.05.20 by Masazumi Imai
+% Last updated: 2024.12.13 by Masazumi Imai
+
   %% Properties
   properties (SetAccess = private, GetAccess = public)
   end
@@ -21,6 +27,7 @@ classdef LimbController
         trajectory_planning   (1, 1) {mustBeA(trajectory_planning, "TrajectoryPlanning")};
         terrain       (1, 1) {mustBeA(terrain, "Terrain")};
       end
+
       global d_time;
       des_SV_last = robot.des_SV.clone();
       des_SV_tmp = des_SV_last;
@@ -62,5 +69,4 @@ classdef LimbController
   methods (Access = private)
   end
 
-end
-% EOF
+end  % LimbController

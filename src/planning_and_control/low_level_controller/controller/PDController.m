@@ -1,29 +1,52 @@
-classdef PDController
-  %% Properties
+classdef PDController < handle
+% PDController
+% PD controller
+%
+% Created     : 2020.04.10 by Warley Ribeiro
+% Last updated: 2024.12.13 by Masazumi Imai
+
+%% Properties
   properties (SetAccess = private, GetAccess = public)
-    Kp (1, 1) double;
-    Kd (1, 1) double;
+    kProportionalGain_ (1, 1) double;
+    kDerivativeGain_ (1, 1) double;
   end
 
   %% Public Methods
   methods (Access = public)
 
-    function controller = PDController(proportional_gain, derivative_gain)
+    function pd_controller = PDController(config_joint_controller)
     % PDController() Constructor
-      controller.Kp = proportional_gain;
-      controller.Kd = derivative_gain;
+      arguments (Input)
+        config_joint_controller (1, 1) {mustBeA(config_joint_controller, "ConfigJointController")};
+      end
+
+      [proportional_gain, derivative_gain] = config_joint_controller.getPDControllerGain();
+
+      pd_controller.kProportionalGain_ = proportional_gain;
+      pd_controller.kDerivativeGain_ = derivative_gain;
     end
 
-    function torque = calcJointTorque(controller, ...
-        desired_angular_position, desired_angular_velocity, ...
-        current_angular_position, current_angular_velocity)
+    function torque = calcJointTorque(pd_controller, robot)
+    % calcJointTorque()
+    % Calculate joint torque
+      arguments (Input)
+        pd_controller;
+        robot (1, 1) {mustBeA(robot, "Robot")};
+      end
+
+      desired_angular_position = robot.des_SV.getJointAngularPosition();
+      desired_angular_velocity = robot.des_SV.getJointAngularVelocity();
+
+      current_angular_position = robot.SV.getJointAngularPosition();
+      current_angular_velocity = robot.SV.getJointAngularVelocity();
+
       diff_position = desired_angular_position - current_angular_position;
       diff_velocity = desired_angular_velocity - current_angular_velocity;
 
-      torque = controller.Kp * diff_position + controller.Kd * diff_velocity;
+      torque = pd_controller.kProportionalGain_ * diff_position + ...
+               pd_controller.kDerivativeGain_ * diff_velocity;
     end
 
   end
 
-end
-% EOF
+end  % PDController
