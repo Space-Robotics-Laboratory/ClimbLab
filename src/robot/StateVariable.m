@@ -1,5 +1,6 @@
 classdef StateVariable
-  % State Variable
+% State Variable
+
   %% Properties
   properties (SetAccess = private, GetAccess = public)
     q     (:, 1) double  % Joint angle
@@ -120,8 +121,7 @@ classdef StateVariable
     end
 
     function SV = detectEECollision(SV, terrain, EE_positions, EE_orientations_dcm)
-      SV.contact_state_ = SV.contact_state_.detectEECollision(terrain, ...
-        EE_positions, EE_orientations_dcm, SV.is_grasping_);
+      SV.contact_state_.detectEECollision(terrain, EE_positions, EE_orientations_dcm, SV.is_grasping_);
     end
 
   end
@@ -154,6 +154,7 @@ classdef StateVariable
       end
       SV.q = joint_angles;
     end
+
     function SV = setJointTorque(SV, joint_torque)
       arguments (Input)
         SV;
@@ -172,6 +173,7 @@ classdef StateVariable
       end
       SV.R0 = base_position;
     end
+
     function SV = setBaseOrientationDCM(SV, base_orientation_dcm)
       arguments (Input)
         SV;
@@ -179,6 +181,7 @@ classdef StateVariable
       end
       SV.A0 = base_orientation_dcm;
     end
+
     function SV = setBaseOrientationEuler(SV, base_orientation_euler)
       arguments (Input)
         SV;
@@ -199,9 +202,6 @@ classdef StateVariable
       SV.Fe = external_forces;
     end
 
-    function SV = setContactPose(SV, contact_position, contact_orientation_dcm)
-      SV.contact_state_ = SV.contact_state_.setContactPose(contact_position, contact_orientation_dcm);
-    end
     function SV = setIsSupporting(SV, limb_ids_to_be_updated, next_state)
       for limb_id = 1 : size(SV.is_supporting_, 2)
         if (any(limb_id == limb_ids_to_be_updated))
@@ -209,9 +209,11 @@ classdef StateVariable
         end
       end
     end
+
     function SV = setIsGrasping(SV, limb_id, next_state)
       SV.is_grasping_(1, limb_id) = next_state;
     end
+
     function SV = setIsSlipping(SV, limb_id, next_state)
       SV.is_slipping_(1, limb_id) = next_state;
     end
@@ -220,34 +222,43 @@ classdef StateVariable
 
   %% Getter
   methods (Access = public)
+
     function joint_angles = getJointAngularPosition(SV)
       joint_angles = SV.q;
     end
+
     function joint_angular_velocity = getJointAngularVelocity(SV)
       joint_angular_velocity = SV.qd;
     end
-    function joint_angylar_acceleration = getJointAngularAcceleration(SV)
-      joint_angylar_acceleration = SV.qdd;
+
+    function joint_angular_acceleration = getJointAngularAcceleration(SV)
+      joint_angular_acceleration = SV.qdd;
     end
 
     function base_position = getBasePosition(SV)
       base_position = SV.R0;
     end
+
     function base_orientation_DCM = getBaseOrientationDCM(SV)
       base_orientation_DCM = SV.A0;
     end
+
     function base_orientation_euler = getBaseOrientationEuler(SV)
       base_orientation_euler = SV.Q0;
     end
+
     function base_linear_velocity = getBaseLinearVelocity(SV)
       base_linear_velocity = SV.v0;
     end
+
     function base_angular_velocity = getBaseAngularVelocity(SV)
       base_angular_velocity = SV.w0;
     end
+
     function base_linear_acceleration = getBaseLinearAcceleration(SV)
       base_linear_acceleration = SV.vd0;
     end
+
     function base_angular_acceleration = getBaseAngularAcceleration(SV)
       base_angular_acceleration = SV.wd0;
     end
@@ -260,6 +271,7 @@ classdef StateVariable
       [~, EE] = find(LP.getEndLink() == 1);
       ground_reaction_force = SV.Fe(:, EE);
     end
+
     function ground_reaction_moment = getGroundReactionMoment(SV, LP)
       arguments (Input)
         SV;
@@ -276,9 +288,11 @@ classdef StateVariable
     function is_supporting = getIsSupporting(SV)
       is_supporting = SV.is_supporting_;
     end
+
     function is_grasping = getIsGrasping(SV)
       is_grasping = SV.is_grasping_;
     end
+
   end
 
 end

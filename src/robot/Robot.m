@@ -258,7 +258,7 @@ classdef Robot
               robot.SV_ = robot.SV_.setIsSlipping(limb_id, true);
             end
           end
-          robot.SV_ = robot.SV_.setContactPose(contact_EE_position, contact_EE_orientation_dcm);
+          robot.SV_.contact_state_.setContactPose(contact_EE_position, contact_EE_orientation_dcm);
         otherwise
           error("ERROR: Invalid gripper detachment detection method is specified.");
       end

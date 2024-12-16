@@ -1,4 +1,8 @@
-classdef ContactState
+classdef ContactState < handle
+% Contact state of end-effector
+%
+% Created     : 2020.04.09 by Warley Ribeiro
+% Last updated: 2024.12.12 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -21,8 +25,7 @@ classdef ContactState
       contact_state.orientation_dcm_ = zeros(3, 3 * num_contact_points);
     end
 
-    function contact_state = detectEECollision(contact_state, ...
-      terrain, EE_positions, EE_orientations_dcm, EE_is_grasping)
+    function detectEECollision(contact_state, terrain, EE_positions, EE_orientations_dcm, EE_is_grasping)
     % detectEECollision()
     %   Detect a new contact (or losing an old one) between the robot end-effector and the ground
     %   surface, and save contact pose of End-Effectors.
@@ -63,11 +66,11 @@ classdef ContactState
   %% Setter
   methods (Access = public)
 
-    function contact_state = setInContact(contact_state)
+    function setInContact(contact_state)
       contact_state.in_contact_
     end
 
-    function contact_state = setContactPose(contact_state, ...
+    function setContactPose(contact_state, ...
         contact_position, contact_orientation_dcm)
       contact_state.position_ = contact_position;
       contact_state.orientation_dcm_ = contact_orientation_dcm;
@@ -77,15 +80,19 @@ classdef ContactState
 
   %% Getter
   methods (Access = public)
+
     function in_contact = getInContact(contact_state)
       in_contact = contact_state.in_contact_;
     end
+
     function contact_position = getPosition(contact_state)
       contact_position = contact_state.position_;
     end
+
     function contact_orientation_dcm = getOrientationDCM(contact_state)
       contact_orientation_dcm = contact_state.orientation_dcm_;
     end
+
   end
 
 end  % ContactState
