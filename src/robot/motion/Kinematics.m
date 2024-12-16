@@ -13,15 +13,15 @@ classdef Kinematics
         robot (1, 1) {mustBeA(robot, "Robot")};
       end
 
-      joint_config = robot.LP_.getJointAllocationType();
-      num_limb = robot.LP_.getNumberOfLimb();
-      num_joints_per_limb = robot.LP_.getNumberOfJointsPerLimb();
+      kJointConfig = robot.LP_.getJointAllocationType();
+      kNumLimb = robot.LP_.getNumberOfLimb();
+      kNumJointsPerLimb = robot.LP_.getNumberOfJointsPerLimb();
 
-      switch (joint_config)
+      switch (kJointConfig)
         % case "mammal"
         case "insect"
-          for limb_id = 1 : num_limb
-            num_joints = num_joints_per_limb(1, limb_id);
+          for limb_id = 1 : kNumLimb
+            num_joints = kNumJointsPerLimb(1, limb_id);
             if (num_joints == 3)
               solver(limb_id, 1) = IKSolverForInsectJointConfig3DoFLimb();
             % elseif (num_joints == 4)
@@ -38,7 +38,7 @@ classdef Kinematics
 
       [yaw_base_to_limb_root, position_vectors_of_links] = ...
         kinematics.calcLinksPositionVectors(robot);
-      for limb_id = 1 : num_limb
+      for limb_id = 1 : kNumLimb
         kinematics.IK_solver_(limb_id, 1) = ...
           kinematics.IK_solver_(limb_id, 1).setLinksPositionVectors( ...
           yaw_base_to_limb_root(limb_id, 1), position_vectors_of_links(:, :, limb_id));
@@ -133,7 +133,7 @@ classdef Kinematics
             cc(:, joints(1, limb_id)+1, joints(1, limb_id) + 1);
           % adjusting the frame for IK from frame of SpaceDyn
           p23(1, 1) = p23_tmp(1, 1); p23(2, 1) = - p23_tmp(3, 1); p23(3, 1) = p23_tmp(2, 1);
-          % Tibia (link 3) to endeffector (link "e") position vector
+          % Tibia (link 3) to end-effector (link "e") position vector
           p3e_tmp = ce(:, joints(1, limb_id) + 2) - ...
             cc(:, joints(1, limb_id)+2, joints(1, limb_id) + 2);
           % adjusting the frame for IK from frame of SpaceDyn

@@ -19,7 +19,7 @@ classdef Robot
 
     gripper_detachment_detection_method_ (1, 1) string;
 
-    graphics_;
+    graphics_ RobotGraphics;
   end
 
   %% Public methods

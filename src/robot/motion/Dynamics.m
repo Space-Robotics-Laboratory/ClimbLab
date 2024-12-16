@@ -1,7 +1,7 @@
 classdef Dynamics
   %% Properties
   properties (SetAccess = immutable, GetAccess = public)
-    use_dynamics (1, 1) logical;
+    kUseDynamics_ (1, 1) logical;
   end
 
   %% Public Methods
@@ -12,7 +12,7 @@ classdef Dynamics
       arguments (Input)
         use_dynamics (1, 1) {mustBeA(use_dynamics, "logical")};
       end
-      dynamics.use_dynamics = use_dynamics;
+      dynamics.kUseDynamics_ = use_dynamics;
     end
 
     function robot = computeForward(dynamics, robot)
@@ -26,7 +26,7 @@ classdef Dynamics
       LP_tmp = robot.LP_.clone();
       SV_tmp = robot.SV_.clone();
 
-      if (dynamics.use_dynamics)  % Dynamics on
+      if (dynamics.kUseDynamics_)  % Dynamics on
         % Solve equation of motion
         SV_tmp = f_dyn_rk2(LP_tmp, SV_tmp);
         SV_tmp = f_dyn(LP_tmp, SV_tmp);
