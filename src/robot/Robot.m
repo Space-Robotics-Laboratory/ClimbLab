@@ -51,17 +51,17 @@ classdef Robot
       base_orientation_dcm = robot.SV_.getBaseOrientationDCM();
       joint_angles = robot.kinematics_.computeInverse(base_position, base_orientation_dcm, ...
         robot.getEEPosition());
-      robot.SV_ = robot.SV_.setJointAngularPositions(joint_angles);
-      robot.SV_ = robot.SV_.calcLinkPose(robot.LP_);
+      robot.SV_.setJointAngularPositions(joint_angles);
+      robot.SV_.calcLinkPose(robot.LP_);
       robot = robot.forwardKinematics();
 
       robot.dynamics_ = Dynamics(world.getUseDynamics());
 
-      robot.des_SV_ = robot.des_SV_.overwrite(robot.SV_.clone());
+      robot.des_SV_.overwrite(robot.SV_.clone());
 
       robot.gripper_detachment_detection_method_ = config_robot.getGripperDetachmentDetectionMethod();
       robot = robot.detectCollision(terrain);
-      robot.des_SV_ = robot.des_SV_.setIsSupporting(1 : kNumLimb, true);
+      robot.des_SV_.setIsSupporting(1 : kNumLimb, true);
       robot = robot.updateGripperState(terrain);
 
       if (~config_robot.getVisualizeRobot())
@@ -91,8 +91,8 @@ classdef Robot
         robot;
         terrain (1, 1) {mustBeA(terrain, "Terrain")};
       end
-      robot.des_SV_ = robot.des_SV_.detectEECollision(terrain, robot.EE_position_, robot.EE_orientation_dcm_);
-      robot.SV_ = robot.SV_.detectEECollision(terrain, robot.EE_position_, robot.EE_orientation_dcm_);
+      robot.des_SV_.detectEECollision(terrain, robot.EE_position_, robot.EE_orientation_dcm_);
+      robot.SV_.detectEECollision(terrain, robot.EE_position_, robot.EE_orientation_dcm_);
     end
 
     function robot = calcGroundReactionForces(robot, terrain)
@@ -135,7 +135,7 @@ classdef Robot
           GRF(:, EE) = zeros(3, 1);
         end
       end
-      robot.SV_ = robot.SV_.applyExternalForces(GRF);
+      robot.SV_.applyExternalForces(GRF);
     end
 
     function robot = updateDesiredGripperState(robot, ...
@@ -163,7 +163,7 @@ classdef Robot
 
         % Release gripper of swing limb at swing motion start time
         if (abs(time - swing_timings(1, limb_id)) < eps)
-          robot.des_SV_ = robot.des_SV_.setIsSupporting(limb_id, false);
+          robot.des_SV_.setIsSupporting(limb_id, false);
         end
 
         desired_support_limb_id = robot.des_SV_.getIsSupporting();
@@ -191,7 +191,7 @@ classdef Robot
 
         velocity_threshold = 0.01;  % TODO: should be set in config
         if (norm_EE_linear_velocity <= velocity_threshold)
-          robot.des_SV_ = robot.des_SV_.setIsSupporting(limb_id, true);
+          robot.des_SV_.setIsSupporting(limb_id, true);
         end
       end
 
@@ -229,9 +229,9 @@ classdef Robot
             % Swing limb EE is not grasping and does not cause slip
             desired_support_limb_id = robot.des_SV_.getIsSupporting();
             if (~desired_support_limb_id(1, limb_id))
-              robot.SV_ = robot.SV_.setIsSupporting(limb_id, false);
-              robot.SV_ = robot.SV_.setIsGrasping(limb_id, false);
-              robot.SV_ = robot.SV_.setIsSlipping(limb_id, false);
+              robot.SV_.setIsSupporting(limb_id, false);
+              robot.SV_.setIsGrasping(limb_id, false);
+              robot.SV_.setIsSlipping(limb_id, false);
               if (~EE_in_contact(1, limb_id))
                 contact_EE_position(:, limb_id) = NaN(3, 1);
                 contact_EE_orientation_dcm(:, 3*limb_id-2 : 3*limb_id) = NaN;
@@ -242,20 +242,20 @@ classdef Robot
             if (norm(ground_reaction_force(:, limb_id)) <= F_grip || EE_in_contact(1, limb_id))
               EE_is_supporting = robot.SV_.getIsSupporting();
               if (~EE_is_supporting(1, limb_id))
-                robot.SV_ = robot.SV_.setIsSupporting(limb_id, true);
+                robot.SV_.setIsSupporting(limb_id, true);
                 contact_EE_position(:, limb_id) = ...
                   terrain.getNearestPointInWorldFrame(robot.EE_position_(:, limb_id));
                 contact_EE_orientation_dcm(:, 3*limb_id-2 : 3*limb_id) = ...
                   robot.EE_orientation_dcm_(:, 3*limb_id-2 : 3*limb_id);
               end
-              robot.SV_ = robot.SV_.setIsGrasping(limb_id, true);
-              robot.SV_ = robot.SV_.setIsSlipping(limb_id, false);
+              robot.SV_.setIsGrasping(limb_id, true);
+              robot.SV_.setIsSlipping(limb_id, false);
             % Gripper detachment is caused when the Ground Reaction Force acting on End-Effector in
             % the pulling direction exceeded the maximum tolerable grasping force
             else
-              robot.SV_ = robot.SV_.setIsSupporting(limb_id, false);
-              robot.SV_ = robot.SV_.setIsGrasping(limb_id, false);
-              robot.SV_ = robot.SV_.setIsSlipping(limb_id, true);
+              robot.SV_.setIsSupporting(limb_id, false);
+              robot.SV_.setIsGrasping(limb_id, false);
+              robot.SV_.setIsSlipping(limb_id, true);
             end
           end
           robot.SV_.contact_state_.setContactPose(contact_EE_position, contact_EE_orientation_dcm);
@@ -314,9 +314,9 @@ classdef Robot
         rpy2dc(deg2rad(surface_inclination))');
       ini_base_ori_dcm_in_World = rpy2dc(ini_base_ori_euler_in_World)';
 
-      robot.SV_ = robot.SV_.setBasePosition(ini_base_pos_in_World);
-      robot.SV_ = robot.SV_.setBaseOrientationDCM(ini_base_ori_dcm_in_World);
-      robot.SV_ = robot.SV_.setBaseOrientationEuler(ini_base_ori_euler_in_World);
+      robot.SV_.setBasePosition(ini_base_pos_in_World);
+      robot.SV_.setBaseOrientationDCM(ini_base_ori_dcm_in_World);
+      robot.SV_.setBaseOrientationEuler(ini_base_ori_euler_in_World);
     end
 
     function EE_position = initializeEEPosition(robot, config_robot, terrain)
@@ -346,14 +346,16 @@ classdef Robot
 
   %% Setter
   methods (Access = public)
+
     % For state variables
     function robot = overwriteStateVariables(robot, state_variables)
       arguments (Input)
         robot;
         state_variables (1, 1) {mustBeA(state_variables, "struct")};
       end
-      robot.SV_ = robot.SV_.overwrite(state_variables);
+      robot.SV_.overwrite(state_variables);
     end
+
     function robot = setJointTorque(robot, joint_torque)
       arguments (Input)
         robot;
@@ -363,16 +365,18 @@ classdef Robot
         error("ERROR: Failed to set joint torque. " + ...
           "Number of joint torques has to be same as number of joints.");
       end
-      robot.SV_ = robot.SV_.setJointTorque(joint_torque);
+      robot.SV_.setJointTorque(joint_torque);
     end
+
     % For desired state variables
     function robot = overwriteDesiredStateVariables(robot, desired_state_variables)
       arguments (Input)
         robot;
         desired_state_variables (1, 1) {mustBeA(desired_state_variables, "struct")};
       end
-      robot.des_SV_ = robot.des_SV_.overwrite(desired_state_variables);
+      robot.des_SV_.overwrite(desired_state_variables);
     end
+
   end
 
   %% Getter

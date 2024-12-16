@@ -1,4 +1,4 @@
-classdef StateVariable
+classdef StateVariable < handle
 % State Variable
 
   %% Properties
@@ -83,7 +83,7 @@ classdef StateVariable
       % SV.contact_state_ = SV.contact_state_.detectEECollision(robot, terrain);
     end
 
-    function SV = calcLinkPose(SV, LP)
+    function calcLinkPose(SV, LP)
     % calcLinkPose()
     %   Calculate positions and orientations (DCM) of all links
     %   Input - LP: Link parameters
@@ -100,7 +100,7 @@ classdef StateVariable
       SV.RR = SV_tmp.RR;
     end
 
-    function SV = overwrite(SV, state_variables)
+    function overwrite(SV, state_variables)
     % overwrite()
     %   Overwrite all property values of state variables
     %   Input - state_variables: State variables with value for overwriting
@@ -109,18 +109,18 @@ classdef StateVariable
         state_variables (1, 1) {mustBeA(state_variables, "struct")};
       end
 
-      field_name = fieldnames(state_variables);
-      prop_name = properties(SV);
-      if (~all(strcmp(prop_name, field_name)))
+      kFieldName = fieldnames(state_variables);
+      kPropName = properties(SV);
+      if (~all(strcmp(kPropName, kFieldName)))
         error("ERROR: Failed to overwrite state variables.");
       end
 
-      for i = 1 : length(prop_name)
-        SV.(prop_name{i, 1}) = state_variables.(field_name{i, 1});
+      for i = 1 : length(kPropName)
+        SV.(kPropName{i, 1}) = state_variables.(kFieldName{i, 1});
       end
     end
 
-    function SV = detectEECollision(SV, terrain, EE_positions, EE_orientations_dcm)
+    function detectEECollision(SV, terrain, EE_positions, EE_orientations_dcm)
       SV.contact_state_.detectEECollision(terrain, EE_positions, EE_orientations_dcm, SV.is_grasping_);
     end
 
@@ -144,7 +144,7 @@ classdef StateVariable
   %% Setter
   methods (Access = public)
 
-    function SV = setJointAngularPositions(SV, joint_angles)
+    function setJointAngularPositions(SV, joint_angles)
       arguments (Input)
         SV;
         joint_angles (:, 1) {mustBeA(joint_angles, "double")};
@@ -155,7 +155,7 @@ classdef StateVariable
       SV.q = joint_angles;
     end
 
-    function SV = setJointTorque(SV, joint_torque)
+    function setJointTorque(SV, joint_torque)
       arguments (Input)
         SV;
         joint_torque (:, 1) {mustBeA(joint_torque, "double")};
@@ -166,7 +166,7 @@ classdef StateVariable
       SV.tau = joint_torque;
     end
 
-    function SV = setBasePosition(SV, base_position)
+    function setBasePosition(SV, base_position)
       arguments (Input)
         SV;
         base_position (3, 1) {mustBeA(base_position, "double")};
@@ -174,7 +174,7 @@ classdef StateVariable
       SV.R0 = base_position;
     end
 
-    function SV = setBaseOrientationDCM(SV, base_orientation_dcm)
+    function setBaseOrientationDCM(SV, base_orientation_dcm)
       arguments (Input)
         SV;
         base_orientation_dcm (3, 3) {mustBeA(base_orientation_dcm, "double")};
@@ -182,7 +182,7 @@ classdef StateVariable
       SV.A0 = base_orientation_dcm;
     end
 
-    function SV = setBaseOrientationEuler(SV, base_orientation_euler)
+    function setBaseOrientationEuler(SV, base_orientation_euler)
       arguments (Input)
         SV;
         base_orientation_euler (3, 1) {mustBeA(base_orientation_euler, "double")};
@@ -190,7 +190,7 @@ classdef StateVariable
       SV.Q0 = base_orientation_euler;
     end
 
-    function SV = applyExternalForces(SV, external_forces)
+    function applyExternalForces(SV, external_forces)
       arguments (Input)
         SV;
         external_forces (3, :) {mustBeA(external_forces, "double")};
@@ -202,7 +202,7 @@ classdef StateVariable
       SV.Fe = external_forces;
     end
 
-    function SV = setIsSupporting(SV, limb_ids_to_be_updated, next_state)
+    function setIsSupporting(SV, limb_ids_to_be_updated, next_state)
       for limb_id = 1 : size(SV.is_supporting_, 2)
         if (any(limb_id == limb_ids_to_be_updated))
           SV.is_supporting_(1, limb_id) = next_state;
@@ -210,11 +210,11 @@ classdef StateVariable
       end
     end
 
-    function SV = setIsGrasping(SV, limb_id, next_state)
+    function setIsGrasping(SV, limb_id, next_state)
       SV.is_grasping_(1, limb_id) = next_state;
     end
 
-    function SV = setIsSlipping(SV, limb_id, next_state)
+    function setIsSlipping(SV, limb_id, next_state)
       SV.is_slipping_(1, limb_id) = next_state;
     end
 
