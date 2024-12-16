@@ -1,4 +1,4 @@
-classdef Kinematics
+classdef Kinematics < handle
   %% Properties
   properties (SetAccess = immutable, GetAccess = public)
     IK_solver_ (:, 1);
@@ -23,7 +23,7 @@ classdef Kinematics
           for limb_id = 1 : kNumLimb
             num_joints = kNumJointsPerLimb(1, limb_id);
             if (num_joints == 3)
-              solver(limb_id, 1) = IKSolverForInsectJointConfig3DoFLimb();
+              solver(limb_id, 1) = IKSolverForInsectJointConfig3DofLimb();
             % elseif (num_joints == 4)
             % elseif (num_joints == 5)
             else
@@ -39,8 +39,7 @@ classdef Kinematics
       [yaw_base_to_limb_root, position_vectors_of_links] = ...
         kinematics.calcLinksPositionVectors(robot);
       for limb_id = 1 : kNumLimb
-        kinematics.IK_solver_(limb_id, 1) = ...
-          kinematics.IK_solver_(limb_id, 1).setLinksPositionVectors( ...
+        kinematics.IK_solver_(limb_id, 1).setLinksPositionVectors( ...
           yaw_base_to_limb_root(limb_id, 1), position_vectors_of_links(:, :, limb_id));
       end
     end
@@ -58,12 +57,12 @@ classdef Kinematics
         SV (1, 1) {mustBeA(SV, "StateVariable")};
       end
 
-      num_limb = length(kinematics.IK_solver_);
+      kNumLimb = length(kinematics.IK_solver_);
       joints = LP.getJoints();
-      EE_position = zeros(3, num_limb);
-      EE_orientation_dcm = zeros(3, 3 * num_limb);
+      EE_position = zeros(3, kNumLimb);
+      EE_orientation_dcm = zeros(3, 3 * kNumLimb);
 
-      for limb_id = 1 : num_limb
+      for limb_id = 1 : kNumLimb
         [EE_position(:, limb_id), EE_orientation_dcm(:, 3*limb_id-2:3*limb_id)] = ...
           f_kin_e(LP, SV, joints(:, limb_id));
       end
@@ -84,10 +83,10 @@ classdef Kinematics
         EE_position (3, :) {mustBeA(EE_position, "double")};
       end
 
-      num_limb = length(kinematics.IK_solver_);
+      kNumLimb = length(kinematics.IK_solver_);
       joint_angles = double.empty;
 
-      for limb_id = 1 : num_limb
+      for limb_id = 1 : kNumLimb
         joint_angle_for_each_limb = kinematics.IK_solver_(limb_id, 1).solve( ...
           base_position, base_orientation_dcm, EE_position(:, limb_id));
         joint_angles = vertcat(joint_angles, joint_angle_for_each_limb);

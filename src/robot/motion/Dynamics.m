@@ -1,4 +1,4 @@
-classdef Dynamics
+classdef Dynamics < handle
   %% Properties
   properties (SetAccess = immutable, GetAccess = public)
     kUseDynamics_ (1, 1) logical;

@@ -1,4 +1,4 @@
-classdef LinkParameters
+classdef LinkParameters < handle
 % Link Parameters
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -77,9 +77,9 @@ classdef LinkParameters
     % clone()
     %   Return link parameters (struct) which have same values as properties of original link
     %   parameters.
-      prop_name = properties(original_LP);
-      for i = 1 : length(prop_name)
-        cloned_LP.(prop_name{i, 1}) = original_LP.(prop_name{i, 1});
+      kPropName = properties(original_LP);
+      for i = 1 : length(kPropName)
+        cloned_LP.(kPropName{i, 1}) = original_LP.(kPropName{i, 1});
       end
     end
 

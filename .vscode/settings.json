@@ -21,6 +21,7 @@
     "horzcat",
     "isfile",
     "isfolder",
+    "isreal",
     "lightangle",
     "limitrate",
     "meshgrid",
