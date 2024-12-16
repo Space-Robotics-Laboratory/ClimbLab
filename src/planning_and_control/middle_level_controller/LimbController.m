@@ -57,10 +57,10 @@ classdef LimbController < handle
       des_SV_tmp = calc_vel(LP_tmp, des_SV_tmp);
       des_SV_tmp = calc_acc(LP_tmp, des_SV_tmp);
 
-      robot = robot.overwriteDesiredStateVariables(des_SV_tmp);
+      robot.overwriteDesiredStateVariables(des_SV_tmp);
 
 
-      robot = robot.updateDesiredGripperState(time, foothold_planning, gait_planning, terrain);
+      robot.updateDesiredGripperState(time, foothold_planning, gait_planning, terrain);
     end
 
   end

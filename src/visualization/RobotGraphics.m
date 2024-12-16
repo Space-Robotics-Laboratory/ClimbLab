@@ -1,4 +1,4 @@
-classdef RobotGraphics
+classdef RobotGraphics < handle
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -22,19 +22,19 @@ classdef RobotGraphics
   methods (Access = public)
 
     function robot_graphics = RobotGraphics(config_robot, LP, SV)
-      robot_graphics = robot_graphics.createBaseGraphics(config_robot, LP, SV);
-      robot_graphics = robot_graphics.createLimbGraphics(config_robot, LP, SV);
-      robot_graphics = robot_graphics.createGripperGraphics();
+      robot_graphics.createBaseGraphics(config_robot, LP, SV);
+      robot_graphics.createLimbGraphics(config_robot, LP, SV);
+      robot_graphics.createGripperGraphics();
     end
 
-    function robot_graphics = visualize(robot_graphics, LP, SV, EE_position, EE_orientation_dcm)
-      robot_graphics = robot_graphics.visualizeBase(SV);
-      robot_graphics = robot_graphics.visualizeLimbs(LP, SV);
+    function visualize(robot_graphics, LP, SV, EE_position, EE_orientation_dcm)
+      robot_graphics.visualizeBase(SV);
+      robot_graphics.visualizeLimbs(LP, SV);
 
       if (LP.getMaxEndurableGrippingForce() == 0.0)
         return;
       end
-      robot_graphics = robot_graphics.visualizeGrippers(LP, EE_position, EE_orientation_dcm);
+      robot_graphics.visualizeGrippers(LP, EE_position, EE_orientation_dcm);
     end
 
     function deleteGripperGraphics(robot_graphics)
@@ -46,7 +46,7 @@ classdef RobotGraphics
   %% Private Methods
   methods (Access = private)
 
-    function robot_graphics = createBaseGraphics(robot_graphics, config_robot, LP, SV)
+    function createBaseGraphics(robot_graphics, config_robot, LP, SV)
       kNumLimb = LP.getNumberOfLimb();
       [base_upper_thickness, base_lower_thickness, base_color, base_alpha] = ...
         config_robot.getBaseVisualSettings();
@@ -90,7 +90,7 @@ classdef RobotGraphics
         'Visible', "off");
     end
 
-    function robot_graphics = createLimbGraphics(robot_graphics, config_robot, LP, SV)
+    function createLimbGraphics(robot_graphics, config_robot, LP, SV)
       BB = LP.getLinkConnectionRelationship();
       SE = LP.getEndLink();
       cc = LP.getPositionVectorFromLinkCoMToJoint();
@@ -158,7 +158,7 @@ classdef RobotGraphics
       end
     end
 
-    function robot_graphics = createGripperGraphics(robot_graphics)
+    function createGripperGraphics(robot_graphics)
       % Create gripper if robot has grippers
       kFingerLength = 1.75 * robot_graphics.kLimbRadius_;
       kFingerThickness = 0.75 * robot_graphics.kLimbRadius_;
@@ -179,7 +179,7 @@ classdef RobotGraphics
                                         5, 6, 7, 8];
     end
 
-    function robot_graphics = visualizeBase(robot_graphics, SV)
+    function visualizeBase(robot_graphics, SV)
       current_base_position = SV.getBasePosition();
       current_base_orientation_dcm = SV.getBaseOrientationDCM();
 
@@ -190,7 +190,7 @@ classdef RobotGraphics
       robot_graphics.base_graphics_obj_.Visible = "on";
     end
 
-    function robot_graphics = visualizeLimbs(robot_graphics, LP, SV)
+    function visualizeLimbs(robot_graphics, LP, SV)
       joints = 1 : LP.getNumberOfJoints();
       [joint_position, joint_orientation] = f_kin_j(LP, SV, joints);
       for i = joints
@@ -218,7 +218,7 @@ classdef RobotGraphics
       end
     end
 
-    function robot_graphics = visualizeGrippers(robot_graphics, LP, EE_position, EE_orientation_dcm)
+    function visualizeGrippers(robot_graphics, LP, EE_position, EE_orientation_dcm)
       kNumLimb = LP.getNumberOfLimb();
       current_gripper_vertices = zeros(8, 3, kNumLimb, 2);
 

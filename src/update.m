@@ -19,14 +19,14 @@ robot = limb_controller.control(time, robot, foothold_planning, gait_planning, t
 robot = joint_controller.control(robot);
 
 % Interaction between robot and environment
-robot = robot.updateGripperState(terrain);
-robot = robot.calcGroundReactionForces(terrain);
+robot.updateGripperState(terrain);
+robot.calcGroundReactionForces(terrain);
 
 % Forward Dynamics
 robot = robot.forwardDynamics();
 
 % Forward Kinematics
-robot = robot.forwardKinematics();
+robot.forwardKinematics();
 
 % Save variables
 saveVariables();

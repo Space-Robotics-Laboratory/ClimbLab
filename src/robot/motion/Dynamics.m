@@ -42,7 +42,7 @@ classdef Dynamics < handle
       SV_tmp = calc_vel(LP_tmp, SV_tmp);
       SV_tmp = calc_acc(LP_tmp, SV_tmp);
 
-      robot = robot.overwriteStateVariables(SV_tmp);
+      robot.overwriteStateVariables(SV_tmp);
     end
 
   end

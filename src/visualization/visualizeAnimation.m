@@ -4,7 +4,7 @@ animation.resetGraphicsObjects(time, robot);
 
 terrain.visualize(time);
 
-robot = robot.visualize();
+robot.visualize();
 
 animation.setLight();
 

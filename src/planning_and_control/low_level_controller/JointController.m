@@ -33,7 +33,7 @@ classdef JointController < handle
 
       joint_torque = joint_controller.controller_.calcJointTorque(robot);
 
-      robot = robot.setJointTorque(joint_torque);
+      robot.setJointTorque(joint_torque);
     end
 
   end
