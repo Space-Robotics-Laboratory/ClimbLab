@@ -15,21 +15,21 @@ end
 
 
 variables_log.time(cnt, 1) = time;
-variables_log.base_position(cnt, :) = robot.SV.getBasePosition()';
-variables_log.base_orientation(cnt, :) = robot.SV.getBaseOrientationEuler()';
-variables_log.base_linear_velocity(cnt, :) = robot.SV.getBaseLinearVelocity()';
-variables_log.base_angular_velocity(cnt, :) = robot.SV.getBaseAngularVelocity()';
-variables_log.base_linear_acceleration(cnt, :) = robot.SV.getBaseLinearAcceleration()';
-variables_log.base_angular_acceleration(cnt, :) = robot.SV.getBaseAngularAcceleration()';
-variables_log.joint_angular_position(cnt, :) = robot.SV.getJointAngularPosition()';
-variables_log.joint_angular_velocity(cnt, :) = robot.SV.getJointAngularVelocity()';
-variables_log.joint_angylar_acceleration(cnt, :) = robot.SV.getJointAngularAcceleration()';
-variables_log.joint_torque(cnt, :) = robot.SV.getJointTorque()';
+variables_log.base_position(cnt, :) = robot.SV_.getBasePosition()';
+variables_log.base_orientation(cnt, :) = robot.SV_.getBaseOrientationEuler()';
+variables_log.base_linear_velocity(cnt, :) = robot.SV_.getBaseLinearVelocity()';
+variables_log.base_angular_velocity(cnt, :) = robot.SV_.getBaseAngularVelocity()';
+variables_log.base_linear_acceleration(cnt, :) = robot.SV_.getBaseLinearAcceleration()';
+variables_log.base_angular_acceleration(cnt, :) = robot.SV_.getBaseAngularAcceleration()';
+variables_log.joint_angular_position(cnt, :) = robot.SV_.getJointAngularPosition()';
+variables_log.joint_angular_velocity(cnt, :) = robot.SV_.getJointAngularVelocity()';
+variables_log.joint_angylar_acceleration(cnt, :) = robot.SV_.getJointAngularAcceleration()';
+variables_log.joint_torque(cnt, :) = robot.SV_.getJointTorque()';
 
-Fe = robot.SV.getGroundReactionForce(robot.LP);
-Te = robot.SV.getGroundReactionMoment(robot.LP);
+Fe = robot.SV_.getGroundReactionForce(robot.LP_);
+Te = robot.SV_.getGroundReactionMoment(robot.LP_);
 EE_positions = robot.getEEPosition();
-for limb_id = 1 : robot.LP.getNumberOfLimb()
+for limb_id = 1 : robot.LP_.getNumberOfLimb()
   variables_log.(matlab.lang.makeValidName("GRF_" + num2str(limb_id)))(cnt, :) = Fe(:, limb_id)';
   variables_log.(matlab.lang.makeValidName("GRF_norm_" + num2str(limb_id)))(cnt, :) = ...
     norm(Fe(:, limb_id));

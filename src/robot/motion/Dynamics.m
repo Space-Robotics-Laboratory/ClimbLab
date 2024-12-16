@@ -23,8 +23,8 @@ classdef Dynamics
         robot (1, 1) {mustBeA(robot, "Robot")};
       end
 
-      LP_tmp = robot.LP.clone();
-      SV_tmp = robot.SV.clone();
+      LP_tmp = robot.LP_.clone();
+      SV_tmp = robot.SV_.clone();
 
       if (dynamics.use_dynamics)  % Dynamics on
         % Solve equation of motion
@@ -32,7 +32,7 @@ classdef Dynamics
         SV_tmp = f_dyn(LP_tmp, SV_tmp);
 
       else  % Dynamics off
-        des_SV_tmp = robot.des_SV.clone();
+        des_SV_tmp = robot.des_SV_.clone();
         SV_tmp = des_SV_tmp;
       end
 
@@ -47,5 +47,4 @@ classdef Dynamics
 
   end
 
-end
-% EOF
+end  % Dynamics

@@ -91,7 +91,7 @@ classdef Animation < dynamicprops & handle
       if (time == 0.0)
         return;
       end
-      robot.graphics.deleteGripperGraphics();
+      robot.graphics_.deleteGripperGraphics();
       delete(animation.graphics_obj_light);
       delete(animation.graphics_obj_vector);
     end

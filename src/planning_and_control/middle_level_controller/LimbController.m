@@ -29,15 +29,15 @@ classdef LimbController < handle
       end
 
       global d_time;
-      des_SV_last = robot.des_SV.clone();
+      des_SV_last = robot.des_SV_.clone();
       des_SV_tmp = des_SV_last;
-      LP_tmp = robot.LP.clone();
+      LP_tmp = robot.LP_.clone();
 
       desired_base_position = trajectory_planning.getDesiredBasePosition();
-      desired_base_orientation_dcm = robot.des_SV.getBaseOrientationDCM();  % TODO: Get from motion planning
+      desired_base_orientation_dcm = robot.des_SV_.getBaseOrientationDCM();  % TODO: Get from motion planning
       desired_EE_positions = trajectory_planning.getDesiredEEPositions();
 
-      desired_joint_angles = robot.kinematics.computeInverse( ...
+      desired_joint_angles = robot.kinematics_.computeInverse( ...
         desired_base_position, desired_base_orientation_dcm, desired_EE_positions);
 
       des_SV_tmp.R0 = desired_base_position;

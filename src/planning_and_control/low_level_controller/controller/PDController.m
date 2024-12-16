@@ -34,11 +34,11 @@ classdef PDController < handle
         robot (1, 1) {mustBeA(robot, "Robot")};
       end
 
-      desired_angular_position = robot.des_SV.getJointAngularPosition();
-      desired_angular_velocity = robot.des_SV.getJointAngularVelocity();
+      desired_angular_position = robot.des_SV_.getJointAngularPosition();
+      desired_angular_velocity = robot.des_SV_.getJointAngularVelocity();
 
-      current_angular_position = robot.SV.getJointAngularPosition();
-      current_angular_velocity = robot.SV.getJointAngularVelocity();
+      current_angular_position = robot.SV_.getJointAngularPosition();
+      current_angular_velocity = robot.SV_.getJointAngularVelocity();
 
       diff_position = desired_angular_position - current_angular_position;
       diff_velocity = desired_angular_velocity - current_angular_velocity;

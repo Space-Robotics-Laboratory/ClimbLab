@@ -46,7 +46,7 @@ classdef BaseTrajectory < handle
         gait_planning (1, 1) {mustBeA(gait_planning, "GaitPlanning")};
       end
 
-      current_base_position = robot.SV.getBasePosition();  % previous desired position?
+      current_base_position = robot.SV_.getBasePosition();  % previous desired position?
       desired_base_position = gait_planning.base_pose_planner_.getDesiredBasePosition();
 
       motion_duration = gait_planning.scheduler_.output_.getTransferDuration();

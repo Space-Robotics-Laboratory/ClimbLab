@@ -41,7 +41,7 @@ classdef LocalPathPlanning < handle
         return;
       end
 
-      current_position = robot.SV.getBasePosition();
+      current_position = robot.SV_.getBasePosition();
       way_points = global_path.getGlobalPath();
       local_path.moving_direction_ = local_path.planner_.plan(current_position, way_points);
     end

@@ -30,10 +30,10 @@ classdef IntersectionOfDiagonalLines
         error("ERROR: Input is not correct.");
       end
 
-      current_base_position_in_World = robot.SV.getBasePosition();
-      current_base_orientation_in_World = robot.SV.getBaseOrientationDCM();
+      current_base_position_in_World = robot.SV_.getBasePosition();
+      current_base_orientation_in_World = robot.SV_.getBaseOrientationDCM();
 
-      kNumLimb = robot.LP.getNumberOfLimb();
+      kNumLimb = robot.LP_.getNumberOfLimb();
 
       current_EE_positions_in_World = robot.getEEPosition();
       desired_EE_positions_in_World = foothold_planning.planner_.output_.getFootholdPosition();

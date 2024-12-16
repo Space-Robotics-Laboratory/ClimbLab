@@ -50,7 +50,7 @@ classdef BasePosePlanning < handle
       end
 
       if (base_pose_planning.kOrientationPlanningType_ == "do_nothing")
-        base_pose_planning.desired_orientation_dcm_ = robot.des_SV.getBaseOrientationDCM();
+        base_pose_planning.desired_orientation_dcm_ = robot.des_SV_.getBaseOrientationDCM();
       else
         % TODO: Implement orientation_planner.plan
       end

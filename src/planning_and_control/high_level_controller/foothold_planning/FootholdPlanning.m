@@ -24,7 +24,7 @@ classdef FootholdPlanning < handle
         robot (1, 1) {mustBeA(robot, "Robot")};
       end
 
-      kNumLimb = robot.LP.getNumberOfLimb();
+      kNumLimb = robot.LP_.getNumberOfLimb();
       current_EE_position = robot.getEEPosition();
 
       foothold_planning.kType_ = config_foothold_planning.getFootholdSelectionType();

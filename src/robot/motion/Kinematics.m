@@ -1,7 +1,7 @@
 classdef Kinematics
   %% Properties
   properties (SetAccess = immutable, GetAccess = public)
-    IK_solver (:, 1);
+    IK_solver_ (:, 1);
   end
 
   %% Public Methods
@@ -13,9 +13,9 @@ classdef Kinematics
         robot (1, 1) {mustBeA(robot, "Robot")};
       end
 
-      joint_config = robot.LP.getJointAllocationType();
-      num_limb = robot.LP.getNumberOfLimb();
-      num_joints_per_limb = robot.LP.getNumberOfJointsPerLimb();
+      joint_config = robot.LP_.getJointAllocationType();
+      num_limb = robot.LP_.getNumberOfLimb();
+      num_joints_per_limb = robot.LP_.getNumberOfJointsPerLimb();
 
       switch (joint_config)
         % case "mammal"
@@ -34,13 +34,13 @@ classdef Kinematics
             error("Invalid joint allocation type is specified." + newline + ...
               "Check ""joint_allocation_type"" defined in LP file.");
       end
-      kinematics.IK_solver = solver;
+      kinematics.IK_solver_ = solver;
 
       [yaw_base_to_limb_root, position_vectors_of_links] = ...
         kinematics.calcLinksPositionVectors(robot);
       for limb_id = 1 : num_limb
-        kinematics.IK_solver(limb_id, 1) = ...
-          kinematics.IK_solver(limb_id, 1).setLinksPositionVectors( ...
+        kinematics.IK_solver_(limb_id, 1) = ...
+          kinematics.IK_solver_(limb_id, 1).setLinksPositionVectors( ...
           yaw_base_to_limb_root(limb_id, 1), position_vectors_of_links(:, :, limb_id));
       end
     end
@@ -58,7 +58,7 @@ classdef Kinematics
         SV (1, 1) {mustBeA(SV, "StateVariable")};
       end
 
-      num_limb = length(kinematics.IK_solver);
+      num_limb = length(kinematics.IK_solver_);
       joints = LP.getJoints();
       EE_position = zeros(3, num_limb);
       EE_orientation_dcm = zeros(3, 3 * num_limb);
@@ -84,11 +84,11 @@ classdef Kinematics
         EE_position (3, :) {mustBeA(EE_position, "double")};
       end
 
-      num_limb = length(kinematics.IK_solver);
+      num_limb = length(kinematics.IK_solver_);
       joint_angles = double.empty;
 
       for limb_id = 1 : num_limb
-        joint_angle_for_each_limb = kinematics.IK_solver(limb_id, 1).solve( ...
+        joint_angle_for_each_limb = kinematics.IK_solver_(limb_id, 1).solve( ...
           base_position, base_orientation_dcm, EE_position(:, limb_id));
         joint_angles = vertcat(joint_angles, joint_angle_for_each_limb);
       end
@@ -112,12 +112,12 @@ classdef Kinematics
 
     function [yaw_base_to_limb_root, position_vectors_of_links] = calcLinksPositionVectors(~, robot)
       robot_type = robot.getType();
-      Qi = robot.LP.getRotationalRelationshipOfLinkFrames();
-      joints = robot.LP.getJoints();
-      c0 = robot.LP.getPositionVectorFromBaseCoMToJoint();
-      cc = robot.LP.getPositionVectorFromLinkCoMToJoint();
-      ce = robot.LP.getPositionVectorFromEndLinkCoMToEndPoint();
-      num_limb = robot.LP.getNumberOfLimb();
+      Qi = robot.LP_.getRotationalRelationshipOfLinkFrames();
+      joints = robot.LP_.getJoints();
+      c0 = robot.LP_.getPositionVectorFromBaseCoMToJoint();
+      cc = robot.LP_.getPositionVectorFromLinkCoMToJoint();
+      ce = robot.LP_.getPositionVectorFromEndLinkCoMToEndPoint();
+      num_limb = robot.LP_.getNumberOfLimb();
 
       yaw_base_to_limb_root = zeros(num_limb, 1);
       if (startsWith(robot_type, "HubRobo"))
@@ -146,5 +146,4 @@ classdef Kinematics
 
   end
 
-end
-% EOF
+end  % Kinematics

@@ -23,7 +23,7 @@ classdef TrajectoryPlanning < handle
 
       trajectory_planning.base_trajectory_ = BaseTrajectory(config_trajectory_planning);
 
-      for limb_id = 1 : robot.LP.getNumberOfLimb()
+      for limb_id = 1 : robot.LP_.getNumberOfLimb()
         trajectory_planning.limb_trajectory_(limb_id, 1) = LimbTrajectory(config_trajectory_planning);
       end
     end
@@ -49,7 +49,7 @@ classdef TrajectoryPlanning < handle
         trajectory_planning.planTrajectories(robot, foothold_planning, gait_planning);
       end
 
-      contact_EE_positions = robot.SV.contact_state_.getPosition();
+      contact_EE_positions = robot.SV_.contact_state_.getPosition();
 
       motion_start_time = swing_time(1, swing_limb_id);
       motion_final_time = landing_time(1, swing_limb_id);
