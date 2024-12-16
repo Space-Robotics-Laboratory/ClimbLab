@@ -1,5 +1,5 @@
 classdef LinkParameters
-  % Link Parameters
+% Link Parameters
   %% Properties
   properties (SetAccess = private, GetAccess = public)
     BB       (1, :) double     % Link connection relationship
@@ -19,13 +19,13 @@ classdef LinkParameters
     inertia  (3, :) double     % Moment of inertia of each link
     num_q    (1, 1) uint8      % Number of links/joints
 
-    joint_allocation_type (1, 1) string % State the type of the joint configuration
-    F_grip (1, 1) double                % Max. endurable gripping force
-    joint_limit (:, 2) double           % Movable limitation of joint
+    kJointAllocationType_ (1, 1) string % State the type of the joint configuration
+    kFGrip_ (1, 1) double                % Max. endurable gripping force
+    kJointLimit_ (:, 2) double           % Movable limitation of joint
 
-    num_limb (1, 1) uint8              % Total number of limbs
-    joints (:, :) uint8
-    num_joints_per_limb (1, :) uint8   % Number of joints per limb
+    kNumLimb_ (1, 1) uint8              % Total number of limbs
+    kJoints_ (:, :) uint8
+    kNumJointsPerLimb_ (1, :) uint8   % Number of joints per limb
   end
 
   %% Public Methods
@@ -62,14 +62,14 @@ classdef LinkParameters
       LP.inertia = LP_tmp.inertia;
       LP.num_q = LP_tmp.num_q;
 
-      LP.joint_allocation_type = LP_tmp.joint_allocation_type;
-      LP.F_grip = LP_tmp.F_grip;
-      LP.joint_limit = LP_tmp.joint_limit;
+      LP.kJointAllocationType_ = LP_tmp.joint_allocation_type;
+      LP.kFGrip_ = LP_tmp.F_grip;
+      LP.kJointLimit_ = LP_tmp.joint_limit;
 
-      LP.num_limb = sum(LP.SE, 2);
-      for limb_id = 1 : LP.num_limb
-        LP.joints(:, limb_id) = j_num(LP, limb_id);
-        LP.num_joints_per_limb(1, limb_id) = length(LP.joints(:, limb_id));
+      LP.kNumLimb_ = sum(LP.SE, 2);
+      for limb_id = 1 : LP.kNumLimb_
+        LP.kJoints_(:, limb_id) = j_num(LP, limb_id);
+        LP.kNumJointsPerLimb_(1, limb_id) = length(LP.kJoints_(:, limb_id));
       end
     end
 
@@ -87,43 +87,55 @@ classdef LinkParameters
 
   %% Getter
   methods (Access = public)
+
     function BB = getLinkConnectionRelationship(LP)
       BB = LP.BB;
     end
+
     function SE = getEndLink(LP)
       SE = LP.SE;
     end
+
     function c0 = getPositionVectorFromBaseCoMToJoint(LinkParameters)
       c0 = LinkParameters.c0;
     end
+
     function cc = getPositionVectorFromLinkCoMToJoint(LP)
       cc = LP.cc;
     end
+
     function ce = getPositionVectorFromEndLinkCoMToEndPoint(LP)
       ce = LP.ce;
     end
+
     function Qi = getRotationalRelationshipOfLinkFrames(LP)
       Qi = LP.Qi;
     end
+
     function num_q = getNumberOfJoints(LinkParameters)
       num_q = LinkParameters.num_q;
     end
+
     function num_limb = getNumberOfLimb(LinkParameters)
-      num_limb = LinkParameters.num_limb;
+      num_limb = LinkParameters.kNumLimb_;
     end
+
     function joint_allocation_type = getJointAllocationType(LinkParameters)
-      joint_allocation_type = LinkParameters.joint_allocation_type;
+      joint_allocation_type = LinkParameters.kJointAllocationType_;
     end
+
     function joints = getJoints(LinkParameters)
-      joints = LinkParameters.joints;
+      joints = LinkParameters.kJoints_;
     end
+
     function num_joints_per_limb = getNumberOfJointsPerLimb(LinkParameters)
-      num_joints_per_limb = LinkParameters.num_joints_per_limb;
+      num_joints_per_limb = LinkParameters.kNumJointsPerLimb_;
     end
+
     function F_grip = getMaxEndurableGrippingForce(LinkParameters)
-      F_grip = LinkParameters.F_grip;
+      F_grip = LinkParameters.kFGrip_;
     end
+
   end
 
-end
-% EOF
+end  % LinkParameters
