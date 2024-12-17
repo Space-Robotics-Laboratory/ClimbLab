@@ -7,7 +7,7 @@ classdef ConfigSaveSettings < Configuration
     % Save basic variables to csv file
     save_csv_file (1, 1) logical = true;
     % Save the loaded config file in the dat folder if config is not "default"
-    save_config_file (1, 1) logical = true;
+    save_config_file (1, 1) logical = false;
   end
 
   %% Public Methods

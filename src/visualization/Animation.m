@@ -96,24 +96,22 @@ classdef Animation < dynamicprops & handle
       delete(animation.graphics_obj_vector);
     end
 
-    function createVideoFile(animation, run_cod, run_id, run_date)
+    function createVideoFile(animation, run_cod, run_id)
     % createVideoFile()
     %   Create file to save simulation video and define video parameters, such as quality and frame
     %   rate.
     %
     % Input : run_cod  - Program identification code
     %         run_id   - Run identification
-    %         run_date - Run identification date
       arguments (Input)
         animation;
         run_cod  (1, 1) {mustBeA(run_cod, "string")};
         run_id   (1, 1) {mustBeA(run_id, "string")};
-        run_date (1, 1) {mustBeA(run_date, "string")};
       end
       if (animation.save_video)
         dir_name = "dat" + filesep + run_cod + filesep + run_id;
         mkdir(dir_name);
-        animation.sim_video = VideoWriter(dir_name + filesep + run_date + "_video" + ...
+        animation.sim_video = VideoWriter(dir_name + filesep + run_id + "_video" + ...
           animation.video_file_extension);
       else
         animation.sim_video = VideoWriter("dat" + filesep + "last_video" + animation.video_file_extension);

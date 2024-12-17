@@ -13,11 +13,9 @@ tic;
 config = "default";
 
 %%% Define a code for current set of simulations
-run_cod = "test";
-% Date and Time
-run_date = string(datetime("now", "Format", "yyyyMMdd_HHmmss"));
-% Simulation run identification
-run_id = run_date;
+run_cod = config;
+% Simulation run identification (date and time)
+run_id = string(datetime("now", "Format", "yyyyMMdd_HHmmss"));
 
 global d_time Gravity Ez;
 
