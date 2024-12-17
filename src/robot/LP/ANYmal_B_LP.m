@@ -50,7 +50,7 @@ LP.SE = [ 0 0 1 0 0 1 0 0 1 0 0 1 ];
 % Type of joint
 LP.J_type = [ "R" "R" "R"  "R" "R" "R"  "R" "R" "R"  "R" "R" "R" ];
 % Movable limitation of joint
-LP.joint_limit = [-540 540; -540 540; -540 540];  %[deg]
+LP.joint_limit = [-540.0, 540.0; -540.0, 540.0; -540.0, 540.0];  %[deg]
 LP.joint_limit = repmat(LP.joint_limit, [sum(LP.SE, 2), 1]);  % for each joints
 
 % Position vector from base CoM to i-th joint. Order is LF_HAA, LF_HFE,
@@ -104,9 +104,9 @@ LH_euler_angle_XYZ = dc2rpy(LH_rotation_matrix');
 RH_euler_angle_XYZ = dc2rpy(RH_rotation_matrix');
 RF_euler_angle_XYZ = dc2rpy(RF_rotation_matrix');
 
-LP.Qi = [ LF_euler_angle_XYZ(1)  pi/2  0  LH_euler_angle_XYZ(1)   pi/2  0  RH_euler_angle_XYZ(1)  pi/2  0  RF_euler_angle_XYZ(1)   pi/2  0;
-          LF_euler_angle_XYZ(2)  0     0  LH_euler_angle_XYZ(2)   0     0  RH_euler_angle_XYZ(2)  0     0  RF_euler_angle_XYZ(2)   0     0;
-          LF_euler_angle_XYZ(3)  0     0  LH_euler_angle_XYZ(3)   0     0  RH_euler_angle_XYZ(3)  0     0  RF_euler_angle_XYZ(3)   0     0];
+LP.Qi = [ LF_euler_angle_XYZ(1),  pi / 2.0,  0.0,  LH_euler_angle_XYZ(1),   pi / 2.0,  0.0,  RH_euler_angle_XYZ(1),  pi / 2.0,  0.0,  RF_euler_angle_XYZ(1),   pi / 2,  0.0;
+          LF_euler_angle_XYZ(2),  0.0,       0.0,  LH_euler_angle_XYZ(2),   0.0,       0.0,  RH_euler_angle_XYZ(2),  0.0,       0.0,  RF_euler_angle_XYZ(2),   0.0,     0.0;
+          LF_euler_angle_XYZ(3),  0.0,       0.0,  LH_euler_angle_XYZ(3),   0.0,       0.0,  RH_euler_angle_XYZ(3),  0.0,       0.0,  RF_euler_angle_XYZ(3),   0.0,     0.0];
 
 % Moment of inertia of each link <- copied from hubrobo_v3_2_parameters.dat @TODO: current each last link inertial matrixes are replaced with the ones of Tibia links, and the coordinates are based on the URDF ones. These should be adjusted for SpaceDyn one.% [kg*m^2]
 % @TODO: current value is just copied from HubRobo
@@ -115,7 +115,7 @@ LP.inertia = [ 4.17250591050379E-05 -3.280237461361E-07 -3.28017174197894E-07   
               -3.28017174197894E-07 6.28753118367121E-07 2.75915908175676E-05     3.77019535347995E-15 6.33438629632886E-16 3.67324197182656E-05    -3.31326402019975E-07 -3.14370002187497E-07 1.19815307988945E-05      -3.3004E-07 -6.1624E-07 2.7592E-05    4.18826057628801E-14 -1.53413473909909E-14 3.67324197174477E-05   -3.31325909357267E-07 -3.14370065697366E-07 1.19815307394935E-05     -3.28016569372976E-07 6.28753097529483E-07 2.75915909936714E-05     3.7701969258325E-15 6.33432116769803E-16 3.67324197182661E-05     -3.31326354131817E-07 -3.1437E-07 1.19815308159254E-05             -3.30041495547628E-07 -6.16243771991015E-07 2.759158797365E-05     4.18826171023906E-14 -1.5341346770838E-14 3.67324197174481E-05   -3.31325909357463E-07 -3.14370065697396E-07 1.19815307394936E-05];
 
 % Position vector from each link CoM to i-th joint
-LP.cc = zeros( 3,12,12 );
+LP.cc = zeros(3, LP.num_q, LP.num_q);
 
 % Position vector from link 1 CoM to joint 1 seen from the joint 1 frame
 LP.cc(:, 1, 1)   = [  0.0,           -0.041 / 2.0, -0.0635 / 2.0 ]';
@@ -126,7 +126,7 @@ LP.cc(:, 2, 3)   = [  0.25 / 2.0,     0.0,         -0.109 / 2.0  ]';
 LP.cc(:, 3, 3)   = [ -0.32125 / 2.0, -0.1 / 2.0,    0.0          ]';
 
 LP.cc(:, 4, 4)   = [  0.0,           -0.041 / 2.0,  0.0635 / 2.0 ]';
-LP.cc(:, 4, 5)   = [  0.0,            0.041 / 2.0, -0.0635 / 2/0 ]';
+LP.cc(:, 4, 5)   = [  0.0,            0.041 / 2.0, -0.0635 / 2.0 ]';
 LP.cc(:, 5, 5)   = [ -0.25 / 2.0,     0.0,          0.109 / 2.0  ]';
 LP.cc(:, 5, 6)   = [  0.25 / 2.0,     0.0,         -0.109 / 2.0  ]';
 LP.cc(:, 6, 6)   = [ -0.32125 / 2.0,  0.1 / 2.0     0.0          ]';
@@ -144,12 +144,12 @@ LP.cc(:, 11, 12) = [  0.25 / 2.0,     0.0,          0.109 / 2.0  ]';
 LP.cc(:, 12, 12) = [ -0.32125 / 2.0, -0.1 / 2.0,    0.0          ]';
 
 % Position vector from end link CoM to end point
-LP.ce = [ 0  0  0.32125 / 2.0    0  0  0.32125 / 2.0    0  0  0.32125 / 2.0    0  0  0.32125 / 2.0  ;
-          0  0  0.1 / 2.0        0  0 -0.1 / 2.0        0  0 -0.1 / 2.0        0  0  0.1 / 2.0      ;
-          0  0  0                0  0  0                0  0  0                0  0  0         ];
+LP.ce = [ 0.0,  0.0,  0.32125 / 2.0    0.0,  0.0,  0.32125 / 2.0    0.0,  0.0,  0.32125 / 2.0    0.0,  0.0,  0.32125 / 2.0 ;
+          0.0,  0.0,  0.1 / 2.0        0.0,  0.0, -0.1 / 2.0        0.0,  0.0, -0.1 / 2.0        0.0,  0.0,  0.1 / 2.0     ;
+          0.0,  0.0,  0.0,             0.0,  0.0,  0.0,             0.0,  0.0,  0.0,             0.0,  0.0,  0.0          ];
 % Rotational relationship of end link frames
-LP.Qe = [ 0  0  0  0  0  0  0  0  0  0  0  0;
-          0  0  0  0  0  0  0  0  0  0  0  0;
-          0  0  0  0  0  0  0  0  0  0  0  0 ];
+LP.Qe = [ 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0 ;
+          0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0 ;
+          0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0 ];
 
 % EOF
