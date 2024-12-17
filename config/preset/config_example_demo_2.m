@@ -119,6 +119,12 @@ classdef config_example_demo_2
     derivative_gain   (1, 1) double = 3.0;
   end
 
+  %% Evaluation Parameters
+  properties (SetAccess = private, GetAccess = {?ConfigEvaluation, ?Configuration})
+    evaluate_manipulability (1, 1) logical = true;
+    evaluate_dynamic_manipulability (1, 1) logical = true;
+  end
+
   %% Animation Settings
   properties (SetAccess = private, GetAccess = {?ConfigAnimationSettings, ?Configuration})
     display_animation (1, 1) logical = true;

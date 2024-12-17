@@ -384,6 +384,10 @@ classdef Robot < handle
       link_parameter = robot.LP_;
     end
 
+    function state_variable = getStateVariable(robot)
+      state_variable = robot.SV_;
+    end
+
     function EE_position = getEEPosition(robot, xyz, limb_id)
       arguments (Input)
         robot;
