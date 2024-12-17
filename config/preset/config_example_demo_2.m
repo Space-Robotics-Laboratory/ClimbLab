@@ -13,6 +13,7 @@ classdef config_example_demo_2
 % Created     : 2021.03.02 by Kentaro Uno
 % Last updated: 2021.09.19 by Kentaro Uno
 
+% TODO: Solve singular matrix error at time == 4.0050
 % TODO: Add equilibrium settings (tsm and gia)
 % TODO: Add animation of support triangle, gia stable region, gia vector
 % TODO: Add save settings (tsm, gia, manipulability, dynamic manipulability, joint max torque, joint rms torque, cot)
