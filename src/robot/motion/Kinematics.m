@@ -1,4 +1,9 @@
 classdef Kinematics < handle
+% Kinematics
+%
+% Created     : 2024.05.20 by Masazumi Imai
+% Last updated: 2024.12.17 by Masazumi Imai
+
   %% Properties
   properties (SetAccess = immutable, GetAccess = public)
     IK_solver_ (:, 1);
@@ -19,7 +24,10 @@ classdef Kinematics < handle
       kNumJointsPerLimb = robot.LP_.getNumberOfJointsPerLimb();
 
       switch (kJointConfig)
-        % case "mammal"
+        case "mammal"
+          for limb_id = 1 : kNumLimb
+            solver(limb_id, 1) = IKSolverForMammalJointConfig3DofLimb(LP, limb_id);
+          end
         case "insect"
           for limb_id = 1 : kNumLimb
             num_joints = kNumJointsPerLimb(1, limb_id);
