@@ -27,7 +27,7 @@ classdef config_example_demo_2
   end
 
   properties (SetAccess = private, GetAccess = {?ConfigTerrain, ?Configuration})
-    surface_type (1, 1) string = "flat_HR_5m_x_5m";
+    surface_type (1, 1) string = "flat_HR_5mx5m";
     inclination (3, 1) double = [0.0; -45.0; 0.0];  % [deg]
 
     stiffness_coefficient_for_GRF (1, 1) double = 100000.0;
@@ -37,7 +37,6 @@ classdef config_example_demo_2
 
     % Visualization
     surface_grid_color = "white";
-    visualize_graspable_points (1, 1) logical = false;
   end
 
   %% Robot Parameters
