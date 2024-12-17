@@ -136,6 +136,8 @@ classdef config_example_demo_2
     camera_azimuth   (1, 1) double = -25;  % [deg]
     camera_elevation (1, 1) double =  10;  % [deg]
     camera_follow_robot (1, 1) logical = false;
+
+    ground_reaction_force_vec_show (1, 1) logical = false;
   end
 
   %% Save Settings
