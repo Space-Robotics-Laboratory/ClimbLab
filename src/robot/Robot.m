@@ -380,6 +380,10 @@ classdef Robot < handle
       type = robot.kType_;
     end
 
+    function link_parameter = getLinkParameter(robot)
+      link_parameter = robot.LP_;
+    end
+
     function EE_position = getEEPosition(robot, xyz, limb_id)
       arguments (Input)
         robot;

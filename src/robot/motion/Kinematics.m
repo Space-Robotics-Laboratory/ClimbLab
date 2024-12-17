@@ -13,6 +13,7 @@ classdef Kinematics < handle
         robot (1, 1) {mustBeA(robot, "Robot")};
       end
 
+      LP = robot.getLinkParameter();
       kJointConfig = robot.LP_.getJointAllocationType();
       kNumLimb = robot.LP_.getNumberOfLimb();
       kNumJointsPerLimb = robot.LP_.getNumberOfJointsPerLimb();
@@ -23,7 +24,7 @@ classdef Kinematics < handle
           for limb_id = 1 : kNumLimb
             num_joints = kNumJointsPerLimb(1, limb_id);
             if (num_joints == 3)
-              solver(limb_id, 1) = IKSolverForInsectJointConfig3DofLimb();
+              solver(limb_id, 1) = IKSolverForInsectJointConfig3DofLimb(LP, limb_id);
             % elseif (num_joints == 4)
             % elseif (num_joints == 5)
             else
@@ -35,13 +36,6 @@ classdef Kinematics < handle
               "Check ""joint_allocation_type"" defined in LP file.");
       end
       kinematics.IK_solver_ = solver;
-
-      [yaw_base_to_limb_root, position_vectors_of_links] = ...
-        kinematics.calcLinksPositionVectors(robot);
-      for limb_id = 1 : kNumLimb
-        kinematics.IK_solver_(limb_id, 1).setLinksPositionVectors( ...
-          yaw_base_to_limb_root(limb_id, 1), position_vectors_of_links(:, :, limb_id));
-      end
     end
 
     function [EE_position, EE_orientation_dcm] = computeForward(kinematics, LP, SV)
@@ -90,56 +84,6 @@ classdef Kinematics < handle
         joint_angle_for_each_limb = kinematics.IK_solver_(limb_id, 1).solve( ...
           base_position, base_orientation_dcm, EE_position(:, limb_id));
         joint_angles = vertcat(joint_angles, joint_angle_for_each_limb);
-      end
-    end
-
-    % function generalized_jacobian = computeGeneralizedJacobianForEndEffector(kinematics)
-    % end
-    % function jacobian = computeJointToLinkJacobian(kinematics)
-    % end
-    % function jacobian_derivative = computeJointToLinkJacobianDerivative(kinematics)
-    % end
-    % function jacobian = computeBaseToLinkJacobian(kinematics)
-    % end
-    % function jacobian_derivative = computeBaseToLinkJacobianDerivative(kinematics)
-    % end
-
-  end
-
-  %% Private Methods
-  methods (Access = private)
-
-    function [yaw_base_to_limb_root, position_vectors_of_links] = calcLinksPositionVectors(~, robot)
-      robot_type = robot.getType();
-      Qi = robot.LP_.getRotationalRelationshipOfLinkFrames();
-      joints = robot.LP_.getJoints();
-      c0 = robot.LP_.getPositionVectorFromBaseCoMToJoint();
-      cc = robot.LP_.getPositionVectorFromLinkCoMToJoint();
-      ce = robot.LP_.getPositionVectorFromEndLinkCoMToEndPoint();
-      num_limb = robot.LP_.getNumberOfLimb();
-
-      yaw_base_to_limb_root = zeros(num_limb, 1);
-      if (startsWith(robot_type, "HubRobo"))
-        for limb_id = 1 : num_limb
-          yaw_base_to_limb_root(limb_id, 1) = Qi(3, joints(1, limb_id));
-          % Base (link 0) to Coxa (link 1) position vector
-          p01 = c0(:, joints(1, limb_id));
-          % Coxa (link 1) to Femur (link 2) position vector
-          p12 = cc(:, joints(1, limb_id), joints(1, limb_id) + 1) - ...
-            cc(:, joints(1, limb_id), joints(1, limb_id));
-          % Femur (link 2) to Tibia (link 3)position vector
-          p23_tmp = cc(:, joints(1, limb_id)+1, joints(1, limb_id) + 2) - ...
-            cc(:, joints(1, limb_id)+1, joints(1, limb_id) + 1);
-          % adjusting the frame for IK from frame of SpaceDyn
-          p23(1, 1) = p23_tmp(1, 1); p23(2, 1) = - p23_tmp(3, 1); p23(3, 1) = p23_tmp(2, 1);
-          % Tibia (link 3) to end-effector (link "e") position vector
-          p3e_tmp = ce(:, joints(1, limb_id) + 2) - ...
-            cc(:, joints(1, limb_id)+2, joints(1, limb_id) + 2);
-          % adjusting the frame for IK from frame of SpaceDyn
-          p3e(1, 1) = p3e_tmp(2, 1); p3e(2, 1) = - p3e_tmp(3, 1); p3e(3, 1) = - p3e_tmp(1, 1);
-
-          position_vectors_of_links(:, :, limb_id) = [p01, p12, p23, p3e];
-        end
       end
     end
 

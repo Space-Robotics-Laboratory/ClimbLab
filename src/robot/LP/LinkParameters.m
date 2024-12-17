@@ -19,13 +19,20 @@ classdef LinkParameters < handle
     inertia  (3, :) double     % Moment of inertia of each link
     num_q    (1, 1) uint8      % Number of links/joints
 
-    kJointAllocationType_ (1, 1) string % State the type of the joint configuration
-    kFGrip_ (1, 1) double                % Max. endurable gripping force
-    kJointLimit_ (:, 2) double           % Movable limitation of joint
+    kJointAllocationType_ (1, 1) string;  % State the type of the joint configuration
+    % Movable limitation of joint
+    %   1st dim: Joint ID
+    %   2nd dim: Min. and Max.
+    kJointLimit_          (:, 2) double;
 
-    kNumLimb_ (1, 1) uint8              % Total number of limbs
-    kJoints_ (:, :) uint8
-    kNumJointsPerLimb_ (1, :) uint8   % Number of joints per limb
+    kNumLimb_          (1, 1) uint8  % Total number of limbs
+    kNumJointsPerLimb_ (1, :) uint8  % Number of joints per limb (1 x kNumLimb)
+    % Joint connection from the 0-th link to an end-link
+    %   1st dim: Joint ID array from base link to end-link
+    %   2nd dim: Limb ID
+    kJoints_           (:, :) uint8
+
+    kFGrip_ (1, 1) double                % Max. endurable gripping force
   end
 
   %% Public Methods

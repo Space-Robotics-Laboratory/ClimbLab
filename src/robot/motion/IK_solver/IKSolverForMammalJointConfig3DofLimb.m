@@ -1,0 +1,170 @@
+classdef IKSolverForMammalJointConfig3DofLimb < handle
+% Position inverse kinematics solver for a 3 DOF manipulator that has a mammal joint configuration
+%
+% Created     : 2021.01.18 by Kentaro Uno
+% Last updated: 2021.02.12 by Kentaro Uno
+
+  %% Properties
+  properties (SetAccess = private, GetAccess = public)
+    % Rotational relationship of links frames to define the offset angle
+    theta_1_ (1, 1) double;
+    theta_2_ (1, 1) double;
+
+    pos_vec_01_ (3, 1) double;  % Base  (link 0) to Hip   (link 1) position vector
+    pos_vec_12_ (3, 1) double;  % Hip   (link 1) to Thigh (link 2) position vector
+    pos_vec_23_ (3, 1) double;  % Thigh (link 2) to Shank (link 3) position vector
+    pos_vec_3e_ (3, 1) double;  % Shank (link 3) to end-effector (link "e") position vector
+  end
+
+  %% Public Methods
+  methods (Access = public)
+
+    function IK_solver = IKSolverForMammalJointConfig3DofLimb(LP, limb_id)
+    % IKSolverForMammalJointConfig3DofLimb() Constructor
+      arguments (Input)
+        LP      (1, 1) {mustBeA(LP, "LinkParameters")};
+        limb_id (1, 1) {mustBeA(limb_id, "uint8")};
+      end
+
+      IK_solver.theta_1_ = LP.theta_1;
+      IK_solver.theta_2_ = LP.theta_2;
+
+      IK_solver.setLinkPositionVectors(LP, limb_id);
+    end
+
+    function joint_angle = solve(IK_solver, base_position, base_orientation, EE_position)
+      % arguments (Input)
+      %   IK_solver;
+      %   base_position (3, 1) {mustBeA(base_position, "double")};
+      %   base_orientation (3, 3) {mustBeA(base_orientation, "double")};
+      %   EE_position (3, 1) {mustBeA(EE_position, "double")};
+      % end
+      % % Base (link 0) to end-effector (link "e") position vector, i.e. input of IK
+      % p0e_in_Inertia_frame = EE_position - base_position;
+      % p0e_in_Base_frame = base_orientation' * p0e_in_Inertia_frame;
+
+      % joint_angle_tmp(1, 1) = IK_solver.solveB2CJointAngle(p0e_in_Base_frame);
+      % [joint_angle_tmp(2, 1), A, B] = IK_solver.solveC2FJointAngle(p0e_in_Base_frame, ...
+      %   joint_angle_tmp(1, 1));
+      % joint_angle_tmp(3, 1) = IK_solver.solveF2TJointAngle(joint_angle_tmp(2, 1), A, B);
+
+      % % Adjust the frame for SpaceDyn from frame for IK
+      % joint_angle(1, 1) = joint_angle_tmp(1, 1);
+      % joint_angle(2, 1) = - joint_angle_tmp(2, 1);
+      % joint_angle(3, 1) = - (joint_angle_tmp(3, 1) + pi / 2);
+
+      % % Adjust the solutions to be described radians from -pi to pi
+      % if joint_angle(1, 1) > pi
+      %   joint_angle(1, 1) = joint_angle(1, 1) - 2*pi;
+      % elseif joint_angle(1, 1) < -pi
+      %   joint_angle(1, 1) = joint_angle(1, 1) + 2*pi;
+      % end
+
+      % if joint_angle(2, 1) > pi
+      %   joint_angle(2, 1) = joint_angle(2, 1) - 2*pi;
+      % elseif joint_angle(2, 1) < -pi
+      %   joint_angle(2, 1) = joint_angle(2, 1) + 2*pi;
+      % end
+
+      % if joint_angle(3, 1) > pi
+      %   joint_angle(3, 1) = joint_angle(3, 1) - 2*pi;
+      % elseif joint_angle(3, 1) < -pi
+      %   joint_angle(3, 1) = joint_angle(3, 1) + 2*pi;
+      % end
+    end
+
+  end
+
+  %% Private Methods
+  methods (Access = private)
+
+    function setLinkPositionVectors(IK_solver, LP, limb_id)
+      arguments (Input)
+        IK_solver;
+        LP      (1, 1) {mustBeA(LP, "LinkParameters")};
+        limb_id (1, 1) {mustBeA(limb_id, "uint8")};
+      end
+
+      c0 = LP.getPositionVectorFromBaseCoMToJoint();
+      cc = LP.getPositionVectorFromLinkCoMToJoint();
+      ce = LP.getPositionVectorFromEndLinkCoMToEndPoint();
+      kJoints = LP.getJoints();
+
+      p01 = c0(:, kJoints(1, limb_id));
+
+      p12_tmp = cc(:, kJoints(1, limb_id), kJoints(1, limb_id) + 1) - cc(:, kJoints(1, limb_id)  , kJoints(1, limb_id));
+      p23_tmp = cc(:, kJoints(1, limb_id) + 1, kJoints(1, limb_id) + 2) - cc(:, kJoints(1, limb_id) + 1, kJoints(1, limb_id) + 1);
+      p3e_tmp = ce(:, kJoints(1, limb_id) + 2) - cc(:, kJoints(1, limb_id) + 2, kJoints(1, limb_id) + 2);
+
+      % Adjusting the frame for IK from frame of SpaceDyn
+      p12(1, 1) =  p12_tmp(3, 1);
+      p12(2, 1) =  p12_tmp(2, 1);
+      p12(3, 1) = -p12_tmp(1, 1);
+      p23(1, 1) =  p23_tmp(2, 1);
+      p23(2, 1) = -p23_tmp(3, 1);
+      p23(3, 1) = -p23_tmp(1, 1);
+      p3e(1, 1) =  p3e_tmp(2, 1);
+      p3e(2, 1) = -p3e_tmp(3, 1);
+      p3e(3, 1) = -p3e_tmp(1, 1);
+
+      IK_solver.pos_vec_01_ = p01;
+      IK_solver.pos_vec_12_ = p12;
+      IK_solver.pos_vec_23_ = p23;
+      IK_solver.pos_vec_3e_ = p3e;
+    end
+
+    % function q1 = solveB2CJointAngle(IK_solver, p0e)
+    %   alpha = IK_solver.yaw_Base2Coxa_in_Base_frame_;
+    %   p01 = IK_solver.pos_vec_01_;
+    %   p12 = IK_solver.pos_vec_12_;
+    %   p23 = IK_solver.pos_vec_23_;
+    %   p3e = IK_solver.pos_vec_3e_;
+
+    %   % a1, b1, c1: temporary variable to calculate B2C joint angle
+    %   a1 = - p0e(1, 1) + p01(1, 1);
+    %   b1 =   p0e(2, 1) - p01(2, 1);
+    %   c1 =   p12(2, 1) + p23(2, 1) + p3e(2, 1);
+
+    %   % Singularity check
+    %   if ~isreal(sqrt(a1^2 + b1^2 - c1^2))
+    %     return;
+    %   end
+
+    %   q1 = atan2( a1 , b1 ) + atan2( sqrt(a1^2 + b1^2 - c1^2), c1 ) - alpha;
+    % end
+
+    % function [q2, A, B] = solveC2FJointAngle(IK_solver, p0e, q1)
+    %   alpha = IK_solver.yaw_Base2Coxa_in_Base_frame_;
+    %   p01 = IK_solver.pos_vec_01_;
+    %   p12 = IK_solver.pos_vec_12_;
+    %   p23 = IK_solver.pos_vec_23_;
+    %   p3e = IK_solver.pos_vec_3e_;
+
+    %   % A, B, a2, b2, c2: temporary variable to calculate C2F joint angle
+    %   A = (p0e(1, 1) - p01(1, 1)) * cos(alpha + q1) + ...
+    %       (p0e(2, 1) - p01(2, 1)) * sin(alpha + q1) - p12(1, 1);
+    %   B = p0e(3, 1) - p01(3, 1) - p12(3, 1);
+    %   a2 = 2 * (B * p23(1, 1) + A * p23(3, 1));
+    %   b2 = 2 * (A * p23(1, 1) + B * p23(3, 1));
+    %   c2 = A^2 + B^2 + p23(1, 1)^2 + p23(3, 1)^2 - p3e(1, 1)^2 - p3e(3, 1)^2;
+
+    %   % Singularity check
+    %   if ~isreal(sqrt(a2^2 + b2^2 - c2^2))
+    %     return;
+    %   end
+
+    %   q2 = - ( atan2( a2 , b2 ) + atan2( sqrt(a2^2 + b2^2 - c2^2), c2 ) );
+    % end
+
+    % function q3 = solveF2TJointAngle(IK_solver, q2, A, B)
+    %   p23 = IK_solver.pos_vec_23_;
+    %   p3e = IK_solver.pos_vec_3e_;
+
+    %   q3 = 2 * pi + ...
+    %     atan2( A * cos(q2) - B * sin(q2) - p23(1, 1), A * sin(q2) + B * cos(q2) - p23(3, 1) ) - ...
+    %     atan2( p3e(1, 1), p3e(3, 1) );
+    % end
+
+  end
+
+end  % IKSolverForMammalJointConfig3DofLimb
