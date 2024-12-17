@@ -9,6 +9,7 @@ config_foothold_planning = ConfigFootholdPlanning(config);
 config_gait_planning = ConfigGaitPlanning(config);
 config_trajectory_planning = ConfigTrajectoryPlanning(config);
 config_joint_controller = ConfigJointController(config);
+config_evaluation = ConfigEvaluation(config);
 config_animation_settings = ConfigAnimationSettings(config);
 save_settings = ConfigSaveSettings(config, config_world);
 
@@ -42,6 +43,9 @@ limb_controller = LimbController();
 
 % Joint Controller
 joint_controller = JointController(config_joint_controller);
+
+% Evaluation
+evaluation = Evaluation(config_evaluation, robot);
 
 
 variables_log = [];

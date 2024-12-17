@@ -28,6 +28,9 @@ robot = robot.forwardDynamics();
 % Forward Kinematics
 robot.forwardKinematics();
 
+% Evaluation
+evaluation.evaluate(robot);
+
 % Save variables
 saveVariables();
 
