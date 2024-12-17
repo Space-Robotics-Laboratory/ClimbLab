@@ -1,7 +1,7 @@
 classdef ConfigJointController < Configuration
   %% Properties
   properties (SetAccess = {?ConfigJointController, ?Configuration}, GetAccess = public)
-    type (1, 1) string = "PD_control";
+    controller_type (1, 1) string = "PD_control";
 
     proportional_gain (1, 1) double = 30.0;
     derivative_gain   (1, 1) double = 0.2;
@@ -29,7 +29,7 @@ classdef ConfigJointController < Configuration
   %% Getter
   methods (Access = public)
     function type = getType(config_control_param)
-      type = config_control_param.type;
+      type = config_control_param.controller_type;
     end
     function [proportional_gain, derivative_gain] = getPDControllerGain(config_control_param)
       proportional_gain = config_control_param.proportional_gain;
