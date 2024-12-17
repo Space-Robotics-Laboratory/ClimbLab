@@ -1,4 +1,4 @@
-classdef LinkParameters < handle
+classdef LinkParameters < dynamicprops & handle
 % Link Parameters
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -78,6 +78,15 @@ classdef LinkParameters < handle
         LP.kJoints_(:, limb_id) = j_num(LP, limb_id);
         LP.kNumJointsPerLimb_(1, limb_id) = length(LP.kJoints_(:, limb_id));
       end
+
+      if (LP.kJointAllocationType_ == "mammal")
+        addprop(LP, "kLegConfigType_");
+        LP.kLegConfigType_ = LP_tmp.leg_config_type;
+        addprop(LP, "kTheta1");
+        LP.kTheta1 = LP_tmp.theta_1;
+        addprop(LP, "kTheta2");
+        LP.kTheta2 = LP_tmp.theta_2;
+      end
     end
 
     function cloned_LP = clone(original_LP)
@@ -141,6 +150,21 @@ classdef LinkParameters < handle
 
     function F_grip = getMaxEndurableGrippingForce(LinkParameters)
       F_grip = LinkParameters.kFGrip_;
+    end
+
+    function leg_config_type = getMammalLegConfigType(LinkParameter)
+      if (LinkParameter.kJointAllocationType_ ~= "mammal")
+        error("ERROR: Failed to get property ""leg_config_type"".");
+      end
+      leg_config_type = LinkParameter.kLegConfigType_;
+    end
+
+    function [theta_1, theta_2] = getMammalConfigOffsetAngles(LinkParameter)
+      if (LinkParameter.kJointAllocationType_ ~= "mammal")
+        error("ERROR: Failed to get property ""theta_1"" and ""theta_2"".");
+      end
+      theta_1 = LinkParameter.kTheta1;
+      theta_2 = LinkParameter.kTheta2;
     end
 
   end

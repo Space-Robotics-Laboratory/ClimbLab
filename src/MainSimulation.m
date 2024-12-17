@@ -10,7 +10,7 @@ tic;
 % - "SII_2022_low_reaction",
 % - "ICRA_2023_Reaction_Aware_Motion_Planning",
 % - "position_based_impedance_control_for_base",  % UNDER DEVELOPMENT
-config = "default";
+config = "example_demo_2";
 
 %%% Define a code for current set of simulations
 run_cod = config;
