@@ -128,6 +128,26 @@ classdef LinkParameters < dynamicprops & handle
       Qi = LP.Qi;
     end
 
+    function base_mass = getBaseMass(LinkParameter)
+      base_mass = LinkParameter.m0;
+    end
+
+    function links_mass = getLinksMass(LinkParameter)
+      links_mass = LinkParameter.m;
+    end
+
+    function total_mass = getTotalMass(LinkParameter)
+      total_mass = LinkParameter.mass;
+    end
+
+    function base_inertia = getBaseInertia(LinkParameter)
+      base_inertia = LinkParameter.inertia0;
+    end
+
+    function links_inertia = getLinksInertia(LinkParameter)
+      links_inertia = LinkParameter.inertia;
+    end
+
     function num_q = getNumberOfJoints(LinkParameters)
       num_q = LinkParameters.num_q;
     end
@@ -140,7 +160,7 @@ classdef LinkParameters < dynamicprops & handle
       joint_allocation_type = LinkParameters.kJointAllocationType_;
     end
 
-    function joints = getJoints(LinkParameters)
+    function joints = getJoints(LinkParameters)  % TODO: Change function name
       joints = LinkParameters.kJoints_;
     end
 

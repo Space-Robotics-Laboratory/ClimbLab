@@ -15,6 +15,7 @@ classdef config_example_demo_2
 
 % TODO: Add equilibrium settings (tsm and gia)
 % TODO: Add animation of support triangle, gia stable region, gia vector
+% TODO: Add CoT
 % TODO: Add save settings (tsm, gia, manipulability, dynamic manipulability, joint max torque, joint rms torque, cot)
 % TODO: Add plot settings (tsm, gia, manipulability, dynamic manipulability, joint max torque, joint rms torque, cot)
 % TODO: Need to check if sensing camera and matching settings are necessary

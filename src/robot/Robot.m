@@ -25,7 +25,7 @@ classdef Robot < handle
     graphics_ RobotGraphics;
   end
 
-  %% Public methods
+  %% Public Methods
   methods (Access = public)
 
     function robot = Robot(config_robot, world, terrain)
@@ -56,6 +56,7 @@ classdef Robot < handle
         robot.getEEPosition());
       robot.SV_.setJointAngularPositions(joint_angles);
       robot.SV_.calcLinkPose(robot.LP_);
+      robot.SV_.calcCoM(robot.LP_);
       robot.forwardKinematics();
 
       robot.dynamics_ = Dynamics(world.getUseDynamics());
