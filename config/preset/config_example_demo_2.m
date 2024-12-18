@@ -13,7 +13,6 @@ classdef config_example_demo_2
 % Created     : 2021.03.02 by Kentaro Uno
 % Last updated: 2021.09.19 by Kentaro Uno
 
-% TODO: Solve singular matrix error at time == 4.0050
 % TODO: Add equilibrium settings (tsm and gia)
 % TODO: Add animation of support triangle, gia stable region, gia vector
 % TODO: Add save settings (tsm, gia, manipulability, dynamic manipulability, joint max torque, joint rms torque, cot)
@@ -31,8 +30,8 @@ classdef config_example_demo_2
     surface_type (1, 1) string = "flat_HR_5mx5m";
     inclination (3, 1) double = [0.0; -45.0; 0.0];  % [deg]
 
-    stiffness_coefficient_for_GRF (1, 1) double = 100000.0;
-    damping_coefficient_for_GRF (1, 1) double = 100.0;
+    stiffness_coefficient_for_GRF (1, 1) double = 100000.0 / 2.0;
+    damping_coefficient_for_GRF (1, 1) double = 100.0 / 2.0;
     stiffness_coefficient_for_GRM (1, 1) double = 0.1;
     damping_coefficient_for_GRM (1, 1) double = 0.01;
 
@@ -54,6 +53,11 @@ classdef config_example_demo_2
 
     % "max_holding_force"
     gripper_detachment_detection_method (1, 1) string = "max_holding_force";
+
+    % Position threshold for checking if gripper can grasp
+    gripper_grasp_position_threshold (1, 1) double = 0.005;
+    % Velocity threshold for checking if gripper can grasp
+    gripper_grasp_velocity_threshold (1, 1) double = 0.05;
 
     % Visualization settings
     visualize_robot (1, 1) logical = true;
@@ -108,9 +112,9 @@ classdef config_example_demo_2
     % Base CoM trajectory type
     base_trajectory_type (1, 1) string = "5th_order_bezier";
     % Limb end-effector trajectory type
-    limb_trajectory_type (1, 1) string = "7th_order_bezier";
+    limb_trajectory_type (1, 1) string = "7th_order_spline";
 
-    visualize_limb_trajectory (1, 1) logical = false;
+    visualize_limb_trajectory (1, 1) logical = true;
   end
 
   %% Joint Controller Parameters

@@ -22,28 +22,30 @@ classdef SeventhOrderSpline < handle
 
     function seventh_order_spline = SeventhOrderSpline()
     % SeventhOrderSpline() Constructor
-      seventh_order_spline.control_points_ = zeros(3, seventh_order_spline.kOrder_);
+      seventh_order_spline.control_points_ = zeros(3, seventh_order_spline.kOrder_ + 1);
     end
 
     function calcControlPoints(seventh_order_spline, ...
-        start_time, mid_time, final_time, ...
-        start_position, mid_position, final_position, ...
-        start_velocity, mid_velocity, final_velocity, ...
-        start_acceleration, final_acceleration)
+      time_constraints, position_constraints, velocity_constraints, acceleration_constraints)
       arguments (Input)
         seventh_order_spline;
-        start_time         (1, 1) {mustBeA(start_time,         "double")};
-        mid_time           (1, 1) {mustBeA(mid_time,           "double")};
-        final_time         (1, 1) {mustBeA(final_time,         "double")};
-        start_position     (3, 1) {mustBeA(start_position,     "double")};
-        mid_position       (3, 1) {mustBeA(mid_position,       "double")};
-        final_position     (3, 1) {mustBeA(final_position,     "double")};
-        start_velocity     (3, 1) {mustBeA(start_velocity,     "double")};
-        mid_velocity       (3, 1) {mustBeA(mid_velocity,       "double")};
-        final_velocity     (3, 1) {mustBeA(final_velocity,     "double")};
-        start_acceleration (3, 1) {mustBeA(start_acceleration, "double")};
-        final_acceleration (3, 1) {mustBeA(final_acceleration, "double")};
+        time_constraints         (1, :) {mustBeA(time_constraints, "double")};
+        position_constraints     (3, :) {mustBeA(position_constraints, "double")};
+        velocity_constraints     (3, :) {mustBeA(velocity_constraints, "double")};
+        acceleration_constraints (3, :) {mustBeA(acceleration_constraints, "double")};
       end
+
+      start_time = time_constraints(1, 1);
+      mid_time   = time_constraints(1, 2);
+      final_time = time_constraints(1, end);
+      start_position = position_constraints(:, 1);
+      mid_position   = position_constraints(:, 2);
+      final_position = position_constraints(:, end);
+      start_velocity = velocity_constraints(:, 1);
+      mid_velocity   = velocity_constraints(:, 2);
+      final_velocity = velocity_constraints(:, end);
+      start_acceleration = acceleration_constraints(:, 1);
+      final_acceleration = acceleration_constraints(:, end);
 
       XX = [start_position'    ;
             mid_position'      ;

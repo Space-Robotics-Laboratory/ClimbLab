@@ -17,7 +17,10 @@ classdef Robot < handle
 
     base_height_in_Surface_ (1, 1) double;
 
-    gripper_detachment_detection_method_ (1, 1) string;
+    kGripperDetachmentDetectionMethod_ (1, 1) string;
+
+    kGripperGraspPositionThreshold_ (1, 1) double;
+    kGripperGraspVelocityThreshold_ (1, 1) double;
 
     graphics_ RobotGraphics;
   end
@@ -59,9 +62,11 @@ classdef Robot < handle
 
       robot.des_SV_.overwrite(robot.SV_.clone());
 
-      robot.gripper_detachment_detection_method_ = config_robot.getGripperDetachmentDetectionMethod();
+      robot.kGripperDetachmentDetectionMethod_ = config_robot.getGripperDetachmentDetectionMethod();
+      [robot.kGripperGraspPositionThreshold_, robot.kGripperGraspVelocityThreshold_] = config_robot.getGripperGraspThresholds();
       robot.detectCollision(terrain);
       robot.des_SV_.setIsSupporting(1 : kNumLimb, true);
+      robot.des_SV_.setIsGrasping(1 : kNumLimb, true);
       robot.updateGripperState(terrain);
 
       if (~config_robot.getVisualizeRobot())
@@ -164,6 +169,7 @@ classdef Robot < handle
         % Release gripper of swing limb at swing motion start time
         if (abs(time - swing_timings(1, limb_id)) < eps)
           robot.des_SV_.setIsSupporting(limb_id, false);
+          robot.des_SV_.setIsGrasping(limb_id, false);
         end
 
         desired_support_limb_id = robot.des_SV_.getIsSupporting();
@@ -181,7 +187,7 @@ classdef Robot < handle
         % Distance between swing limb End-Effector and nearest graspable point positions
         dist_EE_nearGP = norm(swing_EE_position - near_GP);
 
-        distance_threshold = 0.001;  % TODO: should be set in config
+        distance_threshold = robot.kGripperGraspPositionThreshold_;
         if (dist_EE_nearGP > distance_threshold)
           continue;
         end
@@ -189,9 +195,9 @@ classdef Robot < handle
         EE_linear_velocity = (swing_EE_position - EE_position_last(:, limb_id)) / d_time;
         norm_EE_linear_velocity = norm(EE_linear_velocity);
 
-        velocity_threshold = 0.01;  % TODO: should be set in config
-        if (norm_EE_linear_velocity <= velocity_threshold)
+        if (norm_EE_linear_velocity <= robot.kGripperGraspVelocityThreshold_)
           robot.des_SV_.setIsSupporting(limb_id, true);
+          robot.des_SV_.setIsGrasping(limb_id, true);
         end
       end
 
@@ -213,7 +219,7 @@ classdef Robot < handle
       end
 
       % Check gripper detachment based on detection method
-      switch (robot.gripper_detachment_detection_method_)
+      switch (robot.kGripperDetachmentDetectionMethod_)
         case "none"
         case "max_holding_force"
           kNumLimb = robot.LP_.getNumberOfLimb();
