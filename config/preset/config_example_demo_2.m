@@ -129,6 +129,8 @@ classdef config_example_demo_2
   properties (SetAccess = private, GetAccess = {?ConfigEvaluation, ?Configuration})
     evaluate_manipulability (1, 1) logical = true;
     evaluate_dynamic_manipulability (1, 1) logical = true;
+
+    evaluate_tumble_stability_margin (1, 1) logical = true;
   end
 
   %% Animation Settings
@@ -158,6 +160,8 @@ classdef config_example_demo_2
     variable_saving_time_interval (1, 1) double = 0.05;
     % Save basic variables to csv file
     save_csv_file (1, 1) logical = true;
+
+    save_tumble_stability_margin (1, 1) logical = true;
   end
 
 end  % config_example_demo_2

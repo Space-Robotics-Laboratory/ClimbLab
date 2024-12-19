@@ -42,5 +42,9 @@ for limb_id = 1 : robot.LP_.getNumberOfLimb()
 end
 
 
+if (save_settings.getSaveTumbleStabilityMargin())
+  variables_log.TSM(cnt, 1) = evaluation.getTumbleStabilityMargin().getTumbleStabilityMargin();
+end
+
 clearvars('-except', variable_names{:});
 % EOF

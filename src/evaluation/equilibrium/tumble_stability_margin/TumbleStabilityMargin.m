@@ -6,6 +6,9 @@ classdef TumbleStabilityMargin < handle
 % Last updated: 2024.12.18 by Masazumi Imai
 
   %% Properties
+  properties (SetAccess = immutable, GetAccess = public)
+    kEvaluateTumbleStabilityMargin_ (1, 1) logical;
+  end
   properties (SetAccess = private, GetAccess = public)
     force_due_to_gravity_acceleration_  (3, 1);  % [N]
     moment_due_to_gravity_acceleration_ (3, 1);  % [Nm]
@@ -19,7 +22,7 @@ classdef TumbleStabilityMargin < handle
     normal_vector_of_supporting_triangle_plane_ (3, 1) double;
 
     % Tumbling moment for each tumbling axis (tumbling_axes_number_ x 1)  [Nm]
-    tumbling_moment_ (:, 1);
+    tumbling_moment_ (:, 1) double;
 
     is_tumbling_ (:, 1) logical;  % Tumbling condition for each tumbling axis
 
@@ -31,11 +34,40 @@ classdef TumbleStabilityMargin < handle
   %% Public Methods
   methods (Access = public)
 
-    function TSM = TumbleStabilityMargin()
+    function TSM = TumbleStabilityMargin(config_evaluation)
     % TumbleStabilityMargin() Constructor
+      arguments (Input)
+        config_evaluation (1, 1) {mustBeA(config_evaluation, "ConfigEvaluation")};
+        % robot (1, 1) {mustBeA(robot, "Robot")};
+      end
+
+      TSM.kEvaluateTumbleStabilityMargin_ = config_evaluation.getEvaluateTumbleStabilityMargin();
+
+      TSM.force_due_to_gravity_acceleration_ = zeros(3, 1);
+      TSM.moment_due_to_gravity_acceleration_ = zeros(3, 1);
+
+      TSM.force_due_to_inertial_acceleration_ = zeros(3, 1);
+      TSM.moment_due_to_inertial_acceleration_ = zeros(3, 1);
+
+      TSM.tumbling_axes_ = uint8.empty();
+      TSM.tumbling_axes_number_ = 0;
+
+      TSM.normal_vector_of_supporting_triangle_plane_ = zeros(3, 1);
+
+      TSM.tumbling_moment_ = 0.0;
+
+      TSM.is_tumbling_ = false;
+
+      TSM.tumble_stability_margin_ = 0.0;
+
+      TSM.is_equilibrium_ = true;
     end
 
     function evaluate(TSM, gravity, LP, SV, EE_position)
+      if (~TSM.kEvaluateTumbleStabilityMargin_)
+        return;
+      end
+
       TSM.calcGravitationalForceMoment(gravity, LP, SV);
 
       TSM.calcInertialForceMomentPlusRotational(LP, SV);
@@ -293,7 +325,7 @@ classdef TumbleStabilityMargin < handle
         return;
       end
 
-      TSM.is_tumbling_ = false(TSM.tumbling_axes_number_, 1);
+      TSM.is_tumbling_ = true(TSM.tumbling_axes_number_, 1);
 
       kNumLimb = LP.getNumberOfLimb();
       is_supporting = SV.getIsSupporting();
@@ -312,10 +344,10 @@ classdef TumbleStabilityMargin < handle
           if (limb_id ~= limb_i && limb_id ~= limb_j && is_supporting(1, limb_id))
             p_k = EE_position(:, limb_id);
 
-            not_tumbling_condition = cross(p_k - p_i, normal_vector_of_plane)' * tumbling_moment(tumbling_axis_id, 1) * (p_i - p_j) / abs(norm(p_i - p_j));
+            not_tumbling_condition = cross(p_k - p_i, normal_vector_of_plane)' * (tumbling_moment(tumbling_axis_id, 1) * (p_i - p_j) / abs(norm(p_i - p_j)));
 
             if (not_tumbling_condition > 0.0)
-              TSM.is_tumbling_(tumbling_axis_id, 1) = true;
+              TSM.is_tumbling_(tumbling_axis_id, 1) = false;
             end
           end
         end
@@ -337,6 +369,15 @@ classdef TumbleStabilityMargin < handle
       else
         TSM.is_equilibrium_ = true;
       end
+    end
+
+  end
+
+  %% Getter
+  methods (Access = public)
+
+    function tumble_stability_margin = getTumbleStabilityMargin(TSM)
+      tumble_stability_margin = TSM.tumble_stability_margin_;
     end
 
   end

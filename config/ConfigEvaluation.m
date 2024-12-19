@@ -4,6 +4,8 @@ classdef ConfigEvaluation < Configuration
   properties (SetAccess = {?ConfigEvaluation, ?Configuration}, GetAccess = public)
     evaluate_manipulability (1, 1) logical = true;
     evaluate_dynamic_manipulability (1, 1) logical = false;
+
+    evaluate_tumble_stability_margin (1, 1) logical = true;
   end
 
   %% Constructor
@@ -31,6 +33,10 @@ classdef ConfigEvaluation < Configuration
     function [evaluate_manipulability, evaluate_dynamic_manipulability] = getEvaluateManipulabilities(config_evaluation)
       evaluate_manipulability = config_evaluation.evaluate_manipulability;
       evaluate_dynamic_manipulability = config_evaluation.evaluate_dynamic_manipulability;
+    end
+
+    function evaluate_tumble_stability_margin = getEvaluateTumbleStabilityMargin(config_evaluation)
+      evaluate_tumble_stability_margin = config_evaluation.evaluate_tumble_stability_margin;
     end
 
   end

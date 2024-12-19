@@ -2,9 +2,9 @@ classdef Evaluation < handle
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    manipulability;
+    manipulability_;
 
-    tumble_stability_margin;
+    tumble_stability_margin_;
   end
 
   %% Public Methods
@@ -16,15 +16,24 @@ classdef Evaluation < handle
         robot (1, 1) {mustBeA(robot, "Robot")};
       end
 
-      evaluation.manipulability = Manipulability(config_evaluation, robot);
+      evaluation.manipulability_ = Manipulability(config_evaluation, robot);
 
-      evaluation.tumble_stability_margin = TumbleStabilityMargin();
+      evaluation.tumble_stability_margin_ = TumbleStabilityMargin(config_evaluation);
     end
 
     function evaluate(evaluation, world, robot)
-      evaluation.manipulability.evaluate(robot);
+      evaluation.manipulability_.evaluate(robot);
 
-      evaluation.tumble_stability_margin.evaluate(world.getGravity(), robot.getLinkParameter(), robot.getStateVariable(), robot.getEEPosition());
+      evaluation.tumble_stability_margin_.evaluate(world.getGravity(), robot.getLinkParameter(), robot.getStateVariable(), robot.getEEPosition());
+    end
+
+  end
+
+  %% Getter
+  methods (Access = public)
+
+    function TSM = getTumbleStabilityMargin(evaluation)
+      TSM = evaluation.tumble_stability_margin_;
     end
 
   end

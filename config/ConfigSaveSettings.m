@@ -8,6 +8,8 @@ classdef ConfigSaveSettings < Configuration
     save_csv_file (1, 1) logical = true;
     % Save the loaded config file in the dat folder if config is not "default"
     save_config_file (1, 1) logical = false;
+
+    save_tumble_stability_margin (1, 1) logical = false;
   end
 
   %% Public Methods
@@ -30,6 +32,14 @@ classdef ConfigSaveSettings < Configuration
       config_save_settings = config_save_settings.override(config);
     end
 
+  end
+
+  %% Getter
+  methods (Access = public)
+
+    function save_tumble_stability_margin = getSaveTumbleStabilityMargin(config_save_settings)
+      save_tumble_stability_margin = config_save_settings.save_tumble_stability_margin;
+    end
   end
 
 end  % ConfigSaveSettings

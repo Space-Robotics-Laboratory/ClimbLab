@@ -2,14 +2,15 @@ classdef Manipulability < handle
 % Calculate manipulability measure and dynamic manipulability measure
 %
 % Created     : 2020.04.10 by Koizumi Yusuke
-% Last updated: 2024.06.03 by Masazumi Imai
+% Last updated: 2024.12.18 by Masazumi Imai
 
   %% Properties
-  properties (SetAccess = private, GetAccess = public)
+  properties (SetAccess = immutable, GetAccess = public)
     kEvaluateManipulability (1, 1) logical;
-    manipulability_measure (:, 1) double;  % (kNumLimb x 1)
-
     kEvaluateDynamicManipulability (1, 1) logical;
+  end
+  properties (SetAccess = private, GetAccess = public)
+    manipulability_measure (:, 1) double;  % (kNumLimb x 1)
     dynamic_manipulability_measure (:, 1) double;  % (kNumLimb x 1)
   end
 
