@@ -3,6 +3,8 @@ classdef Evaluation < handle
   %% Properties
   properties (SetAccess = private, GetAccess = public)
     manipulability;
+
+    tumble_stability_margin;
   end
 
   %% Public Methods
@@ -15,10 +17,14 @@ classdef Evaluation < handle
       end
 
       evaluation.manipulability = Manipulability(config_evaluation, robot);
+
+      evaluation.tumble_stability_margin = TumbleStabilityMargin();
     end
 
-    function evaluate(evaluation, robot)
+    function evaluate(evaluation, world, robot)
       evaluation.manipulability.evaluate(robot);
+
+      evaluation.tumble_stability_margin.evaluate(world.getGravity(), robot.getLinkParameter(), robot.getStateVariable(), robot.getEEPosition());
     end
 
   end

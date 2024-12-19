@@ -30,7 +30,7 @@ robot.forwardKinematics();
 
 % Evaluation
 robot.SV_.calcCoM(robot.getLinkParameter());
-evaluation.evaluate(robot);
+evaluation.evaluate(world, robot);
 
 % Save variables
 saveVariables();
