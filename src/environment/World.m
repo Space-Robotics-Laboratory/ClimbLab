@@ -36,13 +36,19 @@ classdef World
 
   %% Getter
   methods (Access = public)
+
     function use_dynamics = getUseDynamics(world)
       use_dynamics = world.use_dynamics;
     end
+
     function max_simulation_time = getMaxSimulationTime(world)
       max_simulation_time = world.max_simulation_time;
     end
+
+    function gravity = getGravity(world)
+      gravity = world.gravity;
+    end
+
   end
 
-end
-% EOF
+end  % World

@@ -104,21 +104,6 @@ classdef StateVariable < handle
       SV.RR = SV_tmp.RR;
     end
 
-    function calcCoM(SV, LP)
-      kBaseMass = LP.getBaseMass();
-      kLinksMass = LP.getLinksMass();
-      kTotalMass = LP.getTotalMass();
-      kNumJoints = LP.getNumberOfJoints();
-
-      CoM = kBaseMass * SV.R0;
-
-      for link_id = 1 : kNumJoints
-        CoM = CoM + kLinksMass(1, link_id) * SV.RR(:, link_id);
-      end
-
-      SV.CoM_ = CoM / kTotalMass;
-    end
-
     function overwrite(SV, state_variables)
     % overwrite()
     %   Overwrite all property values of state variables
@@ -156,6 +141,21 @@ classdef StateVariable < handle
       for i = 1 : length(prop_name)
         cloned_SV.(prop_name{i, 1}) = original_SV.(prop_name{i, 1});
       end
+    end
+
+    function calcCoM(SV, LP)
+      kBaseMass = LP.getBaseMass();
+      kLinksMass = LP.getLinksMass();
+      kTotalMass = LP.getTotalMass();
+      kNumJoints = LP.getNumberOfJoints();
+
+      CoM = kBaseMass * SV.R0;
+
+      for link_id = 1 : kNumJoints
+        CoM = CoM + kLinksMass(1, link_id) * SV.RR(:, link_id);
+      end
+
+      SV.CoM_ = CoM / kTotalMass;
     end
 
   end
