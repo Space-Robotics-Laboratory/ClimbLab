@@ -12,6 +12,7 @@ config_joint_controller = ConfigJointController(config);
 config_evaluation = ConfigEvaluation(config);
 config_animation_settings = ConfigAnimationSettings(config);
 save_settings = ConfigSaveSettings(config, config_world);
+config_plot_settings = ConfigPlotSettings(config);
 
 % Animation
 animation = Animation(config_animation_settings);
@@ -49,5 +50,7 @@ evaluation = Evaluation(config_evaluation, robot);
 
 
 variables_log = [];
+
+graph_plotter = GraphPlotter(config_plot_settings, run_cod, run_id);
 
 % EOF

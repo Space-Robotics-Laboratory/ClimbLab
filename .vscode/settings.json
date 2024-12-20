@@ -36,6 +36,7 @@
     "repmat",
     "rmmissing",
     "rotm2eul",
+    "saveas",
     "strcmp",
     "surfnorm",
     "validatecolor",

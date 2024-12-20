@@ -35,6 +35,8 @@ end
 
 animation.saveVideoFile();
 
+graph_plotter.plot(robot, variables_log);
+
 
 toc
 % EOF
