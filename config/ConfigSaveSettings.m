@@ -9,6 +9,9 @@ classdef ConfigSaveSettings < Configuration
     % Save the loaded config file in the dat folder if config is not "default"
     save_config_file (1, 1) logical = false;
 
+    save_manipulability (1, 1) logical = true;
+    save_dynamic_manipulability (1, 1) logical = true;
+
     save_tumble_stability_margin (1, 1) logical = true;
   end
 
@@ -30,12 +33,22 @@ classdef ConfigSaveSettings < Configuration
       end
 
       config_save_settings = config_save_settings.override(config);
+
+      % TODO: Check variable_saving_time_interval is larger than time-step
     end
 
   end
 
   %% Getter
   methods (Access = public)
+
+    function save_manipulability = getSaveManipulability(config_save_settings)
+      save_manipulability = config_save_settings.save_manipulability;
+    end
+
+    function save_dynamic_manipulability = getSaveDynamicManipulability(config_save_settings)
+      save_dynamic_manipulability = config_save_settings.save_dynamic_manipulability;
+    end
 
     function save_tumble_stability_margin = getSaveTumbleStabilityMargin(config_save_settings)
       save_tumble_stability_margin = config_save_settings.save_tumble_stability_margin;

@@ -16,8 +16,8 @@ classdef config_example_demo_2
 % TODO: Add equilibrium settings (tsm and gia)
 % TODO: Add animation of support triangle, gia stable region, gia vector
 % TODO: Add CoT
-% TODO: Add save settings (tsm, gia, manipulability, dynamic manipulability, joint max torque, joint rms torque, cot)
-% TODO: Add plot settings (tsm, gia, manipulability, dynamic manipulability, joint max torque, joint rms torque, cot)
+% TODO: Add save settings (gia, joint max torque, joint rms torque, cot)
+% TODO: Add plot settings (gia, manipulability, dynamic manipulability, joint max torque, joint rms torque, cot)
 % TODO: Need to check if sensing camera and matching settings are necessary
 
   %% Environment Parameters
@@ -162,6 +162,13 @@ classdef config_example_demo_2
     save_csv_file (1, 1) logical = true;
 
     save_tumble_stability_margin (1, 1) logical = true;
+  end
+
+  %% Plot Settings
+  properties (SetAccess = private, GetAccess = {?ConfigPlotSettings, ?Configuration})
+    kPlotBasePosition_ (1, 1) logical = true;
+    kPlotJointTorque_ (1, 1) logical = true;
+    kPlotTumbleStabilityMargin_ (1, 1) logical = true;
   end
 
 end  % config_example_demo_2

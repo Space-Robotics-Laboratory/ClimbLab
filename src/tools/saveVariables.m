@@ -23,7 +23,7 @@ variables_log.base_linear_acceleration(cnt, :) = robot.SV_.getBaseLinearAccelera
 variables_log.base_angular_acceleration(cnt, :) = robot.SV_.getBaseAngularAcceleration()';
 variables_log.joint_angular_position(cnt, :) = robot.SV_.getJointAngularPosition()';
 variables_log.joint_angular_velocity(cnt, :) = robot.SV_.getJointAngularVelocity()';
-variables_log.joint_angylar_acceleration(cnt, :) = robot.SV_.getJointAngularAcceleration()';
+variables_log.joint_angular_acceleration(cnt, :) = robot.SV_.getJointAngularAcceleration()';
 variables_log.joint_torque(cnt, :) = robot.SV_.getJointTorque()';
 
 Fe = robot.SV_.getGroundReactionForce(robot.LP_);
@@ -41,6 +41,14 @@ for limb_id = 1 : robot.LP_.getNumberOfLimb()
     EE_positions(:, limb_id)';
 end
 
+
+if(save_settings.getSaveManipulability())
+  variables_log.manipulability_measure(cnt, :) = evaluation.getManipulability().getManipulabilityMeasure();
+end
+
+if (save_settings.getSaveDynamicManipulability())
+  variables_log.dynamic_manipulability_measure(cnt, :) = evaluation.getManipulability().getDynamicManipulabilityMeasure();
+end
 
 if (save_settings.getSaveTumbleStabilityMargin())
   variables_log.TSM(cnt, 1) = evaluation.getTumbleStabilityMargin().getTumbleStabilityMargin();

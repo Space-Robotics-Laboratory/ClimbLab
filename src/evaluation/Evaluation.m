@@ -2,9 +2,9 @@ classdef Evaluation < handle
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    manipulability_;
+    manipulability_ Manipulability;
 
-    tumble_stability_margin_;
+    tumble_stability_margin_ TumbleStabilityMargin;
   end
 
   %% Public Methods
@@ -31,6 +31,10 @@ classdef Evaluation < handle
 
   %% Getter
   methods (Access = public)
+
+    function manipulability = getManipulability(evaluation)
+      manipulability = evaluation.manipulability_;
+    end
 
     function TSM = getTumbleStabilityMargin(evaluation)
       TSM = evaluation.tumble_stability_margin_;

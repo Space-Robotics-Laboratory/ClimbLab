@@ -6,12 +6,12 @@ classdef Manipulability < handle
 
   %% Properties
   properties (SetAccess = immutable, GetAccess = public)
-    kEvaluateManipulability (1, 1) logical;
-    kEvaluateDynamicManipulability (1, 1) logical;
+    kEvaluateManipulability_ (1, 1) logical;
+    kEvaluateDynamicManipulability_ (1, 1) logical;
   end
   properties (SetAccess = private, GetAccess = public)
-    manipulability_measure (:, 1) double;  % (kNumLimb x 1)
-    dynamic_manipulability_measure (:, 1) double;  % (kNumLimb x 1)
+    manipulability_measure_ (:, 1) double;  % (kNumLimb x 1)
+    dynamic_manipulability_measure_ (:, 1) double;  % (kNumLimb x 1)
   end
 
   %% Public Methods
@@ -23,13 +23,13 @@ classdef Manipulability < handle
         robot (1, 1) {mustBeA(robot, "Robot")};
       end
 
-      [manipulability.kEvaluateManipulability, manipulability.kEvaluateDynamicManipulability] = ...
+      [manipulability.kEvaluateManipulability_, manipulability.kEvaluateDynamicManipulability_] = ...
         config_evaluation.getEvaluateManipulabilities();
 
       kNumLimb = robot.LP_.getNumberOfLimb();
 
-      manipulability.manipulability_measure = zeros(kNumLimb, 1);
-      manipulability.dynamic_manipulability_measure = zeros(kNumLimb, 1);
+      manipulability.manipulability_measure_ = zeros(kNumLimb, 1);
+      manipulability.dynamic_manipulability_measure_ = zeros(kNumLimb, 1);
     end
 
     function evaluate(manipulability, robot)
@@ -41,11 +41,11 @@ classdef Manipulability < handle
       LP = robot.getLinkParameter();
       SV = robot.getStateVariable();
 
-      if (manipulability.kEvaluateManipulability)
+      if (manipulability.kEvaluateManipulability_)
         manipulability.calcManipulability(LP, SV);
       end
 
-      if (manipulability.kEvaluateDynamicManipulability)
+      if (manipulability.kEvaluateDynamicManipulability_)
         manipulability.calcDynamicManipulability(LP, SV);
       end
     end
@@ -65,7 +65,7 @@ classdef Manipulability < handle
         Jacobian = calc_je(LP, SV, kJoints(:, limb_id));
         Je = Jacobian(1 : 3, j * (limb_id - 1) + 1 : j * limb_id);
 
-        manipulability.manipulability_measure(limb_id, 1) = sqrt(det(Je * Je'));
+        manipulability.manipulability_measure_(limb_id, 1) = sqrt(det(Je * Je'));
       end
     end
 
@@ -82,8 +82,21 @@ classdef Manipulability < handle
         Je = Jacobian(1 : 3, j * (limb_id - 1) + 1 : j * limb_id);
         hm = Hm(kJoints(:, limb_id), kJoints(:, limb_id));
 
-        manipulability.dynamic_manipulability_measure(limb_id, 1) = sqrt(det((Je / (hm' * hm) * Je')));
+        manipulability.dynamic_manipulability_measure_(limb_id, 1) = sqrt(det((Je / (hm' * hm) * Je')));
       end
+    end
+
+  end
+
+  %% Getter
+  methods (Access = public)
+
+    function manipulability_measure = getManipulabilityMeasure(manipulability)
+      manipulability_measure = manipulability.manipulability_measure_;
+    end
+
+    function dynamic_manipulability_measure = getDynamicManipulabilityMeasure(manipulability)
+      dynamic_manipulability_measure = manipulability.dynamic_manipulability_measure_;
     end
 
   end
