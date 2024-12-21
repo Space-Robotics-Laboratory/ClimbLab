@@ -1,4 +1,8 @@
 classdef ConfigPlotSettings < Configuration
+% Configuration for graph plot
+%
+% Created:      2020.07.08 by Warley Ribeiro
+% Last updated: 2024.12.21 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = {?ConfigPlotSettings, ?Configuration}, GetAccess = public)
@@ -12,6 +16,9 @@ classdef ConfigPlotSettings < Configuration
     kPlotBasePosition_ (1, 1) logical = true;
 
     kPlotJointTorque_ (1, 1) logical = true;
+
+    kPlotManipulability_ (1, 1) logical = true;
+    kPlotDynamicManipulability_ (1, 1) logical = true;
 
     kPlotTumbleStabilityMargin_ (1, 1) logical = true;
   end

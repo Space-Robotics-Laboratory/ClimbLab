@@ -3,7 +3,7 @@ classdef GraphPlotter < dynamicprops & handle
 % NOTE: GraphPlotter takes over properties of ConfigPlotSettings. Please refer to ConfigPlotSettings.
 %
 % Created:      2020.07.27 by Warley Ribeiro
-% Last updated: 2024.12.20 by Masazumi Imai
+% Last updated: 2024.12.21 by Masazumi Imai
 
   %% Properties
   properties (Access = private)
@@ -59,6 +59,18 @@ classdef GraphPlotter < dynamicprops & handle
           torque = variables_log.joint_torque(:, kNumJointsPerLimb(1, limb_id) * (limb_id - 1) + 1 : kNumJointsPerLimb(1, limb_id) * limb_id);
           graph_plotter.plotTimeHistoryGraph(variables_log.time, torque, fig_title, y_label);
         end
+      end
+
+      if (graph_plotter.kPlotManipulability_)
+        fig_title = "Manipulability Measure";
+        y_label = "\rm{Manipulability Measure [-]}";
+        graph_plotter.plotTimeHistoryGraph(variables_log.time, variables_log.manipulability_measure, fig_title, y_label);
+      end
+
+      if (graph_plotter.kPlotDynamicManipulability_)
+        fig_title = "Dynamic Manipulability Measure";
+        y_label = "\rm{Dynamic Manipulability Measure [-]}";
+        graph_plotter.plotTimeHistoryGraph(variables_log.time, variables_log.dynamic_manipulability_measure, fig_title, y_label);
       end
 
       if (graph_plotter.kPlotTumbleStabilityMargin_)
