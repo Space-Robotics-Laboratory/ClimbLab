@@ -8,7 +8,7 @@ elseif (save_settings.variable_saving_time_interval >= world.time_step)
   if (rem(time, save_settings.variable_saving_time_interval) > eps)
     return;
   end
-  cnt = uint8(numel(variables_log.time) + 1);
+  cnt = numel(variables_log.time) + 1;
 else
   error("ERROR: variable saving time interval should be larger than time-step!");
 end
