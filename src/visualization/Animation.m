@@ -24,7 +24,8 @@ classdef Animation < dynamicprops & handle
       % Add properties from config
       customized_config_prop_name = properties(config_animation_settings);
       for i = 1:length(customized_config_prop_name)
-        addprop(animation, customized_config_prop_name{i, 1});
+        dynamic_property = addprop(animation, customized_config_prop_name{i, 1});
+        dynamic_property.Access = "private";
         animation.(customized_config_prop_name{i, 1}) = ...
           config_animation_settings.(customized_config_prop_name{i, 1});
       end

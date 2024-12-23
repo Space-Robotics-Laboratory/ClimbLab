@@ -33,6 +33,6 @@ robot.SV_.calcCoM(robot.getLinkParameter());
 evaluation.evaluate(world, robot);
 
 % Save variables
-saveVariables();
+data_logger.saveVariables(time, robot, evaluation);
 
 % EOF

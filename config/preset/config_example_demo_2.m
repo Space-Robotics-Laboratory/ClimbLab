@@ -162,16 +162,18 @@ classdef config_example_demo_2
   %% Save Settings
   properties (SetAccess = private, GetAccess = {?ConfigSaveSettings, ?Configuration})
     % Time interval for saving variables (should be larger than time-step)
-    variable_saving_time_interval (1, 1) double = 0.05;
-    save_csv_file (1, 1) logical = true;
+    kVariableSavingTimeInterval_ (1, 1) double = 0.05;
+    kSaveCsvFile_ (1, 1) logical = true;
 
-    save_manipulability          (1, 1) logical = true;
-    save_dynamic_manipulability  (1, 1) logical = true;
-    save_tumble_stability_margin (1, 1) logical = true;
+    kSaveManipulability_        (1, 1) logical = true;
+    kSaveDynamicManipulability_ (1, 1) logical = true;
+    kSaveTumbleStabilityMargin_ (1, 1) logical = true;
   end
 
   %% Plot Settings
   properties (SetAccess = private, GetAccess = {?ConfigPlotSettings, ?Configuration})
+    kSaveGraphs_ (1, 1) logical = true;
+
     kPlotBasePosition_          (1, 1) logical = true;
     kPlotJointTorque_           (1, 1) logical = true;
     kPlotManipulability_        (1, 1) logical = true;

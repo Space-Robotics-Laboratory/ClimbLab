@@ -34,8 +34,9 @@ for time = 0.0 : d_time : kMaxSimTime
 end
 
 animation.saveVideoFile();
+data_logger.saveDataFiles(config, run_id);
 
-graph_plotter.plot(robot, variables_log);
+graph_plotter.plot(robot, data_logger);
 
 
 toc
