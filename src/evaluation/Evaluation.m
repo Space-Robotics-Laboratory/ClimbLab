@@ -11,15 +11,16 @@ classdef Evaluation < handle
   %% Public Methods
   methods (Access = public)
 
-    function evaluation = Evaluation(config_evaluation, robot)
+    function evaluation = Evaluation(config_evaluation, terrain, robot)
       arguments (Input)
         config_evaluation (1, 1) {mustBeA(config_evaluation, "ConfigEvaluation")};
-        robot (1, 1) {mustBeA(robot, "Robot")};
+        terrain           (1, 1) {mustBeA(terrain,           "Terrain")};
+        robot             (1, 1) {mustBeA(robot,             "Robot")};
       end
 
       evaluation.manipulability_ = Manipulability(config_evaluation, robot);
 
-      evaluation.supporting_leg_polygon_ = SupportingLegPolygon(config_evaluation, robot);
+      evaluation.supporting_leg_polygon_ = SupportingLegPolygon(config_evaluation, terrain, robot);
       evaluation.tumble_stability_margin_ = TumbleStabilityMargin(config_evaluation);
     end
 

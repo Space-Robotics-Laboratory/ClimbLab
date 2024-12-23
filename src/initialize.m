@@ -46,7 +46,7 @@ limb_controller = LimbController();
 joint_controller = JointController(config_joint_controller);
 
 % Evaluation
-evaluation = Evaluation(config_evaluation, robot);
+evaluation = Evaluation(config_evaluation, terrain, robot);
 
 
 variables_log = [];
