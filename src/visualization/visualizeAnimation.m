@@ -10,6 +10,8 @@ animation.setLight();
 
 trajectory_planning.visualize(time);
 
+evaluation.visualize();
+
 visualizeVectors();
 
 drawnow limitrate nocallbacks;

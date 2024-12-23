@@ -4,6 +4,7 @@ classdef Evaluation < handle
   properties (SetAccess = private, GetAccess = public)
     manipulability_ Manipulability;
 
+    supporting_leg_polygon_ SupportingLegPolygon;
     tumble_stability_margin_ TumbleStabilityMargin;
   end
 
@@ -18,13 +19,20 @@ classdef Evaluation < handle
 
       evaluation.manipulability_ = Manipulability(config_evaluation, robot);
 
+      evaluation.supporting_leg_polygon_ = SupportingLegPolygon(config_evaluation, robot);
       evaluation.tumble_stability_margin_ = TumbleStabilityMargin(config_evaluation);
     end
 
     function evaluate(evaluation, world, robot)
       evaluation.manipulability_.evaluate(robot);
 
+      evaluation.supporting_leg_polygon_.calculate(robot);
+
       evaluation.tumble_stability_margin_.evaluate(world.getGravity(), robot.getLinkParameter(), robot.getStateVariable(), robot.getEEPosition());
+    end
+
+    function visualize(evaluation)
+      evaluation.supporting_leg_polygon_.visualize();
     end
 
   end

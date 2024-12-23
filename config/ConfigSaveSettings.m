@@ -9,10 +9,10 @@ classdef ConfigSaveSettings < Configuration
     % Save the loaded config file in the dat folder if config is not "default"
     save_config_file (1, 1) logical = false;
 
-    save_manipulability (1, 1) logical = true;
-    save_dynamic_manipulability (1, 1) logical = true;
+    save_manipulability (1, 1) logical = false;
+    save_dynamic_manipulability (1, 1) logical = false;
 
-    save_tumble_stability_margin (1, 1) logical = true;
+    save_tumble_stability_margin (1, 1) logical = false;
   end
 
   %% Public Methods

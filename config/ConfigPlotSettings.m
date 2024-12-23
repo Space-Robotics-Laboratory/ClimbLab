@@ -13,14 +13,14 @@ classdef ConfigPlotSettings < Configuration
 
     kSaveGraphs_ (1, 1) logical = false;
 
-    kPlotBasePosition_ (1, 1) logical = true;
+    kPlotBasePosition_ (1, 1) logical = false;
 
-    kPlotJointTorque_ (1, 1) logical = true;
+    kPlotJointTorque_ (1, 1) logical = false;
 
-    kPlotManipulability_ (1, 1) logical = true;
-    kPlotDynamicManipulability_ (1, 1) logical = true;
+    kPlotManipulability_ (1, 1) logical = false;
+    kPlotDynamicManipulability_ (1, 1) logical = false;
 
-    kPlotTumbleStabilityMargin_ (1, 1) logical = true;
+    kPlotTumbleStabilityMargin_ (1, 1) logical = false;
   end
 
   %% Public Methods

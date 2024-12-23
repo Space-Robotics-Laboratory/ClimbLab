@@ -73,7 +73,7 @@ classdef config_example_demo_2
 
   %% Path Planning Parameters
   properties (SetAccess = private, GetAccess = {?ConfigPathPlanning, ?Configuration})
-    goal_position (3, 1) double = [0.0; 0.0; 0.0];  % [m]
+    goal_position (3, 1) double = [0.4; 0.5; 0.0];  % [m]
     % Global Path Planning method
     global_path_plan_type (1, 1) string = "straight_toward_the_goal_direction";
     % Local Path Planning method
@@ -130,6 +130,11 @@ classdef config_example_demo_2
     evaluate_manipulability (1, 1) logical = true;
     evaluate_dynamic_manipulability (1, 1) logical = true;
 
+    visualize_supporting_leg_polygon (1, 1) logical = true;
+      supporting_leg_polygon_face_color = [0.0 136.0 / 255.0 170.0 / 255.0];
+      supporting_leg_polygon_edge_color = "none";
+      supporting_leg_polygon_face_transparency (1, 1) double = 0.5
+
     evaluate_tumble_stability_margin (1, 1) logical = true;
   end
 
@@ -158,16 +163,19 @@ classdef config_example_demo_2
   properties (SetAccess = private, GetAccess = {?ConfigSaveSettings, ?Configuration})
     % Time interval for saving variables (should be larger than time-step)
     variable_saving_time_interval (1, 1) double = 0.05;
-    % Save basic variables to csv file
     save_csv_file (1, 1) logical = true;
 
+    save_manipulability          (1, 1) logical = true;
+    save_dynamic_manipulability  (1, 1) logical = true;
     save_tumble_stability_margin (1, 1) logical = true;
   end
 
   %% Plot Settings
   properties (SetAccess = private, GetAccess = {?ConfigPlotSettings, ?Configuration})
-    kPlotBasePosition_ (1, 1) logical = true;
-    kPlotJointTorque_ (1, 1) logical = true;
+    kPlotBasePosition_          (1, 1) logical = true;
+    kPlotJointTorque_           (1, 1) logical = true;
+    kPlotManipulability_        (1, 1) logical = true;
+    kPlotDynamicManipulability_ (1, 1) logical = true;
     kPlotTumbleStabilityMargin_ (1, 1) logical = true;
   end
 

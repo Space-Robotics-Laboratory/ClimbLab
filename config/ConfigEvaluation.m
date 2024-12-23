@@ -5,7 +5,12 @@ classdef ConfigEvaluation < Configuration
     evaluate_manipulability (1, 1) logical = true;
     evaluate_dynamic_manipulability (1, 1) logical = false;
 
-    evaluate_tumble_stability_margin (1, 1) logical = true;
+    visualize_supporting_leg_polygon (1, 1) logical = false;
+      supporting_leg_polygon_face_color = [0.0 136.0 / 255.0 170.0 / 255.0];
+      supporting_leg_polygon_edge_color = "none";
+      supporting_leg_polygon_face_transparency (1, 1) double = 0.5
+
+    evaluate_tumble_stability_margin (1, 1) logical = false;
   end
 
   %% Constructor
@@ -33,6 +38,13 @@ classdef ConfigEvaluation < Configuration
     function [evaluate_manipulability, evaluate_dynamic_manipulability] = getEvaluateManipulabilities(config_evaluation)
       evaluate_manipulability = config_evaluation.evaluate_manipulability;
       evaluate_dynamic_manipulability = config_evaluation.evaluate_dynamic_manipulability;
+    end
+
+    function [visualize, face_color, edge_color, face_transparency] = getSupportingLegPolygonVisualSettings(config_evaluation)
+      visualize = config_evaluation.visualize_supporting_leg_polygon;
+      face_color = config_evaluation.supporting_leg_polygon_face_color;
+      edge_color = config_evaluation.supporting_leg_polygon_edge_color;
+      face_transparency = config_evaluation.supporting_leg_polygon_face_transparency;
     end
 
     function evaluate_tumble_stability_margin = getEvaluateTumbleStabilityMargin(config_evaluation)
