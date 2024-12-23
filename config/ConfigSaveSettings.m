@@ -2,12 +2,13 @@ classdef ConfigSaveSettings < Configuration
 
   %% Properties
   properties (SetAccess = {?ConfigSaveSettings, ?Configuration}, GetAccess = public)
-    % Time interval for saving variables (should be larger than time-step)
-    kVariableSavingTimeInterval_ (1, 1) double;
     % Save basic variables to csv file
     kSaveCsvFile_ (1, 1) logical = true;
     % Save the loaded config file in the dat folder if config is not "default"
     kSaveConfigFile_ (1, 1) logical = false;
+
+    % Time interval for saving variables (should be larger than time-step)
+    kVariableSavingTimeInterval_ (1, 1) double;
 
     kSaveManipulability_ (1, 1) logical = false;
     kSaveDynamicManipulability_ (1, 1) logical = false;

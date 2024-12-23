@@ -32,7 +32,7 @@ classdef GraphPlotter < dynamicprops & handle
         graph_plotter.(kConfigPropName{i, 1}) = config_plot_settings.(kConfigPropName{i, 1});
       end
 
-      graph_plotter.kSaveDataDirName_ = "dat/" + run_cod + "/" + run_id;
+      graph_plotter.kSaveDataDirName_ = "dat" + filesep + run_cod + filesep + run_id;
       if (graph_plotter.kSaveGraphs_ && ~isfolder(graph_plotter.kSaveDataDirName_))
         mkdir(graph_plotter.kSaveDataDirName_);
       end

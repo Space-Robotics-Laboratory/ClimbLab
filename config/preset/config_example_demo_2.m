@@ -141,6 +141,7 @@ classdef config_example_demo_2
   %% Animation Settings
   properties (SetAccess = private, GetAccess = {?ConfigAnimationSettings, ?Configuration})
     display_animation (1, 1) logical = true;
+    save_video        (1, 1) logical = true;
     frame_rate        (1, 1) double  = 20;          % [frames/s] (positive value)
     resolution        (1, 2) double  = [640, 480];  % [px]
     show_elapsed_time (1, 1) logical = false;
@@ -161,9 +162,10 @@ classdef config_example_demo_2
 
   %% Save Settings
   properties (SetAccess = private, GetAccess = {?ConfigSaveSettings, ?Configuration})
+    kSaveCsvFile_ (1, 1) logical = true;
+
     % Time interval for saving variables (should be larger than time-step)
     kVariableSavingTimeInterval_ (1, 1) double = 0.05;
-    kSaveCsvFile_ (1, 1) logical = true;
 
     kSaveManipulability_        (1, 1) logical = true;
     kSaveDynamicManipulability_ (1, 1) logical = true;

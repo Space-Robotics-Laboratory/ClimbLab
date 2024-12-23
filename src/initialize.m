@@ -15,8 +15,8 @@ config_save_settings = ConfigSaveSettings(config, config_world);
 config_plot_settings = ConfigPlotSettings(config);
 
 % Animation
-animation = Animation(config_animation_settings);
-animation.createVideoFile(run_cod, run_id);
+animation = Animation(config_animation_settings, run_cod, run_id);
+animation.createVideoFile(run_id);
 
 % Environment
 world = World(config_world);

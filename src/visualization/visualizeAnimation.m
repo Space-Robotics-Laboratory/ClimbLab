@@ -14,7 +14,6 @@ evaluation.visualize();
 
 visualizeVectors();
 
-drawnow limitrate nocallbacks;
-writeVideo(animation.getSimulationVideo(), getframe(animation.getFigure()));
+animation.writeVideoFile();
 
 % EOF

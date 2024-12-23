@@ -36,7 +36,7 @@ classdef DataLogger < dynamicprops & handle
       data_logger.index_ = 0;
       data_logger.variables_log_ = struct;
 
-      data_logger.kSaveDataDirName_ = "dat/" + run_cod + "/" + run_id;
+      data_logger.kSaveDataDirName_ = "dat" + filesep + run_cod + filesep + run_id;
       if ((data_logger.kSaveCsvFile_ || data_logger.kSaveConfigFile_) && ...
           ~isfolder(data_logger.kSaveDataDirName_))
         mkdir(data_logger.kSaveDataDirName_);
