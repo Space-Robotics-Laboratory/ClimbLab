@@ -13,11 +13,11 @@ classdef config_example_demo_2
 % Created     : 2021.03.02 by Kentaro Uno
 % Last updated: 2021.09.19 by Kentaro Uno
 
-% TODO: Add equilibrium settings (tsm and gia)
-% TODO: Add animation of support triangle, gia stable region, gia vector
+% TODO: Add equilibrium settings (gia)
+% TODO: Add animation of gia stable region, gia vector
 % TODO: Add CoT
 % TODO: Add save settings (gia, joint max torque, joint rms torque, cot)
-% TODO: Add plot settings (gia, manipulability, dynamic manipulability, joint max torque, joint rms torque, cot)
+% TODO: Add plot settings (gia, joint max torque, joint rms torque, cot)
 % TODO: Need to check if sensing camera and matching settings are necessary
 
   %% Environment Parameters
@@ -115,7 +115,7 @@ classdef config_example_demo_2
     % Limb end-effector trajectory type
     limb_trajectory_type (1, 1) string = "7th_order_spline";
 
-    visualize_limb_trajectory (1, 1) logical = true;
+    visualize_limb_trajectory (1, 1) logical = false;
   end
 
   %% Joint Controller Parameters

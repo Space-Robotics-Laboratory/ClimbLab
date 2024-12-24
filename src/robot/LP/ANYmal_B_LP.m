@@ -19,7 +19,7 @@ LP.joint_allocation_type = 'mammal';
 LP.leg_config_type = 'xx';
 
 % Max. endurable gripping force
-LP.F_grip = 300.0;  % TODO: Need to check if it is fine to changed
+LP.F_grip = 200.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% Definition of each link parameters %%%%%%%%%%%%%%%%%%%%

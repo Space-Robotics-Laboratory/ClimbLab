@@ -3,7 +3,7 @@ classdef SupportingLegPolygon < handle
 % Supporting Leg Polygon (with multiple triangles)
 %
 % Created     : 2024.12.21 by Masazumi Imai
-% Last updated: 2024.12.23 by Masazumi Imai
+% Last updated: 2024.12.24 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -12,16 +12,23 @@ classdef SupportingLegPolygon < handle
 
     is_forming_supporting_leg_triangle_ (:, 1) logical;  % (n x 1)
 
-    % Vertices of support leg triangles (3 x 3 x n)
+    % Vertices of supporting leg triangles (3 x 3 x n)
     %   1st dim: x-y-z coordinates
     %   2nd dim: Limb IDs for supporting leg triangle
     %   3rd dim: Supporting leg triangle number
     support_leg_triangles_ (3, 3, :) double;
 
+    % Number of possible supporting leg triangles
+    number_of_supporting_leg_triangles_ (1, 1) uint8;
+
+    % Vertices of supporting leg polygon (3 x n)
+    %   1st dim: x-y-z coordinates
+    %   2nd dim: Number of vertices
+    vertices_of_supporting_leg_polygon_ (3, :) double;
+
     graphics_ (:, 1) matlab.graphics.primitive.Patch;
   end
   properties (SetAccess = private, GetAccess = private)
-    number_of_supporting_leg_triangles_ (1, 1) uint8;
 
     kVisualizeSupportingLegPolygon_ (1, 1) logical;
     kColor_;
@@ -35,7 +42,7 @@ classdef SupportingLegPolygon < handle
   methods (Access = public)
 
     function supporting_leg_polygon = SupportingLegPolygon(config_evaluation, terrain, robot)
-    % SupportingLegPolygon() Constructor
+    % Constructor
       arguments (Input)
         config_evaluation (1, 1) {mustBeA(config_evaluation, "ConfigEvaluation")};
         terrain           (1, 1) {mustBeA(terrain,           "Terrain")};
@@ -63,6 +70,7 @@ classdef SupportingLegPolygon < handle
       end
 
       supporting_leg_polygon.calcSupportingLegTriangle(robot.getStateVariable(), robot.getEEPosition());
+      supporting_leg_polygon.calcSupportingLegPolygon(robot.getLinkParameter(), robot.getStateVariable(), robot.getEEPosition())
     end
 
     function visualize(supporting_leg_polygon)
@@ -89,8 +97,8 @@ classdef SupportingLegPolygon < handle
   methods (Access = private)
 
     function calcSupportingLegTriangle(supporting_leg_polygon, SV, EE_position)
-    % calcSupportingLegTriangle()
-    %   Calculate supporting leg triangles
+    % Calculate supporting leg triangles
+    %
     % Input - SV         : State variables
     %       - EE_position: End-effector position
       arguments (Input)
@@ -111,9 +119,23 @@ classdef SupportingLegPolygon < handle
       end
     end
 
+    function calcSupportingLegPolygon(supporting_leg_polygon, LP, SV, EE_position)
+      kNumLimb = LP.getNumberOfLimb();
+      is_supporting = SV.getIsSupporting();
+      vertices_of_supporting_leg_polygon = NaN(3, kNumLimb);
+
+      for limb_id = 1 : kNumLimb
+        if (is_supporting(1, limb_id))
+          vertices_of_supporting_leg_polygon(:, limb_id) = EE_position(:, limb_id);
+        end
+      end
+
+      supporting_leg_polygon.vertices_of_supporting_leg_polygon_ = vertices_of_supporting_leg_polygon;
+    end
+
     function createGraphics(supporting_leg_polygon, surface_inclination)
-    % createGraphics()
-    %   Create graphics for each supporting leg triangles
+    % Create graphics for each supporting leg triangles
+    %
     % Input - surface_inclination: Inclination of terrain surface
       arguments (Input)
         supporting_leg_polygon;
@@ -130,6 +152,15 @@ classdef SupportingLegPolygon < handle
           FaceAlpha = supporting_leg_polygon.kTransparency_, ...
           Visible = "off");
       end
+    end
+
+  end
+
+  %% Getter
+  methods (Access = public)
+
+    function vertices_of_supporting_leg_polygon_ =  getVerticesOfSupportingLegPolygon(supporting_leg_polygon)
+      vertices_of_supporting_leg_polygon_ = supporting_leg_polygon.vertices_of_supporting_leg_polygon_;
     end
 
   end

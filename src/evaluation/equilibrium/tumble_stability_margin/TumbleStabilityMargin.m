@@ -3,7 +3,7 @@ classdef TumbleStabilityMargin < handle
 % Calculate Tumble Stability Margin
 %
 % Created     : 2020.04.23 by Warley Ribeiro
-% Last updated: 2024.12.18 by Masazumi Imai
+% Last updated: 2024.12.24 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = immutable, GetAccess = public)
@@ -17,11 +17,11 @@ classdef TumbleStabilityMargin < handle
     moment_due_to_inertial_acceleration_ (3, 1);  % [Nm]
 
     tumbling_axes_ (:, 2) uint8;  % TODO: This variable size is changed every time step. Need to modify
-    tumbling_axes_number_ (1, 1) uint8;  % TODO: Rename to number_of_tumbling_axes_
+    number_of_tumbling_axes_ (1, 1) uint8;
 
-    normal_vector_of_supporting_triangle_plane_ (3, 1) double;
+    normal_vector_of_supporting_leg_polygon_plane_ (3, :) double;  % (3 x kNumLimb)
 
-    % Tumbling moment for each tumbling axis (tumbling_axes_number_ x 1)  [Nm]
+    % Tumbling moment for each tumbling axis (number_of_tumbling_axes_ x 1)  [Nm]
     tumbling_moment_ (:, 1) double;
 
     is_tumbling_ (:, 1) logical;  % Tumbling condition for each tumbling axis
@@ -35,10 +35,9 @@ classdef TumbleStabilityMargin < handle
   methods (Access = public)
 
     function TSM = TumbleStabilityMargin(config_evaluation)
-    % TumbleStabilityMargin() Constructor
+    % Constructor
       arguments (Input)
         config_evaluation (1, 1) {mustBeA(config_evaluation, "ConfigEvaluation")};
-        % robot (1, 1) {mustBeA(robot, "Robot")};
       end
 
       TSM.kEvaluateTumbleStabilityMargin_ = config_evaluation.getEvaluateTumbleStabilityMargin();
@@ -50,9 +49,9 @@ classdef TumbleStabilityMargin < handle
       TSM.moment_due_to_inertial_acceleration_ = zeros(3, 1);
 
       TSM.tumbling_axes_ = uint8.empty();
-      TSM.tumbling_axes_number_ = 0;
+      TSM.number_of_tumbling_axes_ = 0;
 
-      TSM.normal_vector_of_supporting_triangle_plane_ = zeros(3, 1);
+      TSM.normal_vector_of_supporting_leg_polygon_plane_ = zeros(3, 1);
 
       TSM.tumbling_moment_ = 0.0;
 
@@ -63,7 +62,16 @@ classdef TumbleStabilityMargin < handle
       TSM.is_equilibrium_ = true;
     end
 
-    function evaluate(TSM, gravity, LP, SV, EE_position)
+    function evaluate(TSM, gravity, terrain, LP, SV, supporting_leg_polygon)
+      arguments (Input)
+        TSM;
+        gravity (3, 1) {mustBeA(gravity, "double")};
+        terrain (1, 1) {mustBeA(terrain, "Terrain")};
+        LP (1, 1) {mustBeA(LP, "LinkParameters")};
+        SV (1, 1) {mustBeA(SV, "StateVariable")};
+        supporting_leg_polygon (1, 1) {mustBeA(supporting_leg_polygon, "SupportingLegPolygon")};
+      end
+
       if (~TSM.kEvaluateTumbleStabilityMargin_)
         return;
       end
@@ -74,9 +82,9 @@ classdef TumbleStabilityMargin < handle
 
       TSM.calcTumblingAxes(LP, SV);
 
-      TSM.calcTumblingMoment(LP, SV, EE_position);
+      TSM.calcTumblingMoment(terrain, LP, SV, supporting_leg_polygon);
 
-      TSM.judgeEquilibrium(LP, SV, EE_position);
+      TSM.judgeEquilibrium(LP, SV, supporting_leg_polygon.getVerticesOfSupportingLegPolygon());
 
       TSM.calcTumbleStabilityMargin(gravity, LP)
     end
@@ -87,7 +95,6 @@ classdef TumbleStabilityMargin < handle
   methods (Access = private)
 
     function calcGravitationalForceMoment(TSM, gravity, LP, SV)
-    % calcGravitationalForceMoment()
     % Obtain force and moment acting on the robot due to gravity acceleration at the CoM position
       arguments (Input)
         TSM;
@@ -106,9 +113,8 @@ classdef TumbleStabilityMargin < handle
     end
 
     function calcInertialForceMomentPlusRotational(TSM, LP, SV)
-    % calcInertialForceMomentPlusRotational()
-    %   Obtain force and moment acting on the robot due to inertial acceleration, including angular
-    %   velocity and acceleration effects of each link
+    % Obtain force and moment acting on the robot due to inertial acceleration, including angular
+    % velocity and acceleration effects of each link
       arguments (Input)
         TSM;
         LP (1, 1) {mustBeA(LP, "LinkParameters")};
@@ -159,8 +165,7 @@ classdef TumbleStabilityMargin < handle
     end
 
     function calcTumblingAxes(TSM, LP, SV)
-    % calcTumblingAxes()
-    %   Obtain limb IDs for all possible tumbling axes and total number of tumbling axes
+    % Obtain limb IDs for all possible tumbling axes and total number of tumbling axes
       arguments (Input)
         TSM;
         LP (1, 1) {mustBeA(LP, "LinkParameters")};
@@ -201,7 +206,7 @@ classdef TumbleStabilityMargin < handle
         % One or none supporting legs case
         for i = 1 : kNumLimb
           if (is_supporting(1, i))
-            tumbling_axes(1, 1) = [i, i];
+            tumbling_axes(1, :) = [i, i];
           end
         end
         tumbling_axes_number = 0;
@@ -209,110 +214,93 @@ classdef TumbleStabilityMargin < handle
       end
 
       TSM.tumbling_axes_ = tumbling_axes;
-      TSM.tumbling_axes_number_ = tumbling_axes_number;
+      TSM.number_of_tumbling_axes_ = tumbling_axes_number;
     end
 
-    function calcTumblingMoment(TSM, LP, SV, EE_position)
-    % calcTumblingMoment()
-    %   Calculate tumbling moment for tumbling axes
-    % TODO: Improve code and also need to update for multi-limbed robots (this function is written for only 4-limbed robot)
+    function calcTumblingMoment(TSM, terrain, LP, SV, supporting_leg_polygon)
+    % Calculate tumbling moment for tumbling axes
       arguments (Input)
         TSM;
+        terrain (1, 1) {mustBeA(terrain, "Terrain")};
         LP (1, 1) {mustBeA(LP, "LinkParameters")};
         SV (1, 1) {mustBeA(SV, "StateVariable")};
-        EE_position (3, :) {mustBeA(EE_position, "double")};
+        supporting_leg_polygon (1, 1) {mustBeA(supporting_leg_polygon, "SupportingLegPolygon")};
       end
 
       kNumLimb = LP.getNumberOfLimb();
       is_supporting = SV.getIsSupporting();
 
-      % Obtain support triangle positions
-      support_triangle = NaN(3, kNumLimb);
-      for limb_id = 1 : kNumLimb
-        if (is_supporting(1, limb_id))
-          support_triangle(:, limb_id) = EE_position(:, limb_id);
-        end
-      end
-      support_triangle = rmmissing(support_triangle, 2);
+      % Vertices of supporting leg polygon (supporting end-effector positions)
+      vertices_of_supporting_leg_polygon = supporting_leg_polygon.getVerticesOfSupportingLegPolygon();
 
       % Calculate the normal vector of the support triangle plane
-      centroid_vector_of_plane = mean(support_triangle');
-      deviation_points = bsxfun(@minus ,support_triangle', centroid_vector_of_plane);
-      [right_eigenvectors_matrix, diagonal_matrix_of_eigenvalue] = eig(deviation_points' * deviation_points);
-      [~, index_of_sorted_eigenvalues] = sort(diag(diagonal_matrix_of_eigenvalue));
-      sorted_right_eigenvector_matrix = right_eigenvectors_matrix(:, index_of_sorted_eigenvalues);
-      normal_vector_of_plane = sorted_right_eigenvector_matrix(:, 1);
-      TSM.normal_vector_of_supporting_triangle_plane_ = normal_vector_of_plane;
-
-      %%% NOTE %%%
-      % The following codes must be updated when we execute the simulation that the robot walks from ground to the cliff and finally reach on the ceil.
-      % This is because the normal vector direction becomes inversely.
-      % Check the direction of the normal vector
-      inner_product_of_centroid_and_normal_vector = dot([0.0; 0.0; 1.0], normal_vector_of_plane);
-      if (inner_product_of_centroid_and_normal_vector < 0)
-        % Set the vector to face vertically upward.
-        normal_vector_of_plane = - normal_vector_of_plane;
+      normal_vectors = NaN(3, kNumLimb);
+      for limb_id = 1 : kNumLimb
+        if (is_supporting(1, limb_id))
+          normal_vectors(:, limb_id) = terrain.getNormVectorAtPoint(vertices_of_supporting_leg_polygon(:, limb_id));
+        end
       end
-      % Obtain surface normal for p_k
-      n_k = normal_vector_of_plane;
+      TSM.normal_vector_of_supporting_leg_polygon_plane_ = normal_vectors;
 
       % Tumbling Moment Calculation
-      if (TSM.tumbling_axes_number_ == 0)
+      if (TSM.number_of_tumbling_axes_ == 0)
         TSM.tumbling_moment_ = 0.0;
         return;
       end
 
       % Force due to inertial and gravitational acceleration
-      force_due_to_inertial_and_gravitational_acceleration = TSM.force_due_to_inertial_acceleration_ - TSM.force_due_to_gravity_acceleration_;
+      F_bar = TSM.force_due_to_inertial_acceleration_ - TSM.force_due_to_gravity_acceleration_;
       % Moment due to inertial and gravitational acceleration
-      moment_due_to_inertial_and_gravitational_acceleration = TSM.moment_due_to_inertial_acceleration_ - TSM.moment_due_to_gravity_acceleration_;
+      M_bar = TSM.moment_due_to_inertial_acceleration_ - TSM.moment_due_to_gravity_acceleration_;
 
-      for tumbling_axis_id = 1 : TSM.tumbling_axes_number_
+      for tumbling_axis_id = 1 : TSM.number_of_tumbling_axes_
         % Limb ID for tumbling axis
-        limb_i = TSM.tumbling_axes_(tumbling_axis_id, 1);
-        limb_j = TSM.tumbling_axes_(tumbling_axis_id, 2);
+        limb_a = TSM.tumbling_axes_(tumbling_axis_id, 1);
+        limb_b = TSM.tumbling_axes_(tumbling_axis_id, 2);
         % End-effector position of limb for tumbling axis
-        p_i = EE_position(:, limb_i);
-        p_j = EE_position(:, limb_j);
+        p_a = vertices_of_supporting_leg_polygon(:, limb_a);
+        p_b = vertices_of_supporting_leg_polygon(:, limb_b);
 
         % Moment due to inertial and gravitational forces around tumbling axis
         TSM.tumbling_moment_(tumbling_axis_id, 1) = ...
-          moment_due_to_inertial_and_gravitational_acceleration' * (p_i - p_j) / abs(norm(p_i - p_j)) + ...
-          force_due_to_inertial_and_gravitational_acceleration' * cross(p_j, p_i) / abs(norm(p_i - p_j));
+          M_bar' * (p_a - p_b) / abs(norm(p_a - p_b)) + ...
+          F_bar' * cross(p_b, p_a) / abs(norm(p_a - p_b));
 
-          if (LP.getMaxEndurableGrippingForce() == 0.0)
-            continue;
-          end
+        if (LP.getMaxEndurableGrippingForce() == 0.0)
+          continue;
+        end
 
-          % Check all possible gripping points besides the ones forming the tumbling axis
-          for limb_id = 1 : kNumLimb
-            if (limb_id ~= limb_i && limb_id ~= limb_j && is_supporting(1, limb_id))
-              p_k = EE_position(:, limb_id);
+        % Check all possible gripping points besides the ones forming the tumbling axis
+        for limb_id = 1 : kNumLimb
+          if (limb_id ~= limb_a && limb_id ~= limb_b && is_supporting(1, limb_id))
+            p_j = vertices_of_supporting_leg_polygon(:, limb_id);
+            % Normal vector of terrain surface at p_j
+            n_j = normal_vectors(:, limb_id);
 
-              % Gripping force direction
-              n_g = (cross((p_i - p_k), (p_j - p_k))) / abs(norm(cross((p_i - p_k), (p_j - p_k))));
+            % Gripping force direction
+            n_g = (cross((p_a - p_j), (p_b - p_j))) / abs(norm(cross((p_a - p_j), (p_b - p_j))));
 
-              if (n_g' * n_k > 0.0)
-                sign_gripping_force = -1;
-              elseif (n_g' * n_k < 0.0)
-                sign_gripping_force = 1;
-              else
-                sign_gripping_force = 0;
-              end
-              F_gripper = sign_gripping_force * LP.getMaxEndurableGrippingForce() * n_g;
-
-              % Update tumbling moment with gripping force
-              TSM.tumbling_moment_(tumbling_axis_id, 1) = TSM.tumbling_moment_(tumbling_axis_id, 1) - ...
-                F_gripper' * cross(p_j - p_k, p_i - p_k) / abs(norm(p_i - p_j));
+            if (n_g' * n_j > 0.0)
+              sign_gripping_force = -1;
+            elseif (n_g' * n_j < 0.0)
+              sign_gripping_force = 1;
+            else
+              sign_gripping_force = 0;
             end
+            F_gripper = sign_gripping_force * LP.getMaxEndurableGrippingForce() * n_g;
+
+            % Moment due to gripping force
+            M_gripper = F_gripper' * cross(p_b - p_j, p_a - p_j) / abs(norm(p_a - p_b));
+
+            % Update tumbling moment with gripping force
+            TSM.tumbling_moment_(tumbling_axis_id, 1) = TSM.tumbling_moment_(tumbling_axis_id, 1) - M_gripper;
           end
+        end
       end
     end
 
     function judgeEquilibrium(TSM, LP, SV, EE_position)
-    % judgeEquilibrium()
-    %   Judgment of equilibrium based on tumbling moment for each tumbling axis
-    % TODO: Need to check if this function is correct
+    % Judgment of equilibrium based on tumbling moment for each tumbling axis
       arguments (Input)
         TSM;
         LP (1, 1) {mustBeA(LP, "LinkParameters")};
@@ -320,31 +308,32 @@ classdef TumbleStabilityMargin < handle
         EE_position (3, :) {mustBeA(EE_position, "double")};
       end
 
-      if (TSM.tumbling_axes_number_ == 0)
+      if (TSM.number_of_tumbling_axes_ == 0)
         TSM.is_tumbling_ = true;
         return;
       end
 
-      TSM.is_tumbling_ = true(TSM.tumbling_axes_number_, 1);
+      TSM.is_tumbling_ = true(TSM.number_of_tumbling_axes_, 1);
 
       kNumLimb = LP.getNumberOfLimb();
       is_supporting = SV.getIsSupporting();
-      normal_vector_of_plane = TSM.normal_vector_of_supporting_triangle_plane_;
+      normal_vectors = TSM.normal_vector_of_supporting_leg_polygon_plane_;
       tumbling_moment = TSM.tumbling_moment_;
 
-      for tumbling_axis_id = 1 : TSM.tumbling_axes_number_
+      for tumbling_axis_id = 1 : TSM.number_of_tumbling_axes_
         % Limb ID for tumbling axis
-        limb_i = TSM.tumbling_axes_(tumbling_axis_id, 1);
-        limb_j = TSM.tumbling_axes_(tumbling_axis_id, 2);
+        limb_a = TSM.tumbling_axes_(tumbling_axis_id, 1);
+        limb_b = TSM.tumbling_axes_(tumbling_axis_id, 2);
         % End-effector position of limb for tumbling axis
-        p_i = EE_position(:, limb_i);
-        p_j = EE_position(:, limb_j);
+        p_a = EE_position(:, limb_a);
+        p_b = EE_position(:, limb_b);
 
         for limb_id = 1 : kNumLimb
-          if (limb_id ~= limb_i && limb_id ~= limb_j && is_supporting(1, limb_id))
-            p_k = EE_position(:, limb_id);
+          if (limb_id ~= limb_a && limb_id ~= limb_b && is_supporting(1, limb_id))
+            p_j = EE_position(:, limb_id);
+            n_j = normal_vectors(:, limb_id);
 
-            not_tumbling_condition = cross(p_k - p_i, normal_vector_of_plane)' * (tumbling_moment(tumbling_axis_id, 1) * (p_i - p_j) / abs(norm(p_i - p_j)));
+            not_tumbling_condition = cross(p_j - p_a, n_j)' * (tumbling_moment(tumbling_axis_id, 1) * (p_a - p_b) / abs(norm(p_a - p_b)));
 
             if (not_tumbling_condition > 0.0)
               TSM.is_tumbling_(tumbling_axis_id, 1) = false;
@@ -355,6 +344,12 @@ classdef TumbleStabilityMargin < handle
     end
 
     function calcTumbleStabilityMargin(TSM, gravity, LP)
+      arguments (Input)
+        TSM;
+        gravity (3, 1) {mustBeA(gravity, "double")};
+        LP      (1, 1) {mustBeA(LP,      "LinkParameters")};
+      end
+
       total_mass = LP.getTotalMass();
       tumbling_moment = TSM.tumbling_moment_;
 

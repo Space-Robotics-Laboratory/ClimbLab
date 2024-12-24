@@ -1,4 +1,8 @@
 classdef Terrain < handle
+% Terrain (map surface) parameters
+%
+% Created     : 2020.04.06 by Warley Ribeiro
+% Last updated: 2024.12.24 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -173,8 +177,13 @@ classdef Terrain < handle
       end
 
       % HACK: [~, idx] = min(vecnorm(terrain.kPointCloudInWorld_ - point)); this takes longer time than the following one
-      [~, idx] = find(all(abs(terrain.kPointCloudInWorld_ - point) < 0.001));
-      norm_vector_at_point = terrain.kNormVectors_(:, idx);
+      kDistThreshold = 0.005;  % TODO: Should be set as property based on map dx (or dy)
+      [~, idx] = find(all(abs(terrain.kPointCloudInWorld_ - point) < kDistThreshold));
+      if (length(idx) > 1)
+        [~, idx_min] = min(vecnorm(terrain.kPointCloudInWorld_(:, idx) - point));
+      end
+
+      norm_vector_at_point = terrain.kNormVectors_(:, idx(idx_min));
     end
   end
 

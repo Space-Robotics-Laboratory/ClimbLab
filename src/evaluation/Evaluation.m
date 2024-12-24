@@ -1,4 +1,8 @@
 classdef Evaluation < handle
+% Evaluation robot state
+%
+% Created     : 2020.04.23 by Warley Ribeiro
+% Last updated: 2024.12.24 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -24,12 +28,20 @@ classdef Evaluation < handle
       evaluation.tumble_stability_margin_ = TumbleStabilityMargin(config_evaluation);
     end
 
-    function evaluate(evaluation, world, robot)
+    function evaluate(evaluation, world, terrain, robot)
+      arguments (Input)
+        evaluation;
+        world   (1, 1) {mustBeA(world,   "World")};
+        terrain (1, 1) {mustBeA(terrain, "Terrain")};
+        robot   (1, 1) {mustBeA(robot,   "Robot")};
+      end
+
       evaluation.manipulability_.evaluate(robot);
 
       evaluation.supporting_leg_polygon_.calculate(robot);
 
-      evaluation.tumble_stability_margin_.evaluate(world.getGravity(), robot.getLinkParameter(), robot.getStateVariable(), robot.getEEPosition());
+      evaluation.tumble_stability_margin_.evaluate(world.getGravity(), terrain, ...
+        robot.getLinkParameter(), robot.getStateVariable(), evaluation.supporting_leg_polygon_);
     end
 
     function visualize(evaluation)
