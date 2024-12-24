@@ -172,7 +172,8 @@ classdef Terrain < handle
         point (3, 1) {mustBeA(point, "double")};
       end
 
-      [~, idx] = min(vecnorm(terrain.kPointCloudInWorld_ - point));
+      % HACK: [~, idx] = min(vecnorm(terrain.kPointCloudInWorld_ - point)); this takes longer time than the following one
+      [~, idx] = find(all(abs(terrain.kPointCloudInWorld_ - point) < 0.001));
       norm_vector_at_point = terrain.kNormVectors_(:, idx);
     end
   end

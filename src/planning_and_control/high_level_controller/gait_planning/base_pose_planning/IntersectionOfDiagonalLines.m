@@ -1,9 +1,8 @@
 classdef IntersectionOfDiagonalLines
-% IntersectionOfDiagonalLines
 % Calculate the robot base position based on the intersection of diagonal lines formed by diagonal foothold positions
 %
 % Created     : 2024.09.29 by Masazumi Imai
-% Last updated: 2024.12.07 by Masazumi Imai
+% Last updated: 2024.12.24 by Masazumi Imai
 
   %% Public Methods
   methods (Access = public)
@@ -12,10 +11,10 @@ classdef IntersectionOfDiagonalLines
     end
 
     function desired_base_position_in_World = plan(planner, varargin)
-    % plan()
-    %   Plan the desired base position in World frame
-    %   Input - robot Robot
-    %         - foothold_planning FootholdPlanning
+    % Plan the desired base position in World frame
+    %
+    % Input - robot Robot
+    %       - foothold_planning FootholdPlanning
       for input_id = 1 : length(varargin)
         switch (class(varargin{input_id}))
           case "Robot"
@@ -39,27 +38,22 @@ classdef IntersectionOfDiagonalLines
       desired_EE_positions_in_World = foothold_planning.planner_.output_.getFootholdPosition();
 
       current_EE_positions_in_Base = zeros(3, kNumLimb);
-      desired_EE_positions_in_Base = zeros(3, kNumLimb);
       for limb_id = 1 : kNumLimb
         current_EE_positions_in_Base(:, limb_id) = current_base_orientation_in_World' * ...
           (current_EE_positions_in_World(:, limb_id) - current_base_position_in_World);
-        desired_EE_positions_in_Base(:, limb_id) = current_base_orientation_in_World' * ...
-          (desired_EE_positions_in_World(:, limb_id) - current_base_position_in_World);
       end
-
-      current_EE_positions_in_Base_xy = [current_EE_positions_in_Base(1:2, :); zeros(1, kNumLimb)];
-      desired_EE_positions_in_Base_xy = [desired_EE_positions_in_Base(1:2, :); zeros(1, kNumLimb)];
 
       swing_limb_id = foothold_planning.planner_.output_.getSwingLimbId();
 
       [diagonal_lines, comb_diag_limb] = planner.calcDiagonalLines( ...
-        current_EE_positions_in_Base_xy, desired_EE_positions_in_Base_xy, kNumLimb, swing_limb_id);
+        current_EE_positions_in_World, desired_EE_positions_in_World, kNumLimb, swing_limb_id);
 
-      intersection_in_Base_xy = planner.calcIntersectionInBaseXYPlane( ...
-        diagonal_lines, comb_diag_limb);
+      intersection_in_World = planner.calcIntersectionInWorld(diagonal_lines, comb_diag_limb);
 
-      desired_base_position_in_World = current_base_position_in_World + ...
-        current_base_orientation_in_World * intersection_in_Base_xy;
+      current_base_height_from_surface = abs(mean(current_EE_positions_in_Base(3, :)));
+
+      desired_base_position_in_World = planner.calcDesiredBasePositionInWorld(...
+        current_base_height_from_surface, current_base_orientation_in_World, intersection_in_World);
     end
 
   end
@@ -68,15 +62,14 @@ classdef IntersectionOfDiagonalLines
   methods (Access = private)
 
     function [diagonal_lines, comb_diag_limb] = calcDiagonalLines(~, ...
-        current_EE_positions_in_Base_xy, desired_EE_positions_in_Base_xy, kNumLimb, swing_limb_id)
-    % calcDiagonalLines()
-    %   Calculate diagonal lines formed by non-adjacent limbs
+        current_EE_positions_in_World, desired_EE_positions_in_World, kNumLimb, swing_limb_id)
+    % Calculate diagonal lines in world frame formed by non-adjacent limbs
       arguments (Input)
         ~;
-        current_EE_positions_in_Base_xy ...
-                      (3, :) {mustBeA(current_EE_positions_in_Base_xy, "double")};
-        desired_EE_positions_in_Base_xy ...
-                      (3, :) {mustBeA(desired_EE_positions_in_Base_xy, "double")};
+        current_EE_positions_in_World ...
+                      (3, :) {mustBeA(current_EE_positions_in_World, "double")};
+        desired_EE_positions_in_World ...
+                      (3, :) {mustBeA(desired_EE_positions_in_World, "double")};
         kNumLimb      (1, 1) {mustBeA(kNumLimb, "uint8")};
         swing_limb_id (1, 1) {mustBeA(swing_limb_id, "uint8")};
       end
@@ -124,34 +117,34 @@ classdef IntersectionOfDiagonalLines
 
         % If i is swing limb, EE2EE_line(:, 1, i, j) is next position of swing limb
         if (i == swing_limb_id)
-          EE2EE_line(:, 1, i, j) = desired_EE_positions_in_Base_xy(:, i);
-          EE2EE_line(:, 2, i, j) = current_EE_positions_in_Base_xy(:, j);
+          EE2EE_line(:, 1, i, j) = desired_EE_positions_in_World(:, i);
+          EE2EE_line(:, 2, i, j) = current_EE_positions_in_World(:, j);
           % Diagonal line by the i-th limb
           if (j ~= i_minus_1 && j ~= i_plus_1)
-            diagonal_lines(:, 1, i, j) = desired_EE_positions_in_Base_xy(:, i);
-            diagonal_lines(:, 2, i, j) = current_EE_positions_in_Base_xy(:, j);
+            diagonal_lines(:, 1, i, j) = desired_EE_positions_in_World(:, i);
+            diagonal_lines(:, 2, i, j) = current_EE_positions_in_World(:, j);
             comb_diag_limb(cnt, :) = [i, j];
             cnt = cnt + 1;
           end
         % If j is swing limb, EE2EE_line(:, 2, i, j) is next position of swing limb
         elseif (j == swing_limb_id)
-          EE2EE_line(:, 1, i, j) = current_EE_positions_in_Base_xy(:, i);
-          EE2EE_line(:, 2, i, j) = desired_EE_positions_in_Base_xy(:, j);
+          EE2EE_line(:, 1, i, j) = current_EE_positions_in_World(:, i);
+          EE2EE_line(:, 2, i, j) = desired_EE_positions_in_World(:, j);
           % Diagonal line by the j-th limb
           if (i ~= j_minus_1 && i ~= j_plus_1)
-            diagonal_lines(:, 1, i, j) = current_EE_positions_in_Base_xy(:, i);
-            diagonal_lines(:, 2, i, j) = desired_EE_positions_in_Base_xy(:, j);
+            diagonal_lines(:, 1, i, j) = current_EE_positions_in_World(:, i);
+            diagonal_lines(:, 2, i, j) = desired_EE_positions_in_World(:, j);
             comb_diag_limb(cnt, :) = [i, j];
             cnt = cnt + 1;
           end
         % If i and j are supporting limb
         else
-          EE2EE_line(:, 1, i, j) = current_EE_positions_in_Base_xy(:, i);
-          EE2EE_line(:, 2, i, j) = current_EE_positions_in_Base_xy(:, j);
+          EE2EE_line(:, 1, i, j) = current_EE_positions_in_World(:, i);
+          EE2EE_line(:, 2, i, j) = current_EE_positions_in_World(:, j);
           % Diagonal line by the i-th limb
           if (j ~= i_minus_1 && j ~= i_plus_1)
-            diagonal_lines(:, 1, i, j) = current_EE_positions_in_Base_xy(:, i);
-            diagonal_lines(:, 2, i, j) = current_EE_positions_in_Base_xy(:, j);
+            diagonal_lines(:, 1, i, j) = current_EE_positions_in_World(:, i);
+            diagonal_lines(:, 2, i, j) = current_EE_positions_in_World(:, j);
             comb_diag_limb(cnt, :) = [i, j];
             cnt = cnt + 1;
           end
@@ -159,11 +152,9 @@ classdef IntersectionOfDiagonalLines
       end
     end
 
-    function intersection_in_Base_xy = calcIntersectionInBaseXYPlane(~, ...
-        diagonal_lines, comb_diag_limb)
-    % calcIntersectionInBaseXYPlane()
-    %   Calculate the intersection of diagonal lines in x-y plane of Base frame
-    %   NOTE: This function is currently written for 4-limbed robot
+    function intersection_in_World = calcIntersectionInWorld(~, diagonal_lines, comb_diag_limb)
+    % Calculate the intersection of diagonal lines in x-y plane of Base frame
+    % NOTE: This function is currently written for 4-limbed robot
       arguments (Input)
         ~;
         diagonal_lines (3, 2, :, :) {mustBeA(diagonal_lines, "double")};
@@ -183,8 +174,34 @@ classdef IntersectionOfDiagonalLines
       ratio = - cross(vec_diag_line_2, vec_diag_line_1) \ cross(vec_diag_line_2, vec_1s_to_2s);
 
       % Intersection point in x-y plane of Base frame
-      intersection_in_Base_xy = ...
+      intersection_in_World = ...
         diagonal_lines(:, 1, comb_diag_limb(1, 1), comb_diag_limb(1, 2)) + vec_diag_line_1 * ratio;
+    end
+
+    function desired_base_position_in_World = calcDesiredBasePositionInWorld(~, ...
+        current_base_height_from_surface, current_base_orientation_in_World, intersection_in_World)
+    % Calculate the desired base position in World frame
+      arguments (Input)
+        ~;
+        current_base_height_from_surface (1, 1) {mustBeA(current_base_height_from_surface, "double")};
+        current_base_orientation_in_World (3, 3) {mustBeA(current_base_orientation_in_World, "double")};
+        intersection_in_World (3, 1) {mustBeA(intersection_in_World, "double")};
+      end
+
+      desired_base_position_in_World(1 : 2, 1) = intersection_in_World(1 : 2, 1);
+
+      distance_from_surface = 0.0;
+      kThreshold = 0.01;
+      vec_intersection_to_base = [0.0; 0.0; 0.0];
+      kStepDist = 0.01;
+
+      while (abs(current_base_height_from_surface - distance_from_surface) > kThreshold)
+        vec_intersection_to_base(3, 1) = vec_intersection_to_base(3, 1) + kStepDist;
+        desired_base_position_in_Base_tmp = current_base_orientation_in_World * vec_intersection_to_base;
+        distance_from_surface = desired_base_position_in_Base_tmp(3, 1);
+      end
+
+      desired_base_position_in_World(3, 1) = intersection_in_World(3, 1) + vec_intersection_to_base(3, 1);
     end
 
   end

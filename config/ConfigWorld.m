@@ -4,7 +4,7 @@ classdef ConfigWorld < Configuration
   properties (SetAccess = {?ConfigWorld, ?Configuration}, GetAccess = public)
     % General Settings
     time_step (1, 1) double = 0.001;  % [s]
-    max_simulation_time (1, 1) double = 4.0;  % [s]
+    max_simulation_time (1, 1) double = 8.0;  % [s]
     use_dynamics (1, 1) logical = true;  % true/false
     gravity (1, 1) double = 1 / 6;  % [G]
 
