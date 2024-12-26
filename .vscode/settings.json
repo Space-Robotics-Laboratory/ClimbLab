@@ -33,6 +33,7 @@
     "nchoosek",
     "nocallbacks",
     "numel",
+    "pinv",
     "repelem",
     "repmat",
     "rmmissing",

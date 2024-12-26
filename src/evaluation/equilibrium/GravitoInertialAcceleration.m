@@ -24,13 +24,13 @@ classdef GravitoInertialAcceleration < handle
     % Inclination margin for total acceleration considering the support polyhedron [deg] (scalar)
     gia_inclination_margin_ (1, 1) double;
     % Inclination margin for each tumbling axis [rad] (1 x n vector)  % ?: [deg]?
-    gia_inclination_margin_for_each_tumbling_axis (1, :) double;
+    gia_inclination_margin_for_each_tumbling_axis_ (1, :) double;
   end
   properties (SetAccess = private, GetAccess = private)
     force_due_to_inertial_acceleration_  (3, 1) double;  % [N]  (F_alpha)
     moment_due_to_inertial_acceleration_ (3, 1) double;  % [Nm] (M_alpha)
 
-    % Matrix with the number legs for tumbling axes (matrix: tumbling_axes_number x 2).
+    % Matrix with the number legs for tumbling axes (number_of_tumbling_axes x 2 matrix).
     % Each row represents one tumbling axis, while the columns represent the number of the leg for that specific axis
     tumbling_axes_ (:, 2) uint8;  % TODO: This variable size is changed every time step. Need to modify
     % Total number of possible tumbling axis (scalar)
@@ -53,10 +53,11 @@ classdef GravitoInertialAcceleration < handle
   %% Public Methods
   methods (Access = public)
 
-    function GIA = GravitoInertialAcceleration(config_evaluation)
+    function GIA = GravitoInertialAcceleration(config_evaluation, animation)
     % Constructor
       arguments (Input)
         config_evaluation (1, 1) {mustBeA(config_evaluation, "ConfigEvaluation")};
+        animation         (1, 1) {mustBeA(animation,         "Animation")};
       end
 
       GIA.kEvaluateGravitoInertialAcceleration_ = config_evaluation.getEvaluateGravitoInertialAcceleration();
@@ -67,11 +68,11 @@ classdef GravitoInertialAcceleration < handle
       GIA.number_of_tumbling_axes_ = 0;
       GIA.gia_vector_ = zeros(3, 1);
       GIA.is_equilibrium_ = false;
-      GIA.stability_polyhedron_ = GIAStabilityPolyhedron(config_evaluation);
+      GIA.stability_polyhedron_ = GIAStabilityPolyhedron(config_evaluation, animation);
       GIA.gia_margin_ = 0.0;
       GIA.gia_margin_for_each_tumbling_axis_ = zeros(1, GIA.number_of_tumbling_axes_);
       GIA.gia_inclination_margin_ = 0.0;
-      GIA.gia_inclination_margin_for_each_tumbling_axis = zeros(1, GIA.number_of_tumbling_axes_);
+      GIA.gia_inclination_margin_for_each_tumbling_axis_ = zeros(1, GIA.number_of_tumbling_axes_);
     end
 
     function evaluate(GIA, gravity, LP, SV, end_effector_position)
@@ -95,22 +96,17 @@ classdef GravitoInertialAcceleration < handle
       GIA.calcGIAInclinationMargin();
     end
 
-    function visualizeGIAVector(GIA, robot, animation)
+    function visualize(GIA, terrain, robot, animation)
+    % Visualize GIA vector and GIA stable region
       arguments (Input)
         GIA;
+        terrain   (1, 1) {mustBeA(terrain,   "Terrain")};
         robot     (1, 1) {mustBeA(robot,     "Robot")};
         animation (1, 1) {mustBeA(animation, "Animation")};
       end
 
-      if (~GIA.kVisualizeGIAVector_)
-        return;
-      end
-
-      CoM = robot.getStateVariable().getCoM();
-      kColor = GIA.kGIAVectorColor_;
-      kWidth = GIA.kGIAVectorWidth_;
-      vec_magnitude = GIA.gia_vector_ * animation.getAccelerationExpansionFactor();
-      animation.visualizeVector(CoM, vec_magnitude, kColor, kWidth);
+      GIA.visualizeGIAVector(robot, animation);
+      GIA.stability_polyhedron_.visualizeStableRegion(terrain, GIA.number_of_tumbling_axes_);
     end
 
   end
@@ -204,7 +200,7 @@ classdef GravitoInertialAcceleration < handle
       GIA.calcTumblingAxis(kNumLimb, is_supporting);
 
       CoM = SV.getCoM();
-      GIA.calcNormalVector(end_effector_position, CoM);
+      GIA.calcNormalVector(CoM, end_effector_position);
 
       mass = LP.getTotalMass();  % [kg]
       external_force = [0.0; 0.0; 0.0];  % [N] (F_0)
@@ -222,7 +218,11 @@ classdef GravitoInertialAcceleration < handle
       GIA.stability_polyhedron_.setPlanePoint(GIA.max_acceleration_in_normal_direction_);
       GIA.stability_polyhedron_.setPlaneVector(GIA.normal_vector_);
 
-      % TODO: Implement polyhedron visualization
+      % GIA stable region
+      tumbling_axes = GIA.tumbling_axes_;
+      number_of_tumbling_axes = GIA.number_of_tumbling_axes_;
+      unit_normal_vector = GIA.unit_normal_vector_;
+      GIA.stability_polyhedron_.calcStableRegion(CoM, end_effector_position, tumbling_axes, number_of_tumbling_axes, unit_normal_vector);
     end
 
     function calcTumblingAxis(GIA, kNumLimb, is_grasping)
@@ -274,11 +274,11 @@ classdef GravitoInertialAcceleration < handle
       GIA.number_of_tumbling_axes_ = number_of_tumbling_axes;
     end
 
-    function calcNormalVector(GIA, end_effector_position, p_g)
+    function calcNormalVector(GIA, p_g, end_effector_position)
     % Calculate vector normal to tumbling axes from center of gravity, which is the normal vector to the limit planes
     %
-    % Input  - end_effector_position  : End-effector positions (= [p_1, p_2, ... p_n]) [m] (3 x n matrix)
-    %        - p_g                    : Center of Gravity position [m] (3 x 1 vector)
+    % Input - p_g                  : Center of Gravity position [m] (3 x 1 vector)
+    %       - end_effector_position: End-effector positions (= [p_1, p_2, ... p_n]) [m] (3 x n matrix)
 
       tumbling_axes = GIA.tumbling_axes_;
       number_of_tumbling_axes = GIA.number_of_tumbling_axes_;
@@ -430,7 +430,7 @@ classdef GravitoInertialAcceleration < handle
       gia_inclination_margin_ab = zeros(1, GIA.number_of_tumbling_axes_);
 
       if (~GIA.is_equilibrium_)
-        GIA.gia_inclination_margin_for_each_tumbling_axis = gia_inclination_margin_ab;
+        GIA.gia_inclination_margin_for_each_tumbling_axis_ = gia_inclination_margin_ab;
         GIA.gia_inclination_margin_ = 0.0;
         return;
       end
@@ -450,14 +450,36 @@ classdef GravitoInertialAcceleration < handle
         end
       end
 
-      GIA.gia_inclination_margin_for_each_tumbling_axis = gia_inclination_margin_ab;
+      GIA.gia_inclination_margin_for_each_tumbling_axis_ = gia_inclination_margin_ab;
       GIA.gia_inclination_margin_ = rad2deg(min(gia_inclination_margin_ab));
+    end
+
+    function visualizeGIAVector(GIA, robot, animation)
+      arguments (Input)
+        GIA;
+        robot     (1, 1) {mustBeA(robot,     "Robot")};
+        animation (1, 1) {mustBeA(animation, "Animation")};
+      end
+
+      if (~GIA.kVisualizeGIAVector_)
+        return;
+      end
+
+      CoM = robot.getStateVariable().getCoM();
+      kColor = GIA.kGIAVectorColor_;
+      kWidth = GIA.kGIAVectorWidth_;
+      vec_magnitude = GIA.gia_vector_ * animation.getAccelerationExpansionFactor();
+      animation.visualizeVector(CoM, vec_magnitude, kColor, kWidth);
     end
 
   end
 
   %% Getter
   methods (Access = public)
+
+    function stability_polyhedron = getStabilityPolyhedron(GIA)
+      stability_polyhedron = GIA.stability_polyhedron_;
+    end
 
     function visualize_GIA_vector = getVisualizeGIAVector(GIA)
       visualize_GIA_vector = GIA.kVisualizeGIAVector_;

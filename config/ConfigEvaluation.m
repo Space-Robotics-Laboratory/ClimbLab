@@ -17,6 +17,11 @@ classdef ConfigEvaluation < Configuration
     evaluate_tumble_stability_margin (1, 1) logical = false;
 
     evaluate_gravito_inertial_acceleration (1, 1) logical = false;
+    visualize_stable_region (1, 1) logical = false;
+      gia_stable_region_face_color = [0.0, 0.0, 1.0];
+      gia_stable_region_face_transparency (1, 1) double = 0.25;
+      gia_stable_region_edge_color = [0.0, 0.0, 1.0];
+      gia_stable_region_edge_width (1, 1) double = 2.0;
     visualize_gia_vector (1, 1) logical = false;
       gia_vector_color = [1.0, 0.0, 0.0];
       gia_vector_width (1, 1) double = 3.0;  % [mm]
@@ -64,6 +69,13 @@ classdef ConfigEvaluation < Configuration
       evaluate_gravito_inertial_acceleration = config_evaluation.evaluate_gravito_inertial_acceleration;
     end
 
+    function [visualize, face_color, face_transparency, edge_color, edge_width] = getGIAStableRegionVisualSettings(config_evaluation)
+      visualize = config_evaluation.visualize_stable_region;
+      face_color = config_evaluation.gia_stable_region_face_color;
+      face_transparency = config_evaluation.gia_stable_region_face_transparency;
+      edge_color = config_evaluation.gia_stable_region_edge_color;
+      edge_width = config_evaluation.gia_stable_region_edge_width;
+    end
     function [visualize, color, width] = getGIAVectorVisualSettings(config_evaluation)
       visualize = config_evaluation.visualize_gia_vector;
       color = config_evaluation.gia_vector_color;

@@ -16,18 +16,19 @@ classdef Evaluation < handle
   %% Public Methods
   methods (Access = public)
 
-    function evaluation = Evaluation(config_evaluation, terrain, robot)
+    function evaluation = Evaluation(config_evaluation, terrain, robot, animation)
       arguments (Input)
         config_evaluation (1, 1) {mustBeA(config_evaluation, "ConfigEvaluation")};
         terrain           (1, 1) {mustBeA(terrain,           "Terrain")};
         robot             (1, 1) {mustBeA(robot,             "Robot")};
+        animation         (1, 1) {mustBeA(animation,         "Animation")};
       end
 
       evaluation.manipulability_ = Manipulability(config_evaluation, robot);
 
       evaluation.supporting_leg_polygon_ = SupportingLegPolygon(config_evaluation, terrain, robot);
       evaluation.tumble_stability_margin_ = TumbleStabilityMargin(config_evaluation);
-      evaluation.gravito_inertial_acceleration_ = GravitoInertialAcceleration(config_evaluation);
+      evaluation.gravito_inertial_acceleration_ = GravitoInertialAcceleration(config_evaluation, animation);
     end
 
     function evaluate(evaluation, world, terrain, robot)
@@ -48,8 +49,16 @@ classdef Evaluation < handle
       evaluation.gravito_inertial_acceleration_.evaluate(world.getGravity(), robot.getLinkParameter(), robot.getStateVariable(), robot.getEEPosition());
     end
 
-    function visualize(evaluation)
+    function visualize(evaluation, terrain, robot, animation)
+      arguments (Input)
+        evaluation;
+        terrain   (1, 1) {mustBeA(terrain,   "Terrain")};
+        robot     (1, 1) {mustBeA(robot,     "Robot")};
+        animation (1, 1) {mustBeA(animation, "Animation")};
+      end
+
       evaluation.supporting_leg_polygon_.visualize();
+      evaluation.gravito_inertial_acceleration_.visualize(terrain, robot, animation);
     end
 
   end

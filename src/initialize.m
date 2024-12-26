@@ -46,7 +46,7 @@ limb_controller = LimbController();
 joint_controller = JointController(config_joint_controller);
 
 % Evaluation
-evaluation = Evaluation(config_evaluation, terrain, robot);
+evaluation = Evaluation(config_evaluation, terrain, robot, animation);
 
 data_logger = DataLogger(config_save_settings, run_cod, run_id);
 

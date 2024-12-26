@@ -94,13 +94,14 @@ classdef Animation < dynamicprops & handle
       animation.graphics_obj_vector(idx, 1) = arrow;
     end
 
-    function resetGraphicsObjects(animation, time, robot)
+    function resetGraphicsObjects(animation, time, robot, evaluation)
     % resetGraphicsObjects()
     %   Delete graphics objects from animation figure
       arguments (Input)
         animation;
         time  (1, 1) {mustBeA(time, "double")};
         robot (1, 1) {mustBeA(robot, "Robot")};
+        evaluation (1, 1) {mustBeA(evaluation, "Evaluation")};
       end
 
       if (time == 0.0)
@@ -109,6 +110,7 @@ classdef Animation < dynamicprops & handle
       robot.graphics_.deleteGripperGraphics();
       delete(animation.graphics_obj_light);
       delete(animation.graphics_obj_vector);
+      evaluation.getGIA().getStabilityPolyhedron().resetStableRegion();
     end
 
     function createVideoFile(animation, run_id)
