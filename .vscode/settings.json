@@ -57,6 +57,7 @@
     // Name and Proper Noun
     "Calibri",
     "CLAWAR",
+    "Gravito",
     "HubRobo",
     "Keigo",
     "Kentaro",
@@ -69,8 +70,8 @@
     "URDF",
     "Yusuke",
   ],
-  // "MATLAB.installPath": "C:\\Program Files\\MATLAB\\R2024a",  // For Windows
-  "MATLAB.installPath": "/usr/local/MATLAB/R2024b",  // For Ubuntu
+  "MATLAB.installPath": "C:\\Program Files\\MATLAB\\R2024a",  // For Windows
+  // "MATLAB.installPath": "/usr/local/MATLAB/R2024b",  // For Ubuntu
   "cSpell.words": [
   ],
   // "editor.defaultFormatter": "MathWorks.language-matlab",

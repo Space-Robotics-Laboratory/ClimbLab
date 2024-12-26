@@ -1,4 +1,8 @@
 classdef ConfigEvaluation < Configuration
+% Configuration for evaluation
+%
+% Created:      2020.07.08 by Warley Ribeiro
+% Last updated: 2024.12.25 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = {?ConfigEvaluation, ?Configuration}, GetAccess = public)
@@ -11,6 +15,7 @@ classdef ConfigEvaluation < Configuration
       supporting_leg_polygon_face_transparency (1, 1) double = 0.5
 
     evaluate_tumble_stability_margin (1, 1) logical = false;
+    evaluate_gravito_inertial_acceleration (1, 1) logical = false;
   end
 
   %% Constructor
@@ -49,6 +54,10 @@ classdef ConfigEvaluation < Configuration
 
     function evaluate_tumble_stability_margin = getEvaluateTumbleStabilityMargin(config_evaluation)
       evaluate_tumble_stability_margin = config_evaluation.evaluate_tumble_stability_margin;
+    end
+
+    function evaluate_gravito_inertial_acceleration = getEvaluateGravitoInertialAcceleration(config_evaluation)
+      evaluate_gravito_inertial_acceleration = config_evaluation.evaluate_gravito_inertial_acceleration;
     end
 
   end

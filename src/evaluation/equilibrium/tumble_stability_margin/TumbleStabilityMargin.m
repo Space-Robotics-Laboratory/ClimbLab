@@ -1,6 +1,5 @@
 classdef TumbleStabilityMargin < handle
-% TumbleStabilityMargin
-% Calculate Tumble Stability Margin
+% Tumble Stability Margin
 %
 % Created     : 2020.04.23 by Warley Ribeiro
 % Last updated: 2024.12.24 by Masazumi Imai
@@ -10,11 +9,11 @@ classdef TumbleStabilityMargin < handle
     kEvaluateTumbleStabilityMargin_ (1, 1) logical;
   end
   properties (SetAccess = private, GetAccess = public)
-    force_due_to_gravity_acceleration_  (3, 1);  % [N]
-    moment_due_to_gravity_acceleration_ (3, 1);  % [Nm]
+    force_due_to_gravity_acceleration_  (3, 1) double;  % [N]
+    moment_due_to_gravity_acceleration_ (3, 1) double;  % [Nm]
 
-    force_due_to_inertial_acceleration_  (3, 1);  % [N]
-    moment_due_to_inertial_acceleration_ (3, 1);  % [Nm]
+    force_due_to_inertial_acceleration_  (3, 1) double;  % [N]  (F_alpha)
+    moment_due_to_inertial_acceleration_ (3, 1) double;  % [Nm] (M_alpha)
 
     tumbling_axes_ (:, 2) uint8;  % TODO: This variable size is changed every time step. Need to modify
     number_of_tumbling_axes_ (1, 1) uint8;
@@ -254,7 +253,7 @@ classdef TumbleStabilityMargin < handle
       M_bar = TSM.moment_due_to_inertial_acceleration_ - TSM.moment_due_to_gravity_acceleration_;
 
       for tumbling_axis_id = 1 : TSM.number_of_tumbling_axes_
-        % Limb ID for tumbling axis
+        % Limb IDs for tumbling axis
         limb_a = TSM.tumbling_axes_(tumbling_axis_id, 1);
         limb_b = TSM.tumbling_axes_(tumbling_axis_id, 2);
         % End-effector position of limb for tumbling axis
@@ -321,7 +320,7 @@ classdef TumbleStabilityMargin < handle
       tumbling_moment = TSM.tumbling_moment_;
 
       for tumbling_axis_id = 1 : TSM.number_of_tumbling_axes_
-        % Limb ID for tumbling axis
+        % Limb IDs for tumbling axis
         limb_a = TSM.tumbling_axes_(tumbling_axis_id, 1);
         limb_b = TSM.tumbling_axes_(tumbling_axis_id, 2);
         % End-effector position of limb for tumbling axis

@@ -2,7 +2,7 @@ classdef Evaluation < handle
 % Evaluation robot state
 %
 % Created     : 2020.04.23 by Warley Ribeiro
-% Last updated: 2024.12.24 by Masazumi Imai
+% Last updated: 2024.12.25 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -10,6 +10,7 @@ classdef Evaluation < handle
 
     supporting_leg_polygon_ SupportingLegPolygon;
     tumble_stability_margin_ TumbleStabilityMargin;
+    gravito_inertial_acceleration_ GravitoInertialAcceleration;
   end
 
   %% Public Methods
@@ -26,6 +27,7 @@ classdef Evaluation < handle
 
       evaluation.supporting_leg_polygon_ = SupportingLegPolygon(config_evaluation, terrain, robot);
       evaluation.tumble_stability_margin_ = TumbleStabilityMargin(config_evaluation);
+      evaluation.gravito_inertial_acceleration_ = GravitoInertialAcceleration(config_evaluation);
     end
 
     function evaluate(evaluation, world, terrain, robot)
@@ -42,6 +44,8 @@ classdef Evaluation < handle
 
       evaluation.tumble_stability_margin_.evaluate(world.getGravity(), terrain, ...
         robot.getLinkParameter(), robot.getStateVariable(), evaluation.supporting_leg_polygon_);
+
+      evaluation.gravito_inertial_acceleration_.evaluate(world.getGravity(), robot.getLinkParameter(), robot.getStateVariable(), robot.getEEPosition());
     end
 
     function visualize(evaluation)

@@ -136,6 +136,7 @@ classdef config_example_demo_2
       supporting_leg_polygon_face_transparency (1, 1) double = 0.5
 
     evaluate_tumble_stability_margin (1, 1) logical = true;
+    evaluate_gravito_inertial_acceleration (1, 1) logical = true;
   end
 
   %% Animation Settings
