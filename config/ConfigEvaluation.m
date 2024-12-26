@@ -10,12 +10,16 @@ classdef ConfigEvaluation < Configuration
     evaluate_dynamic_manipulability (1, 1) logical = false;
 
     visualize_supporting_leg_polygon (1, 1) logical = false;
-      supporting_leg_polygon_face_color = [0.0 136.0 / 255.0 170.0 / 255.0];
+      supporting_leg_polygon_face_color = [0.0, 136.0 / 255.0, 170.0 / 255.0];
       supporting_leg_polygon_edge_color = "none";
-      supporting_leg_polygon_face_transparency (1, 1) double = 0.5
+      supporting_leg_polygon_face_transparency (1, 1) double = 0.5;
 
     evaluate_tumble_stability_margin (1, 1) logical = false;
+
     evaluate_gravito_inertial_acceleration (1, 1) logical = false;
+    visualize_gia_vector (1, 1) logical = false;
+      gia_vector_color = [1.0, 0.0, 0.0];
+      gia_vector_width (1, 1) double = 3.0;  % [mm]
   end
 
   %% Constructor
@@ -58,6 +62,12 @@ classdef ConfigEvaluation < Configuration
 
     function evaluate_gravito_inertial_acceleration = getEvaluateGravitoInertialAcceleration(config_evaluation)
       evaluate_gravito_inertial_acceleration = config_evaluation.evaluate_gravito_inertial_acceleration;
+    end
+
+    function [visualize, color, width] = getGIAVectorVisualSettings(config_evaluation)
+      visualize = config_evaluation.visualize_gia_vector;
+      color = config_evaluation.gia_vector_color;
+      width = config_evaluation.gia_vector_width;
     end
 
   end

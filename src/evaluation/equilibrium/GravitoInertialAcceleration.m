@@ -44,6 +44,11 @@ classdef GravitoInertialAcceleration < handle
     % Acceleration limit for all possible tumbling axis faces of the equilibrium polyhedron (3 x number_of_tumbling_axes matrix)
     max_acceleration_in_normal_direction_
   end
+  properties (SetAccess = immutable, GetAccess = private)
+    kVisualizeGIAVector_ (1, 1) logical;
+    kGIAVectorColor_;
+    kGIAVectorWidth_ (1, 1) double;
+  end
 
   %% Public Methods
   methods (Access = public)
@@ -55,6 +60,7 @@ classdef GravitoInertialAcceleration < handle
       end
 
       GIA.kEvaluateGravitoInertialAcceleration_ = config_evaluation.getEvaluateGravitoInertialAcceleration();
+      [GIA.kVisualizeGIAVector_, GIA.kGIAVectorColor_, GIA.kGIAVectorWidth_] = config_evaluation.getGIAVectorVisualSettings();
 
       GIA.force_due_to_inertial_acceleration_ = zeros(3, 1);
       GIA.moment_due_to_inertial_acceleration_ = zeros(3, 1);
@@ -87,6 +93,24 @@ classdef GravitoInertialAcceleration < handle
 
       GIA.calcGIAAccelerationMargin();
       GIA.calcGIAInclinationMargin();
+    end
+
+    function visualizeGIAVector(GIA, robot, animation)
+      arguments (Input)
+        GIA;
+        robot     (1, 1) {mustBeA(robot,     "Robot")};
+        animation (1, 1) {mustBeA(animation, "Animation")};
+      end
+
+      if (~GIA.kVisualizeGIAVector_)
+        return;
+      end
+
+      CoM = robot.getStateVariable().getCoM();
+      kColor = GIA.kGIAVectorColor_;
+      kWidth = GIA.kGIAVectorWidth_;
+      vec_magnitude = GIA.gia_vector_ * animation.getAccelerationExpansionFactor();
+      animation.visualizeVector(CoM, vec_magnitude, kColor, kWidth);
     end
 
   end
@@ -434,6 +458,11 @@ classdef GravitoInertialAcceleration < handle
 
   %% Getter
   methods (Access = public)
+
+    function visualize_GIA_vector = getVisualizeGIAVector(GIA)
+      visualize_GIA_vector = GIA.kVisualizeGIAVector_;
+    end
+
   end
 
 end  % GravitoInertialAcceleration

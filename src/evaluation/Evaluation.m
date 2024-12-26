@@ -65,6 +65,10 @@ classdef Evaluation < handle
       TSM = evaluation.tumble_stability_margin_;
     end
 
+    function GIA = getGIA(evaluation)
+      GIA = evaluation.gravito_inertial_acceleration_;
+    end
+
   end
 
 end  % Evaluation

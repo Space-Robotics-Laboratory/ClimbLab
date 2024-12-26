@@ -131,12 +131,15 @@ classdef config_example_demo_2
     evaluate_dynamic_manipulability (1, 1) logical = true;
 
     visualize_supporting_leg_polygon (1, 1) logical = true;
-      supporting_leg_polygon_face_color = [0.0 136.0 / 255.0 170.0 / 255.0];
+      supporting_leg_polygon_face_color = [0.0, 136.0 / 255.0, 170.0 / 255.0];
       supporting_leg_polygon_edge_color = "none";
-      supporting_leg_polygon_face_transparency (1, 1) double = 0.5
+      supporting_leg_polygon_face_transparency (1, 1) double = 0.5;
 
     evaluate_tumble_stability_margin (1, 1) logical = true;
     evaluate_gravito_inertial_acceleration (1, 1) logical = true;
+    visualize_gia_vector (1, 1) logical = true;
+      gia_vector_color = [1.0, 0.0, 0.0];
+      gia_vector_width (1, 1) double = 9.0;  % [mm]
   end
 
   %% Animation Settings
@@ -157,6 +160,8 @@ classdef config_example_demo_2
     camera_azimuth   (1, 1) double = -25;  % [deg]
     camera_elevation (1, 1) double =  10;  % [deg]
     camera_follow_robot (1, 1) logical = false;
+
+    acceleration_expansion_factor (1, 1) double = 0.02;
 
     ground_reaction_force_vec_show (1, 1) logical = false;
   end

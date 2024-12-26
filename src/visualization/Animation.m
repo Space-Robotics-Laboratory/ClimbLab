@@ -159,6 +159,10 @@ classdef Animation < dynamicprops & handle
       frame_rate = animation.frame_rate;
     end
 
+    function acceleration_expansion_factor = getAccelerationExpansionFactor(animation)
+      acceleration_expansion_factor = animation.acceleration_expansion_factor;
+    end
+
     function force_expansion_factor = getForceExpansionFactor(animation)
       force_expansion_factor = animation.force_expansion_factor;
     end
