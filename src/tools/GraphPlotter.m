@@ -2,8 +2,8 @@ classdef GraphPlotter < dynamicprops & handle
 % Graph plotter
 % NOTE: GraphPlotter takes over properties of ConfigPlotSettings. Please refer to ConfigPlotSettings.
 %
-% Created:      2020.07.27 by Warley Ribeiro
-% Last updated: 2024.12.21 by Masazumi Imai
+% Created     : 2020.07.27 by Warley Ribeiro
+% Last updated: 2025.01.03 by Masazumi Imai
 
   %% Properties
   properties (Access = private)
@@ -82,6 +82,15 @@ classdef GraphPlotter < dynamicprops & handle
         fig_title = "Tumble Stability Margin";
         y_label = "\rm{Tumble Stability Margin [m]}";
         graph_plotter.plotTimeHistoryGraph(data.time, data.TSM, fig_title, y_label);
+      end
+
+      if (graph_plotter.kPlotGravitoInertialAcceleration_)
+        fig_title = "GIA Margin";
+        y_label = "\rm{GIA Margin [m/s^2]}";
+        graph_plotter.plotTimeHistoryGraph(data.time, data.GIAM, fig_title, y_label);
+        fig_title = "GIA Inclination Margin";
+        y_label = "\rm{GIA Inclination Margin [deg]}";
+        graph_plotter.plotTimeHistoryGraph(data.time, data.GIA_inclination_margin, fig_title, y_label);
       end
     end
 

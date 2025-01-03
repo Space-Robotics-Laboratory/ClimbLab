@@ -16,8 +16,8 @@ classdef config_example_demo_2
 % TODO: Add equilibrium settings (gia)
 % TODO: Add animation of gia stable region, gia vector
 % TODO: Add CoT
-% TODO: Add save settings (gia, joint max torque, joint rms torque, cot)
-% TODO: Add plot settings (gia, joint max torque, joint rms torque, cot)
+% TODO: Add save settings (joint max torque, joint rms torque, cot)
+% TODO: Add plot settings (joint max torque, joint rms torque, cot)
 % TODO: Need to check if sensing camera and matching settings are necessary
 
   %% Environment Parameters
@@ -188,11 +188,12 @@ classdef config_example_demo_2
   properties (SetAccess = private, GetAccess = {?ConfigPlotSettings, ?Configuration})
     kSaveGraphs_ (1, 1) logical = true;
 
-    kPlotBasePosition_          (1, 1) logical = true;
-    kPlotJointTorque_           (1, 1) logical = true;
-    kPlotManipulability_        (1, 1) logical = true;
-    kPlotDynamicManipulability_ (1, 1) logical = true;
-    kPlotTumbleStabilityMargin_ (1, 1) logical = true;
+    kPlotBasePosition_                (1, 1) logical = true;
+    kPlotJointTorque_                 (1, 1) logical = true;
+    kPlotManipulability_              (1, 1) logical = true;
+    kPlotDynamicManipulability_       (1, 1) logical = true;
+    kPlotTumbleStabilityMargin_       (1, 1) logical = true;
+    kPlotGravitoInertialAcceleration_ (1, 1) logical = true;
   end
 
 end  % config_example_demo_2

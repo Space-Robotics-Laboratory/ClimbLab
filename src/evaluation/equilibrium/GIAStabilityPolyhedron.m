@@ -2,7 +2,7 @@ classdef GIAStabilityPolyhedron < handle
 % Gravito-Inertial Acceleration Stability Polyhedron
 %
 % Created     : 2020.01.20 by Warley Ribeiro
-% Last updated: 2024.12.25 by Masazumi Imai
+% Last updated: 2025.01.03 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = immutable, GetAccess = private)
@@ -63,7 +63,7 @@ classdef GIAStabilityPolyhedron < handle
         GIA_stability_polyhedron;
         p_g                     (3, 1) {mustBeA(p_g,                     "double")};
         end_effector_position   (3, :) {mustBeA(end_effector_position,   "double")};
-        tumbling_axes           (3, :) {mustBeA(tumbling_axes,           "uint8")};
+        tumbling_axes           (:, 2) {mustBeA(tumbling_axes,           "uint8")};
         number_of_tumbling_axes (1, 1) {mustBeA(number_of_tumbling_axes, "uint8")};
         unit_normal_vector      (3, :) {mustBeA(unit_normal_vector,      "double")};
       end

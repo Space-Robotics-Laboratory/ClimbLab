@@ -485,8 +485,8 @@ classdef GravitoInertialAcceleration < handle
       gravito_inertial_acceleration_margin = GIA.gia_margin_;
     end
 
-    function gravito_inertial_inclination_margin = getGIIM(GIA)
-      gravito_inertial_inclination_margin = GIA.gia_inclination_margin_;
+    function inclination_margin = getGIAInclinationMargin(GIA)
+      inclination_margin = GIA.gia_inclination_margin_;
     end
 
     function stability_polyhedron = getStabilityPolyhedron(GIA)
