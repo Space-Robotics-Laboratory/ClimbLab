@@ -178,9 +178,10 @@ classdef config_example_demo_2
     % Time interval for saving variables (should be larger than time-step)
     kVariableSavingTimeInterval_ (1, 1) double = 0.05;
 
-    kSaveManipulability_        (1, 1) logical = true;
-    kSaveDynamicManipulability_ (1, 1) logical = true;
-    kSaveTumbleStabilityMargin_ (1, 1) logical = true;
+    kSaveManipulability_              (1, 1) logical = true;
+    kSaveDynamicManipulability_       (1, 1) logical = true;
+    kSaveTumbleStabilityMargin_       (1, 1) logical = true;
+    kSaveGravitoInertialAcceleration_ (1, 1) logical = true;
   end
 
   %% Plot Settings

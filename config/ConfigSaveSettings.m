@@ -1,4 +1,8 @@
 classdef ConfigSaveSettings < Configuration
+% Configuration for variables save settings
+%
+% Created:      2020.07.08 by Warley Ribeiro
+% Last updated: 2025.01.03 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = {?ConfigSaveSettings, ?Configuration}, GetAccess = public)
@@ -14,6 +18,8 @@ classdef ConfigSaveSettings < Configuration
     kSaveDynamicManipulability_ (1, 1) logical = false;
 
     kSaveTumbleStabilityMargin_ (1, 1) logical = false;
+
+    kSaveGravitoInertialAcceleration_ (1, 1) logical = false;
   end
 
   %% Public Methods

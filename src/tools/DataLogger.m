@@ -3,7 +3,7 @@ classdef DataLogger < dynamicprops & handle
 % NOTE: DataLogger takes over properties of ConfigSaveSettings. Please refer to ConfigSaveSettings.
 %
 % Created:      2020.05.12 by Warley Ribeiro
-% Last updated: 2024.12.23 by Masazumi Imai
+% Last updated: 2025.01.03 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -94,6 +94,12 @@ classdef DataLogger < dynamicprops & handle
 
       if (data_logger.kSaveTumbleStabilityMargin_)
         data_logger.variables_log_.TSM(idx, 1) = evaluation.getTumbleStabilityMargin().getTumbleStabilityMargin();
+      end
+
+      if (data_logger.kSaveGravitoInertialAcceleration_)
+        data_logger.variables_log_.GIA_vector(idx, :) = evaluation.getGIA().getGIAVector()';
+        data_logger.variables_log_.GIAM(idx, 1) = evaluation.getGIA().getGIAM();
+        data_logger.variables_log_.GIIM(idx, 1) = evaluation.getGIA().getGIIM();
       end
     end
 

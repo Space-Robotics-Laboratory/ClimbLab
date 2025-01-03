@@ -2,7 +2,7 @@ classdef GravitoInertialAcceleration < handle
 % Gravito-Inertial Acceleration
 %
 % Created     : 2020.04.23 by Warley Ribeiro
-% Last updated: 2024.12.25 by Masazumi Imai
+% Last updated: 2025.01.03 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = immutable, GetAccess = public)
@@ -476,6 +476,18 @@ classdef GravitoInertialAcceleration < handle
 
   %% Getter
   methods (Access = public)
+
+    function gia_vector = getGIAVector(GIA)
+      gia_vector = GIA.gia_vector_;
+    end
+
+    function gravito_inertial_acceleration_margin = getGIAM(GIA)
+      gravito_inertial_acceleration_margin = GIA.gia_margin_;
+    end
+
+    function gravito_inertial_inclination_margin = getGIIM(GIA)
+      gravito_inertial_inclination_margin = GIA.gia_inclination_margin_;
+    end
 
     function stability_polyhedron = getStabilityPolyhedron(GIA)
       stability_polyhedron = GIA.stability_polyhedron_;
