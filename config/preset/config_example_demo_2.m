@@ -22,17 +22,17 @@ classdef config_example_demo_2
 
   %% Environment Parameters
   properties (SetAccess = private, GetAccess = {?ConfigWorld, ?Configuration})
-    max_simulation_time (1, 1) double = 16.0;  % [s]
-    use_dynamics (1, 1) logical = true;
-    gravity (1, 1) double = 1.0;  % [G]
+    kMaxSimulationTime_ (1, 1) double = 16.0;  % [s]
+    KUseDynamics_ (1, 1) logical = true;
+    kGravity_ (1, 1) double = 1.0;  % [G]
   end
 
   properties (SetAccess = private, GetAccess = {?ConfigTerrain, ?Configuration})
     surface_type (1, 1) string = "flat_HR_5mx5m";
     inclination (3, 1) double = [0.0; -45.0; 0.0];  % [deg]
 
-    stiffness_coefficient_for_GRF (1, 1) double = 100000.0 / 2.0;
-    damping_coefficient_for_GRF (1, 1) double = 100.0 / 2.0;
+    stiffness_coefficient_for_GRF (1, 1) double = 100000.0 / 2.0;  % TODO: Fix this value
+    damping_coefficient_for_GRF (1, 1) double = 100.0 / 2.0;  % TODO: Fix this value
     stiffness_coefficient_for_GRM (1, 1) double = 0.1;
     damping_coefficient_for_GRM (1, 1) double = 0.01;
 

@@ -75,10 +75,11 @@ classdef GravitoInertialAcceleration < handle
       GIA.gia_inclination_margin_for_each_tumbling_axis_ = zeros(1, GIA.number_of_tumbling_axes_);
     end
 
-    function evaluate(GIA, gravity, LP, SV, end_effector_position)
+    function evaluate(GIA, gravity, terrain, LP, SV, end_effector_position)
       arguments (Input)
         GIA;
         gravity (3, 1) {mustBeA(gravity, "double")};
+        terrain (1, 1) {mustBeA(terrain, "Terrain")};
         LP (1, 1) {mustBeA(LP, "LinkParameters")};
         SV (1, 1) {mustBeA(SV, "StateVariable")};
         end_effector_position (3, :) {mustBeA(end_effector_position, "double")};
@@ -90,23 +91,22 @@ classdef GravitoInertialAcceleration < handle
 
       GIA.calcInertialForceMomentPlusRotational(LP, SV);
 
-      GIA.calcStabilityPolyhedron(gravity, LP, SV, end_effector_position);  % ?: should be implemented in GIAStabilityPolyhedron
+      GIA.calcStabilityPolyhedron(gravity, terrain, LP, SV, end_effector_position);  % ?: should be implemented in GIAStabilityPolyhedron
 
       GIA.calcGIAAccelerationMargin();
       GIA.calcGIAInclinationMargin();
     end
 
-    function visualize(GIA, terrain, robot, animation)
+    function visualize(GIA, robot, animation)
     % Visualize GIA vector and GIA stable region
       arguments (Input)
         GIA;
-        terrain   (1, 1) {mustBeA(terrain,   "Terrain")};
         robot     (1, 1) {mustBeA(robot,     "Robot")};
         animation (1, 1) {mustBeA(animation, "Animation")};
       end
 
       GIA.visualizeGIAVector(robot, animation);
-      GIA.stability_polyhedron_.visualizeStableRegion(terrain, GIA.number_of_tumbling_axes_);
+      GIA.stability_polyhedron_.visualizeStableRegion(GIA.number_of_tumbling_axes_);
     end
 
   end
@@ -166,7 +166,7 @@ classdef GravitoInertialAcceleration < handle
       GIA.moment_due_to_inertial_acceleration_ = moment_due_to_inertial_linear_acceleration + moment_due_to_inertial_angular_acceleration;
     end
 
-    function calcStabilityPolyhedron(GIA, gravity, LP, SV, end_effector_position)
+    function calcStabilityPolyhedron(GIA, gravity, terrain, LP, SV, end_effector_position)
     % Calculate Gravito-Inertial Acceleration Stability Polyhedron
     % Considering the tumble stability with the addition of gripping forces to prevent the tumbling motion, the following equation describe the limit condition for one tumbling axis
     %
@@ -188,6 +188,7 @@ classdef GravitoInertialAcceleration < handle
       arguments (Input)
         GIA;
         gravity (3, 1) {mustBeA(gravity, "double")};
+        terrain (1, 1) {mustBeA(terrain, "Terrain")};
         LP (1, 1) {mustBeA(LP, "LinkParameters")};
         SV (1, 1) {mustBeA(SV, "StateVariable")};
         end_effector_position (3, :) {mustBeA(end_effector_position, "double")};
@@ -206,7 +207,7 @@ classdef GravitoInertialAcceleration < handle
       external_force = [0.0; 0.0; 0.0];  % [N] (F_0)
       external_moment = [0.0; 0.0; 0.0];  % [Nm] (M_0)
       GIA.calcMaximumAccelerationForNormalVectorDirection(...
-        mass, external_force, external_moment, end_effector_position, is_supporting, F_grip);
+        terrain, mass, external_force, external_moment, end_effector_position, is_supporting, F_grip);
 
       center_of_gravity_acceleration = GIA.force_due_to_inertial_acceleration_ / mass;
 
@@ -301,7 +302,7 @@ classdef GravitoInertialAcceleration < handle
       GIA.unit_normal_vector_ = unit_normal_vector;
     end
 
-    function calcMaximumAccelerationForNormalVectorDirection(GIA, ...
+    function calcMaximumAccelerationForNormalVectorDirection(GIA, terrain, ...
         mass, F_0, M_0, end_effector_position, is_grasping, F_hold)
     % Calculate maximum acceleration for the normal directions of tumbling axes
     %
@@ -341,7 +342,8 @@ classdef GravitoInertialAcceleration < handle
         for limb_id = 1 : kNumLimb
           if (limb_id ~= limb_a && limb_id ~= limb_b && is_grasping(1, limb_id))
             p_j = end_effector_position(:, limb_id);
-            M_ab = M_ab + F_hold * [0, 0, -1] * cross(p_b - p_j, p_a - p_j);
+            n_j = terrain.getNormVectorAtPoint(p_j);
+            M_ab = M_ab + F_hold * (-n_j)' * cross(p_b - p_j, p_a - p_j);
           end
         end
 

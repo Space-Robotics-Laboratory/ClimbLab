@@ -87,35 +87,22 @@ classdef GIAStabilityPolyhedron < handle
           j = i + 1;
         end
 
-        % Intersection line direction
+        % Calculate direction vector of intersection line
         edge_vector(:, i) = cross(unit_normal_vector(:, i), unit_normal_vector(:, j));
 
-        % Intersection line point (z = 0)
-        if (abs(edge_vector(3, i)) > kThreshold)
-          edge_point(3, i) = 0.0;
-          A = [ unit_normal_vector(1, i), unit_normal_vector(2, i);
-                unit_normal_vector(1, j), unit_normal_vector(2, j)];
-          B = [ unit_normal_vector(:, i)' * plane_point_exp(:, i);
-                unit_normal_vector(:, j)' * plane_point_exp(:, j)];
-          edge_point(1 : 2, i) = A \ B;
+        % Calculate point on intersection line by solving plane equations
+        kArbitraryScalar = 0.0;
+        A = [ unit_normal_vector(:, i)';
+              unit_normal_vector(:, j)';
+              edge_vector(:, i)'];
+        B = [ dot(unit_normal_vector(:, i), plane_point_exp(:, i));
+              dot(unit_normal_vector(:, j), plane_point_exp(:, j));
+              kArbitraryScalar];
+
+        if (rank(A) == 3)
+          edge_point(:, i) = A \ B;
         else
-          % Intersection line point (y = 0)
-          if (abs(edge_vector(2, i)) > kThreshold)
-            edge_point(2, i) = 0.0;
-            A = [ unit_normal_vector(1, i), unit_normal_vector(3, i);
-                  unit_normal_vector(1, j), unit_normal_vector(3, j)];
-            B = [ unit_normal_vector(:, i)' * plane_point_exp(:, i);
-                  unit_normal_vector(:, j)' * plane_point_exp(:, j)];
-            edge_point([1, 3], i) = A \ B;
-          % Intersection line point (x = 0)
-          else
-            edge_point(1, i) = 0.0;
-            A = [ unit_normal_vector(2, i), unit_normal_vector(3, i);
-                  unit_normal_vector(2, j), unit_normal_vector(3, j)];
-            B = [ unit_normal_vector(:, i)' * plane_point_exp(:, i);
-                  unit_normal_vector(:, j)' * plane_point_exp(:, j)];
-            edge_point(2 : 3, i) = A \ B;
-          end
+          error("ERROR: Failed to calculate point on intersection for GIA stability region. Planes are parallel and no intersections exist.");
         end
       end
       GIA_stability_polyhedron.edge_vector_ = edge_vector;
@@ -142,18 +129,17 @@ classdef GIAStabilityPolyhedron < handle
       C = edge_vector(:, 1) - edge_vector(:, 2);
       D = edge_point(:, 1) - edge_point(:, 2);
       ind = pinv(C) * D;
-      vertex(:, end + 1) = edge_point(:, 1) - ind(1) * edge_vector(:, 1);
+      vertex(:, end) = edge_point(:, 1) - ind(1) * edge_vector(:, 1);
       GIA_stability_polyhedron.vertex_ = vertex;
     end
 
-    function visualizeStableRegion(GIA_stability_polyhedron, terrain, number_of_tumbling_axes)
+    function visualizeStableRegion(GIA_stability_polyhedron, number_of_tumbling_axes)
     % Visualize GIA stable region
     %
     % Input - terrain                : Terrain class
     %       - number_of_tumbling_axes: Total number of possible tumbling axis (scalar)
       arguments (Input)
         GIA_stability_polyhedron;
-        terrain                 (1, 1) {mustBeA(terrain,                 "Terrain")};
         number_of_tumbling_axes (1, 1) {mustBeA(number_of_tumbling_axes, "uint8")};
       end
 
@@ -162,12 +148,8 @@ classdef GIAStabilityPolyhedron < handle
         return;
       end
 
-      surface_inclination = terrain.getSurfaceInclination();
-      % Rotation matrix
-      rot = rpy2dc(deg2rad(surface_inclination))';
-
       % Rotate polyhedron to match surface inclination
-      polyhedron_vertex = rot' * GIA_stability_polyhedron.vertex_;
+      polyhedron_vertex = GIA_stability_polyhedron.vertex_;
 
       for i = 1 : size(polyhedron_vertex, 2) - 1
         GIA_stability_polyhedron.stable_region_graphics_(i, 1) = patch( ...

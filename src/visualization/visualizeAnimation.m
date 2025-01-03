@@ -10,7 +10,7 @@ animation.setLight();
 
 trajectory_planning.visualize(time);
 
-evaluation.visualize(terrain, robot, animation);
+evaluation.visualize(robot, animation);
 
 visualizeVectors();
 

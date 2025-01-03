@@ -1,7 +1,7 @@
 classdef ConfigSaveSettings < Configuration
 % Configuration for variables save settings
 %
-% Created:      2020.07.08 by Warley Ribeiro
+% Created     : 2020.07.08 by Warley Ribeiro
 % Last updated: 2025.01.03 by Masazumi Imai
 
   %% Properties
@@ -33,7 +33,7 @@ classdef ConfigSaveSettings < Configuration
         config_world (1, 1) {mustBeA(config_world, "ConfigWorld")};
       end
 
-      config_save_settings.kVariableSavingTimeInterval_ = config_world.time_step;
+      config_save_settings.kVariableSavingTimeInterval_ = config_world.getTimeStep();
 
       if (config == "default")
         return;
