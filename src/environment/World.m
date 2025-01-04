@@ -9,7 +9,7 @@ classdef World < handle
     kTimeStep_ (1, 1) double;  % [s]
     kMaxSimulationTime_ (1, 1) double;  % [s]
     KUseDynamics_ (1, 1) logical;
-    kGravity (1, 1) double;  % [G]
+    kGravity_ (1, 1) double;  % [G]
     kGravityVector_ (3, 1) double;  % [m/s^2]
   end
 
@@ -17,7 +17,7 @@ classdef World < handle
   methods (Access = public)
 
     function world = World(config)
-    % World() Constructor
+    % Constructor
       arguments (Input)
         config (1, 1) {mustBeA(config, "ConfigWorld")};
       end
@@ -33,7 +33,7 @@ classdef World < handle
         world.(config_prop_name{i, 1}) = config.(config_prop_name{i, 1});
       end
 
-      world.kGravityVector_ = world.kGravity * [0.0; 0.0; -9.81];
+      world.kGravityVector_ = world.kGravity_ * [0.0; 0.0; -9.81];
 
       d_time = world.kTimeStep_;
       Gravity = world.kGravityVector_;
