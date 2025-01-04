@@ -13,12 +13,9 @@ classdef config_example_demo_2
 % Created     : 2021.03.02 by Kentaro Uno
 % Last updated: 2021.09.19 by Kentaro Uno
 
-% TODO: Add equilibrium settings (gia)
-% TODO: Add animation of gia stable region, gia vector
 % TODO: Add CoT
 % TODO: Add save settings (joint max torque, joint rms torque, cot)
 % TODO: Add plot settings (joint max torque, joint rms torque, cot)
-% TODO: Need to check if sensing camera and matching settings are necessary
 
   %% Environment Parameters
   properties (SetAccess = private, GetAccess = {?ConfigWorld, ?Configuration})

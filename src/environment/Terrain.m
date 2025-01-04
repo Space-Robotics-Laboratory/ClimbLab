@@ -2,7 +2,7 @@ classdef Terrain < handle
 % Terrain (map surface) parameters
 %
 % Created     : 2020.04.06 by Warley Ribeiro
-% Last updated: 2024.12.24 by Masazumi Imai
+% Last updated: 2025.01.05 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -11,7 +11,7 @@ classdef Terrain < handle
 
     kRawMapData_ (1, 1) struct;  % (x, y, z)
     kPointCloudInWorld_ (3, :) double;
-    kNormVectors_;
+    kNormVectors_ (3, :) double;
 
     kStiffnessCoefficientForGRF_ (1, 1) double;
     kDampingCoefficientForGRF_   (1, 1) double;
@@ -21,6 +21,8 @@ classdef Terrain < handle
     graspable_points_ GraspablePoints;
   end
   properties (Access = private)
+    kPointDx_ (1, 1) double;
+
     kGridColor_    (1, 3) double;
     kTransparency_ (1, 1) double;
     graphics_ (1, 1) matlab.graphics.chart.primitive.Surface;
@@ -30,7 +32,7 @@ classdef Terrain < handle
   methods (Access = public)
 
     function terrain = Terrain(config_terrain)
-    % Terrain() Constructor
+    % Constructor
       arguments (Input)
         config_terrain (1, 1) {mustBeA(config_terrain, "ConfigTerrain")};
       end
@@ -64,6 +66,7 @@ classdef Terrain < handle
   methods (Access = private)
 
     function loadSurfaceDataFromMatFile(terrain)
+    % Load surface points from .mat file
       folder = "src/environment/map";
       map_file_name = "map_" + terrain.kType_ + ".mat";
       file_path = fullfile(folder, map_file_name);
@@ -72,12 +75,21 @@ classdef Terrain < handle
           + "Check ""type"" defined in config file.");
       end
       load(file_path, "x", "y", "z");
-      terrain.kRawMapData_.x = x;
-      terrain.kRawMapData_.y = y;
-      terrain.kRawMapData_.z = z;
+      terrain.kRawMapData_.x = x;  % 1 x n vector
+      terrain.kRawMapData_.y = y;  % 1 x m vector
+      terrain.kRawMapData_.z = z;  % m x n matrix
+
+      dx = mean(diff(x));
+      dy = mean(diff(y));
+      if (dx <= dy)
+        terrain.kPointDx_ = dx;
+      else
+        terrain.kPointDx_ = dy;
+      end
     end
 
     function setPointCloudInWorldFrame(terrain)
+    % Set map point data as point cloud described in the world frame
       x = terrain.kRawMapData_.x;
       y = terrain.kRawMapData_.y;
       z = terrain.kRawMapData_.z;
@@ -94,12 +106,14 @@ classdef Terrain < handle
     end
 
     function setNormVectors(terrain)
+    % Calculate and set normal vectors at each points of terrain surface
       [Nx, Ny, Nz] = surfnorm(terrain.kRawMapData_.z);
       norm_vector_in_Surface = [reshape(Nx, 1, []); reshape(Ny, 1, []); reshape(Nz, 1, [])];
       terrain.kNormVectors_ = rpy2dc(deg2rad(terrain.kInclination_))' * norm_vector_in_Surface;
     end
 
     function setSurfaceCoefficients(terrain, config_terrain)
+    % Set contact characteristics (stiffness and damping)
       [Kf, Df, Km, Dm] = config_terrain.getGroundCoefficients();
       terrain.kStiffnessCoefficientForGRF_ = Kf;
       terrain.kDampingCoefficientForGRF_   = Df;
@@ -133,12 +147,14 @@ classdef Terrain < handle
     function inclination = getSurfaceInclination(terrain)
       inclination = terrain.kInclination_;
     end
+
     function [Kf, Df, Km, Dm] = getGroundCoefficients(terrain)
       Kf = terrain.kStiffnessCoefficientForGRF_;
       Df = terrain.kDampingCoefficientForGRF_;
       Km = terrain.kStiffnessCoefficientForGRM_;
       Dm = terrain.kDampingCoefficientForGRM_;
     end
+
     function graspable_points = getGraspablePoints(terrain)
       graspable_points = terrain.graspable_points_;
     end
@@ -150,8 +166,8 @@ classdef Terrain < handle
     %   Created:      2019.09.30 by Victoria Keo, Warley Ribeiro
     %   Last updated: 2024.03.15 by Masazumi Imai
     %
-    % Input : original_point (3x1) - Given position of the point to be checked in the World frame
-    % Output: nearest_point (3x1) - Closest point positions for the map in the World frame
+    % Input  - original_point (3x1): Given position of the point to be checked in the World frame
+    % Output - nearest_point (3x1): Closest point positions for the map in the World frame
       arguments (Input)
         terrain;
         original_point (3, 1) {mustBeA(original_point, "double")};
@@ -177,10 +193,12 @@ classdef Terrain < handle
       end
 
       % HACK: [~, idx] = min(vecnorm(terrain.kPointCloudInWorld_ - point)); this takes longer time than the following one
-      kDistThreshold = 0.005;  % TODO: Should be set as property based on map dx (or dy)
+      kDistThreshold = terrain.kPointDx_;
       [~, idx] = find(all(abs(terrain.kPointCloudInWorld_ - point) < kDistThreshold));
       if (length(idx) > 1)
         [~, idx_min] = min(vecnorm(terrain.kPointCloudInWorld_(:, idx) - point));
+      else
+        idx_min = 1;
       end
 
       norm_vector_at_point = terrain.kNormVectors_(:, idx(idx_min));
