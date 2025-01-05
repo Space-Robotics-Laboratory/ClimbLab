@@ -17,6 +17,11 @@ classdef ConfigRobot < Configuration
     % "max_holding_force"
     gripper_detachment_detection_method (1, 1) string = "max_holding_force";
 
+    % Position threshold for checking if gripper can grasp
+    gripper_grasp_position_threshold (1, 1) double = 0.001;
+    % Velocity threshold for checking if gripper can grasp
+    gripper_grasp_velocity_threshold (1, 1) double = 0.01;
+
 
     % Visualization settings
     visualize_robot (1, 1) logical = true;
@@ -53,19 +58,28 @@ classdef ConfigRobot < Configuration
     function robot_type = getRobotType(config_robot)
       robot_type = config_robot.robot_type;
     end
+
     function initial_base_position = getInitialBasePosition(config_robot)
       initial_base_position = config_robot.initial_base_position;
     end
+
     function initial_base_orientation_euler = getInitialBaseOrientationDCM(config_robot)
       initial_base_orientation_euler = config_robot.initial_base_orientation_euler;
     end
+
     function desired_initial_EE_distance_xy_from_base_CoM = ...
         getInitialEEDistXYFromBaseCoM(config_robot)
       desired_initial_EE_distance_xy_from_base_CoM = ...
         config_robot.desired_initial_EE_distance_xy_from_base_CoM;
     end
+
     function gripper_detachment_detection_method = getGripperDetachmentDetectionMethod(config_robot)
       gripper_detachment_detection_method = config_robot.gripper_detachment_detection_method;
+    end
+
+    function [position_threshold, velocity_threshold] = getGripperGraspThresholds(config_robot)
+      position_threshold = config_robot.gripper_grasp_position_threshold;
+      velocity_threshold = config_robot.gripper_grasp_velocity_threshold;
     end
 
     function boolean = getVisualizeRobot(config_robot)

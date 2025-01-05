@@ -1,4 +1,8 @@
 classdef ConfigAnimationSettings < Configuration
+% Configuration for animation settings
+%
+% Created:      2020.07.08 by Warley Ribeiro
+% Last updated: 2024.12.25 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = {?ConfigAnimationSettings, ?Configuration}, GetAccess = public)
@@ -21,7 +25,11 @@ classdef ConfigAnimationSettings < Configuration
     camera_elevation (1, 1) double = 12;  % [deg]
     camera_follow_robot (1, 1) logical = false;
 
+
     % Equilibrium related
+    % Transformation from acceleration to visualize GIA Stable Region, GIA vector in the position coordinate
+    % -> this scale is used for all accelerational variables visualization
+    acceleration_expansion_factor (1, 1) double = 0.02;
     % Transformation from force to visualize Fg (gravitational force) and Fe (reaction force) Stable
     % Region in the position coordinate
     % -> this scale is used for all force-dimensional variables visualization

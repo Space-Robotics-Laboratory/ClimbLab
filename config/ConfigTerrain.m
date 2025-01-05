@@ -44,6 +44,9 @@ classdef ConfigTerrain  < Configuration
       end
 
       config_terrain = config_terrain.override(config);
+
+      % Convert color specifications to valid values
+      config_terrain.surface_grid_color = validatecolor(config_terrain.surface_grid_color);
     end
 
   end

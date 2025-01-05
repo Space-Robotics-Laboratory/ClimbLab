@@ -1,17 +1,23 @@
-classdef World
+classdef World < handle
+% World (environment) parameters
+%
+% Created     : 2020.04.09 by Warley Ribeiro
+% Last updated: 2025.01.03 by Masazumi Imai
+
   %% Properties
   properties (SetAccess = private, GetAccess = public)
-    time_step (1, 1) double;  % [s]
-    max_simulation_time (1, 1) double;  % [s]
-    use_dynamics (1, 1) logical;
-    gravity (1, 1) double;  % [G]
+    kTimeStep_ (1, 1) double;  % [s]
+    kMaxSimulationTime_ (1, 1) double;  % [s]
+    KUseDynamics_ (1, 1) logical;
+    kGravity_ (1, 1) double;  % [G]
+    kGravityVector_ (3, 1) double;  % [m/s^2]
   end
 
   %% Public Methods
   methods (Access = public)
 
     function world = World(config)
-    % World() Constructor
+    % Constructor
       arguments (Input)
         config (1, 1) {mustBeA(config, "ConfigWorld")};
       end
@@ -27,8 +33,10 @@ classdef World
         world.(config_prop_name{i, 1}) = config.(config_prop_name{i, 1});
       end
 
-      d_time = world.time_step;
-      Gravity = world.gravity * [0.0; 0.0; -9.81];
+      world.kGravityVector_ = world.kGravity_ * [0.0; 0.0; -9.81];
+
+      d_time = world.kTimeStep_;
+      Gravity = world.kGravityVector_;
       Ez = [0; 0; 1];
     end
 
@@ -36,13 +44,19 @@ classdef World
 
   %% Getter
   methods (Access = public)
-    function use_dynamics = getUseDynamics(world)
-      use_dynamics = world.use_dynamics;
-    end
+
     function max_simulation_time = getMaxSimulationTime(world)
-      max_simulation_time = world.max_simulation_time;
+      max_simulation_time = world.kMaxSimulationTime_;
     end
+
+    function use_dynamics = getUseDynamics(world)
+      use_dynamics = world.KUseDynamics_;
+    end
+
+    function gravity_vector = getGravityVector(world)
+      gravity_vector = world.kGravityVector_;
+    end
+
   end
 
-end
-% EOF
+end  % World

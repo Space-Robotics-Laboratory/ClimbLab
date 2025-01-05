@@ -9,12 +9,14 @@ config_foothold_planning = ConfigFootholdPlanning(config);
 config_gait_planning = ConfigGaitPlanning(config);
 config_trajectory_planning = ConfigTrajectoryPlanning(config);
 config_joint_controller = ConfigJointController(config);
+config_evaluation = ConfigEvaluation(config);
 config_animation_settings = ConfigAnimationSettings(config);
-save_settings = ConfigSaveSettings(config, config_world);
+config_save_settings = ConfigSaveSettings(config, config_world);
+config_plot_settings = ConfigPlotSettings(config);
 
 % Animation
-animation = Animation(config_animation_settings);
-animation.createVideoFile(run_cod, run_id);
+animation = Animation(config_animation_settings, run_cod, run_id);
+animation.createVideoFile(run_id);
 
 % Environment
 world = World(config_world);
@@ -43,7 +45,11 @@ limb_controller = LimbController();
 % Joint Controller
 joint_controller = JointController(config_joint_controller);
 
+% Evaluation
+evaluation = Evaluation(config_evaluation, terrain, robot, animation);
 
-variables_log = [];
+data_logger = DataLogger(config_save_settings, run_cod, run_id);
+
+graph_plotter = GraphPlotter(config_plot_settings, run_cod, run_id);
 
 % EOF

@@ -13,31 +13,24 @@ classdef config_example_demo_2
 % Created     : 2021.03.02 by Kentaro Uno
 % Last updated: 2021.09.19 by Kentaro Uno
 
-% TODO: Add equilibrium settings (tsm and gia)
-% TODO: Add animation of support triangle, gia stable region, gia vector
-% TODO: Add save settings (tsm, gia, manipulability, dynamic manipulability, joint max torque, joint rms torque, cot)
-% TODO: Add plot settings (tsm, gia, manipulability, dynamic manipulability, joint max torque, joint rms torque, cot)
-% TODO: Need to check if sensing camera and matching settings are necessary
-
   %% Environment Parameters
   properties (SetAccess = private, GetAccess = {?ConfigWorld, ?Configuration})
-    max_simulation_time (1, 1) double = 16.0;  % [s]
-    use_dynamics (1, 1) logical = true;
-    gravity (1, 1) double = 1.0;  % [G]
+    kMaxSimulationTime_ (1, 1) double = 16.0;  % [s]
+    KUseDynamics_ (1, 1) logical = true;
+    kGravity_ (1, 1) double = 1.0;  % [G]
   end
 
   properties (SetAccess = private, GetAccess = {?ConfigTerrain, ?Configuration})
-    surface_type (1, 1) string = "flat_HR_5m_x_5m";
+    surface_type (1, 1) string = "flat_HR_5mx5m";
     inclination (3, 1) double = [0.0; -45.0; 0.0];  % [deg]
 
-    stiffness_coefficient_for_GRF (1, 1) double = 100000.0;
-    damping_coefficient_for_GRF (1, 1) double = 100.0;
+    stiffness_coefficient_for_GRF (1, 1) double = 50000.0;
+    damping_coefficient_for_GRF   (1, 1) double = 50.0;
     stiffness_coefficient_for_GRM (1, 1) double = 0.1;
-    damping_coefficient_for_GRM (1, 1) double = 0.01;
+    damping_coefficient_for_GRM   (1, 1) double = 0.01;
 
     % Visualization
     surface_grid_color = "white";
-    visualize_graspable_points (1, 1) logical = false;
   end
 
   %% Robot Parameters
@@ -55,6 +48,11 @@ classdef config_example_demo_2
     % "max_holding_force"
     gripper_detachment_detection_method (1, 1) string = "max_holding_force";
 
+    % Position threshold for checking if gripper can grasp
+    gripper_grasp_position_threshold (1, 1) double = 0.005;
+    % Velocity threshold for checking if gripper can grasp
+    gripper_grasp_velocity_threshold (1, 1) double = 0.05;
+
     % Visualization settings
     visualize_robot (1, 1) logical = true;
       base_upper_thickness (1, 1) double = 0.20;  % [m]
@@ -68,7 +66,7 @@ classdef config_example_demo_2
 
   %% Path Planning Parameters
   properties (SetAccess = private, GetAccess = {?ConfigPathPlanning, ?Configuration})
-    goal_position (3, 1) double = [0.0; 0.0; 0.0];  % [m]
+    goal_position (3, 1) double = [0.4; 0.5; 0.0];  % [m]
     % Global Path Planning method
     global_path_plan_type (1, 1) string = "straight_toward_the_goal_direction";
     % Local Path Planning method
@@ -108,7 +106,7 @@ classdef config_example_demo_2
     % Base CoM trajectory type
     base_trajectory_type (1, 1) string = "5th_order_bezier";
     % Limb end-effector trajectory type
-    limb_trajectory_type (1, 1) string = "7th_order_bezier";
+    limb_trajectory_type (1, 1) string = "7th_order_spline";
 
     visualize_limb_trajectory (1, 1) logical = false;
   end
@@ -120,9 +118,32 @@ classdef config_example_demo_2
     derivative_gain   (1, 1) double = 3.0;
   end
 
+  %% Evaluation Parameters
+  properties (SetAccess = private, GetAccess = {?ConfigEvaluation, ?Configuration})
+    evaluate_manipulability (1, 1) logical = true;
+    evaluate_dynamic_manipulability (1, 1) logical = true;
+
+    visualize_supporting_leg_polygon (1, 1) logical = true;
+      supporting_leg_polygon_face_color = [0.0, 136.0 / 255.0, 170.0 / 255.0];
+      supporting_leg_polygon_edge_color = "none";
+      supporting_leg_polygon_face_transparency (1, 1) double = 0.5;
+
+    evaluate_tumble_stability_margin (1, 1) logical = true;
+    evaluate_gravito_inertial_acceleration (1, 1) logical = true;
+    visualize_stable_region (1, 1) logical = true;
+      gia_stable_region_face_color = [0.0, 136.0 / 255.0, 170.0 / 255.0];
+      gia_stable_region_face_transparency (1, 1) double = 0.2;
+      gia_stable_region_edge_color = "none";
+      gia_stable_region_edge_width (1, 1) double = 1.0;
+    visualize_gia_vector (1, 1) logical = true;
+      gia_vector_color = [1.0, 0.0, 0.0];
+      gia_vector_width (1, 1) double = 9.0;  % [mm]
+  end
+
   %% Animation Settings
   properties (SetAccess = private, GetAccess = {?ConfigAnimationSettings, ?Configuration})
     display_animation (1, 1) logical = true;
+    save_video        (1, 1) logical = true;
     frame_rate        (1, 1) double  = 20;          % [frames/s] (positive value)
     resolution        (1, 2) double  = [640, 480];  % [px]
     show_elapsed_time (1, 1) logical = false;
@@ -137,14 +158,41 @@ classdef config_example_demo_2
     camera_azimuth   (1, 1) double = -25;  % [deg]
     camera_elevation (1, 1) double =  10;  % [deg]
     camera_follow_robot (1, 1) logical = false;
+
+    acceleration_expansion_factor (1, 1) double = 0.008;
+
+    ground_reaction_force_vec_show (1, 1) logical = false;
   end
 
   %% Save Settings
   properties (SetAccess = private, GetAccess = {?ConfigSaveSettings, ?Configuration})
+    kSaveCsvFile_ (1, 1) logical = true;
+
     % Time interval for saving variables (should be larger than time-step)
-    variable_saving_time_interval (1, 1) double = 0.05;
-    % Save basic variables to csv file
-    save_csv_file (1, 1) logical = true;
+    kVariableSavingTimeInterval_ (1, 1) double = 0.05;
+
+    kSaveMaxJointTorque_              (1, 1) logical = true;
+    kSaveRMSJointTorque_              (1, 1) logical = true;  % NOTE: Need "Signal Processing Toolbox" if MATLAB version is before R2022a
+    kSaveManipulability_              (1, 1) logical = true;
+    kSaveDynamicManipulability_       (1, 1) logical = true;
+    kSaveTumbleStabilityMargin_       (1, 1) logical = true;
+    kSaveGravitoInertialAcceleration_ (1, 1) logical = true;
+    kSaveCostOfTransport_             (1, 1) logical = true;
+  end
+
+  %% Plot Settings
+  properties (SetAccess = private, GetAccess = {?ConfigPlotSettings, ?Configuration})
+    kSaveGraphs_ (1, 1) logical = true;
+
+    kPlotBasePosition_                (1, 1) logical = true;
+    kPlotJointTorque_                 (1, 1) logical = true;
+    kPlotMaxJointTorque_              (1, 1) logical = true;
+    kPlotRMSJointTorque_              (1, 1) logical = true;
+    kPlotManipulability_              (1, 1) logical = true;
+    kPlotDynamicManipulability_       (1, 1) logical = true;
+    kPlotTumbleStabilityMargin_       (1, 1) logical = true;
+    kPlotGravitoInertialAcceleration_ (1, 1) logical = true;
+    kPlotCostOfTransport_             (1, 1) logical = true;
   end
 
 end  % config_example_demo_2

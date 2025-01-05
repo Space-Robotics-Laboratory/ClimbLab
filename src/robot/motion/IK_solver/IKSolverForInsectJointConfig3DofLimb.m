@@ -1,38 +1,35 @@
 classdef IKSolverForInsectJointConfig3DofLimb < handle
 % Position inverse kinematics solver for a 3 DOF manipulator that has a insect joint configuration
+%
+% Created     : 2020.06.25 by Kentaro Uno
+% Last updated: 2021.01.19 by Kentaro Uno
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
     yaw_Base2Coxa_in_Base_frame_ (1, 1) double  % yaw rotation of Base_to_Coxa joint seen from Base frame
-    pos_vec_01_ (3, 1) double;  % Base (link 0) to Coxa (link 1) position vector
-    pos_vec_12_ (3, 1) double;  % Coxa (link 1) to Femur (link 2) position vector
-    pos_vec_23_ (3, 1) double;  % Femur (link 2) to Tibia (link 3)position vector
+
+    pos_vec_01_ (3, 1) double;  % Base  (link 0) to Coxa  (link 1) position vector
+    pos_vec_12_ (3, 1) double;  % Coxa  (link 1) to Femur (link 2) position vector
+    pos_vec_23_ (3, 1) double;  % Femur (link 2) to Tibia (link 3) position vector
     pos_vec_3e_ (3, 1) double;  % Tibia (link 3) to end-effector (link "e") position vector
   end
 
   %% Public Methods
   methods (Access = public)
 
-    % Constructor
-    function IK_solver = IKSolverForInsectJointConfig3DofLimb()
-      IK_solver.yaw_Base2Coxa_in_Base_frame_ = 0.0;
-      IK_solver.pos_vec_01_ = zeros(3, 1);
-      IK_solver.pos_vec_12_ = zeros(3, 1);
-      IK_solver.pos_vec_23_ = zeros(3, 1);
-      IK_solver.pos_vec_3e_ = zeros(3, 1);
-    end
-
-    function setLinksPositionVectors(IK_solver, yaw_base2coxa, position_vectors)
+    function IK_solver = IKSolverForInsectJointConfig3DofLimb(LP, limb_id)
+    % IKSolverForInsectJointConfig3DofLimb() Constructor
       arguments (Input)
-        IK_solver;
-        yaw_base2coxa (:, 1) {mustBeA(yaw_base2coxa, "double")};
-        position_vectors (3, :) {mustBeA(position_vectors, "double")};
+        LP      (1, 1) {mustBeA(LP, "LinkParameters")};
+        limb_id (1, 1) {mustBeA(limb_id, "uint8")};
       end
-      IK_solver.yaw_Base2Coxa_in_Base_frame_ = yaw_base2coxa;
-      IK_solver.pos_vec_01_ = position_vectors(:, 1);
-      IK_solver.pos_vec_12_ = position_vectors(:, 2);
-      IK_solver.pos_vec_23_ = position_vectors(:, 3);
-      IK_solver.pos_vec_3e_ = position_vectors(:, 4);
+
+      Qi = LP.getRotationalRelationshipOfLinkFrames();
+      kJoints = LP.getJoints();
+
+      IK_solver.yaw_Base2Coxa_in_Base_frame_ = Qi(3, kJoints(1, limb_id));
+
+      IK_solver.setLinkPositionVectors(LP, limb_id);
     end
 
     function joint_angle = solve(IK_solver, base_position, base_orientation, EE_position)
@@ -80,6 +77,42 @@ classdef IKSolverForInsectJointConfig3DofLimb < handle
 
   %% Private Methods
   methods (Access = private)
+
+    function setLinkPositionVectors(IK_solver, LP, limb_id)
+      arguments (Input)
+        IK_solver;
+        LP      (1, 1) {mustBeA(LP, "LinkParameters")};
+        limb_id (1, 1) {mustBeA(limb_id, "uint8")};
+      end
+
+      c0 = LP.getPositionVectorFromBaseCoMToJoint();
+      cc = LP.getPositionVectorFromLinkCoMToJoint();
+      ce = LP.getPositionVectorFromEndLinkCoMToEndPoint();
+      kJoints = LP.getJoints();
+
+      % Base (link 0) to Coxa (link 1) position vector
+      p01 = c0(:, kJoints(1, limb_id));
+      % Coxa (link 1) to Femur (link 2) position vector
+      p12 = cc(:, kJoints(1, limb_id), kJoints(1, limb_id) + 1) - cc(:, kJoints(1, limb_id), kJoints(1, limb_id));
+
+      % Femur (link 2) to Tibia (link 3)position vector
+      p23_tmp = cc(:, kJoints(1, limb_id) + 1, kJoints(1, limb_id) + 2) - cc(:, kJoints(1, limb_id) + 1, kJoints(1, limb_id) + 1);
+      % Tibia (link 3) to end-effector (link "e") position vector
+      p3e_tmp = ce(:, kJoints(1, limb_id) + 2) - cc(:, kJoints(1, limb_id) + 2, kJoints(1, limb_id) + 2);
+
+      % Adjusting the frame for IK from frame of SpaceDyn
+      p23(1, 1) =  p23_tmp(1, 1);
+      p23(2, 1) = -p23_tmp(3, 1);
+      p23(3, 1) =  p23_tmp(2, 1);
+      p3e(1, 1) =  p3e_tmp(2, 1);
+      p3e(2, 1) = -p3e_tmp(3, 1);
+      p3e(3, 1) = -p3e_tmp(1, 1);
+
+      IK_solver.pos_vec_01_ = p01;
+      IK_solver.pos_vec_12_ = p12;
+      IK_solver.pos_vec_23_ = p23;
+      IK_solver.pos_vec_3e_ = p3e;
+    end
 
     function q1 = solveB2CJointAngle(IK_solver, p0e)
       alpha = IK_solver.yaw_Base2Coxa_in_Base_frame_;
@@ -135,5 +168,4 @@ classdef IKSolverForInsectJointConfig3DofLimb < handle
 
   end
 
-end
-% EOF
+end  % IKSolverForInsectJointConfig3DofLimb

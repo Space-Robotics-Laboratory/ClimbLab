@@ -1,6 +1,6 @@
 % Visualization functions
 
-animation.resetGraphicsObjects(time, robot);
+animation.resetGraphicsObjects(time, robot, evaluation);
 
 terrain.visualize(time);
 
@@ -10,9 +10,10 @@ animation.setLight();
 
 trajectory_planning.visualize(time);
 
+evaluation.visualize(robot, animation);
+
 visualizeVectors();
 
-drawnow limitrate nocallbacks;
-writeVideo(animation.getSimulationVideo(), getframe(animation.getFigure()));
+animation.writeVideoFile();
 
 % EOF

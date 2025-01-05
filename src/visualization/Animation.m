@@ -6,15 +6,23 @@ classdef Animation < dynamicprops & handle
     graphics_obj_light (1, 1) matlab.graphics.primitive.Light
     graphics_obj_vector matlab.graphics.primitive.Patch;
   end
+  properties (Access = private)
+    kSaveDataDirName_ (1, 1) string;
+  end
 
   %% Public methods
   methods (Access = public)
 
-    function animation = Animation(config_animation_settings)
+    function animation = Animation(config_animation_settings, run_cod, run_id)
     % Animation() Constructor
+    %
+    % Input : run_cod  - Program identification code
+    %         run_id   - Run identification
       arguments (Input)
         config_animation_settings ...
           (1, 1) {mustBeA(config_animation_settings, "ConfigAnimationSettings")};
+        run_cod (1, 1) {mustBeA(run_cod, "string")};
+        run_id  (1, 1) {mustBeA(run_id,  "string")};
       end
 
       animation.fig = figure(Visible = "off");
@@ -24,7 +32,8 @@ classdef Animation < dynamicprops & handle
       % Add properties from config
       customized_config_prop_name = properties(config_animation_settings);
       for i = 1:length(customized_config_prop_name)
-        addprop(animation, customized_config_prop_name{i, 1});
+        dynamic_property = addprop(animation, customized_config_prop_name{i, 1});
+        dynamic_property.Access = "private";
         animation.(customized_config_prop_name{i, 1}) = ...
           config_animation_settings.(customized_config_prop_name{i, 1});
       end
@@ -46,6 +55,12 @@ classdef Animation < dynamicprops & handle
       grid on;
       % Camera angle
       view(animation.camera_azimuth, animation.camera_elevation);
+
+      animation.kSaveDataDirName_ = "dat" + filesep + run_cod + filesep + run_id;
+      if (animation.save_video && ~isfolder(animation.kSaveDataDirName_))
+        mkdir(animation.kSaveDataDirName_);
+      end
+
     end
 
     function setLight(animation)
@@ -79,13 +94,14 @@ classdef Animation < dynamicprops & handle
       animation.graphics_obj_vector(idx, 1) = arrow;
     end
 
-    function resetGraphicsObjects(animation, time, robot)
+    function resetGraphicsObjects(animation, time, robot, evaluation)
     % resetGraphicsObjects()
     %   Delete graphics objects from animation figure
       arguments (Input)
         animation;
         time  (1, 1) {mustBeA(time, "double")};
         robot (1, 1) {mustBeA(robot, "Robot")};
+        evaluation (1, 1) {mustBeA(evaluation, "Evaluation")};
       end
 
       if (time == 0.0)
@@ -94,35 +110,43 @@ classdef Animation < dynamicprops & handle
       robot.graphics_.deleteGripperGraphics();
       delete(animation.graphics_obj_light);
       delete(animation.graphics_obj_vector);
+      evaluation.getGIA().getStabilityPolyhedron().resetStableRegion();
     end
 
-    function createVideoFile(animation, run_cod, run_id)
+    function createVideoFile(animation, run_id)
     % createVideoFile()
     %   Create file to save simulation video and define video parameters, such as quality and frame
     %   rate.
     %
-    % Input : run_cod  - Program identification code
-    %         run_id   - Run identification
+    % Input : run_id   - Run identification
       arguments (Input)
         animation;
-        run_cod  (1, 1) {mustBeA(run_cod, "string")};
-        run_id   (1, 1) {mustBeA(run_id, "string")};
+        run_id (1, 1) {mustBeA(run_id, "string")};
       end
-      if (animation.save_video)
-        dir_name = "dat" + filesep + run_cod + filesep + run_id;
-        mkdir(dir_name);
-        animation.sim_video = VideoWriter(dir_name + filesep + run_id + "_video" + ...
-          animation.video_file_extension);
-      else
-        animation.sim_video = VideoWriter("dat" + filesep + "last_video" + animation.video_file_extension);
+
+      if (~animation.save_video)
+        return;
       end
+
+      dir_name = animation.kSaveDataDirName_;
+      animation.sim_video = VideoWriter(dir_name + filesep + run_id + "_video" + animation.video_file_extension);
       animation.sim_video.Quality = 100;
       animation.sim_video.FrameRate = animation.frame_rate;
       open(animation.sim_video);
     end
 
+    function writeVideoFile(animation)
+      drawnow limitrate nocallbacks;
+
+      if (animation.save_video)
+        writeVideo(animation.sim_video, getframe(animation.fig));
+      end
+    end
+
     function saveVideoFile(animation)
-      close(animation.sim_video);
+      if (animation.save_video)
+        close(animation.sim_video);
+      end
     end
 
   end
@@ -132,11 +156,13 @@ classdef Animation < dynamicprops & handle
     function fig = getFigure(animation)
       fig = animation.fig;
     end
-    function sim_video = getSimulationVideo(animation)
-      sim_video = animation.sim_video;
-    end
+
     function frame_rate = getFrameRate(animation)
       frame_rate = animation.frame_rate;
+    end
+
+    function acceleration_expansion_factor = getAccelerationExpansionFactor(animation)
+      acceleration_expansion_factor = animation.acceleration_expansion_factor;
     end
 
     function force_expansion_factor = getForceExpansionFactor(animation)

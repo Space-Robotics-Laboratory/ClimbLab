@@ -29,6 +29,8 @@ classdef StateVariable < handle
     AA    (3, :) double  % Link orientations (DCM)
   end
   properties (SetAccess = private, GetAccess = public)
+    CoM_ (3, 1) double;
+
     contact_state_ ContactState;
     is_supporting_ (1, :) logical;
     is_grasping_ (1, :) logical;
@@ -75,6 +77,8 @@ classdef StateVariable < handle
 
       SV.RR = zeros(3, kNumJoints);
       SV.AA = zeros(3, 3 * kNumJoints);
+
+      SV.CoM_ = zeros(3, 1);
 
       SV.contact_state_ = ContactState(kNumLimb);
       SV.is_supporting_ = false(1, kNumLimb);
@@ -137,6 +141,21 @@ classdef StateVariable < handle
       for i = 1 : length(prop_name)
         cloned_SV.(prop_name{i, 1}) = original_SV.(prop_name{i, 1});
       end
+    end
+
+    function calcCoM(SV, LP)
+      kBaseMass = LP.getBaseMass();
+      kLinksMass = LP.getLinksMass();
+      kTotalMass = LP.getTotalMass();
+      kNumJoints = LP.getNumberOfJoints();
+
+      CoM = kBaseMass * SV.R0;
+
+      for link_id = 1 : kNumJoints
+        CoM = CoM + kLinksMass(1, link_id) * SV.RR(:, link_id);
+      end
+
+      SV.CoM_ = CoM / kTotalMass;
     end
 
   end
@@ -263,6 +282,22 @@ classdef StateVariable < handle
       base_angular_acceleration = SV.wd0;
     end
 
+    function links_position = getLinksPosition(StateVariable)
+      links_position = StateVariable.RR;
+    end
+
+    function links_angular_velocity = getLinksAngularVelocity(StateVariable)
+      links_angular_velocity = StateVariable.ww;
+    end
+
+    function links_linear_acceleration = getLinksLinearAcceleration(StateVariable)
+      links_linear_acceleration = StateVariable.vd;
+    end
+
+    function links_angular_acceleration = getLinksAngularAcceleration(StateVariable)
+      links_angular_acceleration = StateVariable.wd;
+    end
+
     function ground_reaction_force = getGroundReactionForce(SV, LP)
       arguments (Input)
         SV;
@@ -285,6 +320,10 @@ classdef StateVariable < handle
       joint_torque = SV.tau;
     end
 
+    function CoM = getCoM(StateVariable)
+      CoM = StateVariable.CoM_;
+    end
+
     function is_supporting = getIsSupporting(SV)
       is_supporting = SV.is_supporting_;
     end
@@ -295,5 +334,4 @@ classdef StateVariable < handle
 
   end
 
-end
-% EOF
+end  % StateVariable
