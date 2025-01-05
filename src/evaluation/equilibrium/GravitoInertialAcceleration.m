@@ -342,7 +342,7 @@ classdef GravitoInertialAcceleration < handle
         for limb_id = 1 : kNumLimb
           if (limb_id ~= limb_a && limb_id ~= limb_b && is_grasping(1, limb_id))
             p_j = end_effector_position(:, limb_id);
-            n_j = terrain.getNormVectorAtPoint(p_j);
+            n_j = terrain.getNormalVectorAtPoint(p_j);
             M_ab = M_ab + F_hold * (-n_j)' * cross(p_b - p_j, p_a - p_j);
           end
         end

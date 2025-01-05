@@ -11,7 +11,7 @@ classdef Terrain < handle
 
     kRawMapData_ (1, 1) struct;  % (x, y, z)
     kPointCloudInWorld_ (3, :) double;
-    kNormVectors_ (3, :) double;
+    kNormalVectors_ (3, :) double;
 
     kStiffnessCoefficientForGRF_ (1, 1) double;
     kDampingCoefficientForGRF_   (1, 1) double;
@@ -42,7 +42,7 @@ classdef Terrain < handle
 
       terrain.loadSurfaceDataFromMatFile();
       terrain.setPointCloudInWorldFrame();
-      terrain.setNormVectors();
+      terrain.setNormalVectors();
 
       terrain.setSurfaceCoefficients(config_terrain);
 
@@ -105,11 +105,11 @@ classdef Terrain < handle
                                       inclined_surface_point_cloud(3, :)];
     end
 
-    function setNormVectors(terrain)
+    function setNormalVectors(terrain)
     % Calculate and set normal vectors at each points of terrain surface
       [Nx, Ny, Nz] = surfnorm(terrain.kRawMapData_.z);
       norm_vector_in_Surface = [reshape(Nx, 1, []); reshape(Ny, 1, []); reshape(Nz, 1, [])];
-      terrain.kNormVectors_ = rpy2dc(deg2rad(terrain.kInclination_))' * norm_vector_in_Surface;
+      terrain.kNormalVectors_ = rpy2dc(deg2rad(terrain.kInclination_))' * norm_vector_in_Surface;
     end
 
     function setSurfaceCoefficients(terrain, config_terrain)
@@ -186,7 +186,7 @@ classdef Terrain < handle
       nearest_point = rpy2dc(deg2rad(terrain.kInclination_))' * nearest_point_in_Surface;
     end
 
-    function norm_vector_at_point = getNormVectorAtPoint(terrain, point)
+    function norm_vector_at_point = getNormalVectorAtPoint(terrain, point)
       arguments (Input)
         terrain;
         point (3, 1) {mustBeA(point, "double")};
@@ -201,7 +201,7 @@ classdef Terrain < handle
         idx_min = 1;
       end
 
-      norm_vector_at_point = terrain.kNormVectors_(:, idx(idx_min));
+      norm_vector_at_point = terrain.kNormalVectors_(:, idx(idx_min));
     end
   end
 

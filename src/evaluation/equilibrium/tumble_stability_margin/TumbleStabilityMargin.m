@@ -236,7 +236,7 @@ classdef TumbleStabilityMargin < handle
       normal_vectors = NaN(3, kNumLimb);
       for limb_id = 1 : kNumLimb
         if (is_supporting(1, limb_id))
-          normal_vectors(:, limb_id) = terrain.getNormVectorAtPoint(vertices_of_supporting_leg_polygon(:, limb_id));
+          normal_vectors(:, limb_id) = terrain.getNormalVectorAtPoint(vertices_of_supporting_leg_polygon(:, limb_id));
         end
       end
       TSM.normal_vector_of_supporting_leg_polygon_plane_ = normal_vectors;

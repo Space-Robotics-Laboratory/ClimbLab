@@ -41,7 +41,7 @@ classdef ContactState < handle
 
       for limb_id = 1 : kNumLimb
         nearest_point = terrain.getNearestPointInWorldFrame(EE_positions(:, limb_id));
-        norm_vector_at_nearest_point = terrain.getNormVectorAtPoint(nearest_point);
+        norm_vector_at_nearest_point = terrain.getNormalVectorAtPoint(nearest_point);
         % Vector from nearest point to EE position
         vec_np2EE = EE_positions(:, limb_id) - nearest_point;
         theta = acos(dot(vec_np2EE, norm_vector_at_nearest_point));
