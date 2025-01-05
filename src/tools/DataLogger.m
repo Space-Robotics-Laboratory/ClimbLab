@@ -70,7 +70,15 @@ classdef DataLogger < dynamicprops & handle
       data_logger.variables_log_.joint_angular_position(idx, :) = SV.getJointAngularPosition()';
       data_logger.variables_log_.joint_angular_velocity(idx, :) = SV.getJointAngularVelocity()';
       data_logger.variables_log_.joint_angular_acceleration(idx, :) = SV.getJointAngularAcceleration()';
-      data_logger.variables_log_.joint_torque(idx, :) = SV.getJointTorque()';
+
+      joint_torque = SV.getJointTorque();
+      data_logger.variables_log_.joint_torque(idx, :) = joint_torque';
+      if (data_logger.kSaveMaxJointTorque_)
+        data_logger.variables_log_.max_joint_torque(idx, :) = max(abs(joint_torque));
+      end
+      if (data_logger.kSaveRMSJointTorque_)
+        data_logger.variables_log_.rms_joint_torque(idx, :) = rms(joint_torque);
+      end
 
       Fe = SV.getGroundReactionForce(LP);
       Te = SV.getGroundReactionMoment(LP);

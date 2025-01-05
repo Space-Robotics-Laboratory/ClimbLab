@@ -16,6 +16,8 @@ classdef ConfigPlotSettings < Configuration
     kPlotBasePosition_ (1, 1) logical = false;
 
     kPlotJointTorque_ (1, 1) logical = false;
+    kPlotMaxJointTorque_ (1, 1) logical = false;
+    kPlotRMSJointTorque_ (1, 1) logical = false;
 
     kPlotManipulability_ (1, 1) logical = false;
     kPlotDynamicManipulability_ (1, 1) logical = false;

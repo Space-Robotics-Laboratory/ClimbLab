@@ -13,9 +13,6 @@ classdef config_example_demo_2
 % Created     : 2021.03.02 by Kentaro Uno
 % Last updated: 2021.09.19 by Kentaro Uno
 
-% TODO: Add save settings (joint max torque, joint rms torque)
-% TODO: Add plot settings (joint max torque, joint rms torque)
-
   %% Environment Parameters
   properties (SetAccess = private, GetAccess = {?ConfigWorld, ?Configuration})
     kMaxSimulationTime_ (1, 1) double = 16.0;  % [s]
@@ -174,6 +171,8 @@ classdef config_example_demo_2
     % Time interval for saving variables (should be larger than time-step)
     kVariableSavingTimeInterval_ (1, 1) double = 0.05;
 
+    kSaveMaxJointTorque_              (1, 1) logical = true;
+    kSaveRMSJointTorque_              (1, 1) logical = true;  % NOTE: Need "Signal Processing Toolbox" if MATLAB version is before R2022a
     kSaveManipulability_              (1, 1) logical = true;
     kSaveDynamicManipulability_       (1, 1) logical = true;
     kSaveTumbleStabilityMargin_       (1, 1) logical = true;
@@ -187,6 +186,8 @@ classdef config_example_demo_2
 
     kPlotBasePosition_                (1, 1) logical = true;
     kPlotJointTorque_                 (1, 1) logical = true;
+    kPlotMaxJointTorque_              (1, 1) logical = true;
+    kPlotRMSJointTorque_              (1, 1) logical = true;
     kPlotManipulability_              (1, 1) logical = true;
     kPlotDynamicManipulability_       (1, 1) logical = true;
     kPlotTumbleStabilityMargin_       (1, 1) logical = true;

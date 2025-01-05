@@ -14,6 +14,12 @@ classdef ConfigSaveSettings < Configuration
     % Time interval for saving variables (should be larger than time-step)
     kVariableSavingTimeInterval_ (1, 1) double;
 
+    % Maximum of absolute torque of all joint
+    kSaveMaxJointTorque_ (1, 1) logical = false;
+    % Root Mean Square (RMS) of torque of all joint
+    % NOTE: Need "Signal Processing Toolbox" if MATLAB version is before R2022a
+    kSaveRMSJointTorque_ (1, 1) logical = false;
+
     kSaveManipulability_ (1, 1) logical = false;
     kSaveDynamicManipulability_ (1, 1) logical = false;
 

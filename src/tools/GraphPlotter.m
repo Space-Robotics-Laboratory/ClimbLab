@@ -65,6 +65,16 @@ classdef GraphPlotter < dynamicprops & handle
           graph_plotter.plotTimeHistoryGraph(data.time, torque, fig_title, y_label);
         end
       end
+      if (graph_plotter.kPlotMaxJointTorque_)
+        fig_title = "Max. Joints Torque";
+        y_label = "\rm{Max. Joint Torque [Nm]}";
+        graph_plotter.plotTimeHistoryGraph(data.time, data.max_joint_torque, fig_title, y_label);
+      end
+      if (graph_plotter.kPlotRMSJointTorque_)
+        fig_title = "RMS Joints Torque";
+        y_label = "\rm{RMS Joint Torque [Nm]}";
+        graph_plotter.plotTimeHistoryGraph(data.time, data.rms_joint_torque, fig_title, y_label);
+      end
 
       if (graph_plotter.kPlotManipulability_)
         fig_title = "Manipulability Measure";
