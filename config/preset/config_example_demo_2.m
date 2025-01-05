@@ -24,10 +24,10 @@ classdef config_example_demo_2
     surface_type (1, 1) string = "flat_HR_5mx5m";
     inclination (3, 1) double = [0.0; -45.0; 0.0];  % [deg]
 
-    stiffness_coefficient_for_GRF (1, 1) double = 100000.0 / 2.0;  % TODO: Fix this value
-    damping_coefficient_for_GRF (1, 1) double = 100.0 / 2.0;  % TODO: Fix this value
+    stiffness_coefficient_for_GRF (1, 1) double = 50000.0;
+    damping_coefficient_for_GRF   (1, 1) double = 50.0;
     stiffness_coefficient_for_GRM (1, 1) double = 0.1;
-    damping_coefficient_for_GRM (1, 1) double = 0.01;
+    damping_coefficient_for_GRM   (1, 1) double = 0.01;
 
     % Visualization
     surface_grid_color = "white";

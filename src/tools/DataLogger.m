@@ -52,6 +52,10 @@ classdef DataLogger < dynamicprops & handle
         evaluation (1, 1) {mustBeA(evaluation, "Evaluation")};
       end
 
+      if (rem(time, data_logger.kVariableSavingTimeInterval_) > eps)
+        return;
+      end
+
       data_logger.index_ = data_logger.index_ + 1;
       idx = data_logger.index_;
 
