@@ -2,7 +2,7 @@ classdef ConfigPlotSettings < Configuration
 % Configuration for graph plot
 %
 % Created     : 2020.07.08 by Warley Ribeiro
-% Last updated: 2025.01.03 by Masazumi Imai
+% Last updated: 2025.01.05 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = {?ConfigPlotSettings, ?Configuration}, GetAccess = public)
@@ -23,6 +23,8 @@ classdef ConfigPlotSettings < Configuration
     kPlotTumbleStabilityMargin_ (1, 1) logical = false;
 
     kPlotGravitoInertialAcceleration_ (1, 1) logical = false;
+
+    kPlotCostOfTransport_ (1, 1) logical = false;
   end
 
   %% Public Methods

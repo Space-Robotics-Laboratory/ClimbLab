@@ -3,7 +3,7 @@ classdef GraphPlotter < dynamicprops & handle
 % NOTE: GraphPlotter takes over properties of ConfigPlotSettings. Please refer to ConfigPlotSettings.
 %
 % Created     : 2020.07.27 by Warley Ribeiro
-% Last updated: 2025.01.03 by Masazumi Imai
+% Last updated: 2025.01.05 by Masazumi Imai
 
   %% Properties
   properties (Access = private)
@@ -91,6 +91,12 @@ classdef GraphPlotter < dynamicprops & handle
         fig_title = "GIA Inclination Margin";
         y_label = "\rm{GIA Inclination Margin [deg]}";
         graph_plotter.plotTimeHistoryGraph(data.time, data.GIA_inclination_margin, fig_title, y_label);
+      end
+
+      if (graph_plotter.kPlotCostOfTransport_)
+        fig_title = "Cost of Transport (Ave. " + num2str(mean(data.CoT)) + ")";
+        y_label = "\rm{CoT [-]}";
+        graph_plotter.plotTimeHistoryGraph(data.time, data.CoT, fig_title, y_label);
       end
     end
 

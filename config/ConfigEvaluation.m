@@ -1,8 +1,8 @@
 classdef ConfigEvaluation < Configuration
 % Configuration for evaluation
 %
-% Created:      2020.07.08 by Warley Ribeiro
-% Last updated: 2024.12.25 by Masazumi Imai
+% Created     : 2020.07.08 by Warley Ribeiro
+% Last updated: 2025.01.05 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = {?ConfigEvaluation, ?Configuration}, GetAccess = public)
@@ -25,6 +25,8 @@ classdef ConfigEvaluation < Configuration
     visualize_gia_vector (1, 1) logical = false;
       gia_vector_color = [1.0, 0.0, 0.0];
       gia_vector_width (1, 1) double = 3.0;  % [mm]
+
+    kEvaluateCostOfTransport_ (1, 1) logical = false;
   end
 
   %% Constructor
@@ -80,6 +82,10 @@ classdef ConfigEvaluation < Configuration
       visualize = config_evaluation.visualize_gia_vector;
       color = config_evaluation.gia_vector_color;
       width = config_evaluation.gia_vector_width;
+    end
+
+    function kEvaluateCostOfTransport = getEvaluateCostOfTransport(config_evaluation)
+      kEvaluateCostOfTransport = config_evaluation.kEvaluateCostOfTransport_;
     end
 
   end

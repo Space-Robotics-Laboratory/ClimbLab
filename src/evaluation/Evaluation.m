@@ -11,6 +11,8 @@ classdef Evaluation < handle
     supporting_leg_polygon_ SupportingLegPolygon;
     tumble_stability_margin_ TumbleStabilityMargin;
     gravito_inertial_acceleration_ GravitoInertialAcceleration;
+
+    cost_of_transport_ CostOfTransport;
   end
 
   %% Public Methods
@@ -29,6 +31,8 @@ classdef Evaluation < handle
       evaluation.supporting_leg_polygon_ = SupportingLegPolygon(config_evaluation, terrain, robot);
       evaluation.tumble_stability_margin_ = TumbleStabilityMargin(config_evaluation);
       evaluation.gravito_inertial_acceleration_ = GravitoInertialAcceleration(config_evaluation, animation);
+
+      evaluation.cost_of_transport_ = CostOfTransport(config_evaluation);
     end
 
     function evaluate(evaluation, world, terrain, robot)
@@ -47,6 +51,8 @@ classdef Evaluation < handle
         robot.getLinkParameter(), robot.getStateVariable(), evaluation.supporting_leg_polygon_);
 
       evaluation.gravito_inertial_acceleration_.evaluate(world.getGravityVector(), terrain, robot.getLinkParameter(), robot.getStateVariable(), robot.getEEPosition());
+
+      evaluation.cost_of_transport_.evaluate(world.getGravityVector(), robot.getLinkParameter(), robot.getStateVariable());
     end
 
     function visualize(evaluation, robot, animation)
@@ -75,6 +81,10 @@ classdef Evaluation < handle
 
     function GIA = getGIA(evaluation)
       GIA = evaluation.gravito_inertial_acceleration_;
+    end
+
+    function CoT = getCostOfTransport(evaluation)
+      CoT = evaluation.cost_of_transport_;
     end
 
   end

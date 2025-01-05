@@ -3,7 +3,7 @@ classdef DataLogger < dynamicprops & handle
 % NOTE: DataLogger takes over properties of ConfigSaveSettings. Please refer to ConfigSaveSettings.
 %
 % Created     : 2020.05.12 by Warley Ribeiro
-% Last updated: 2025.01.03 by Masazumi Imai
+% Last updated: 2025.01.05 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -18,7 +18,7 @@ classdef DataLogger < dynamicprops & handle
   methods (Access = public)
 
     function data_logger = DataLogger(config_save_settings, run_cod, run_id)
-    % DataLogger() Constructor
+    % Constructor
       arguments (Input)
         config_save_settings (1, 1) {mustBeA(config_save_settings, "ConfigSaveSettings")};
         run_cod (1, 1) {mustBeA(run_cod, "string")};
@@ -44,8 +44,7 @@ classdef DataLogger < dynamicprops & handle
     end
 
     function saveVariables(data_logger, time, robot, evaluation)
-    % saveVariables()
-    %   Save variables
+    % Save variables
       arguments (Input)
         data_logger;
         time       (1, 1) {mustBeA(time,  "double")};
@@ -101,10 +100,13 @@ classdef DataLogger < dynamicprops & handle
         data_logger.variables_log_.GIAM(idx, 1) = evaluation.getGIA().getGIAM();
         data_logger.variables_log_.GIA_inclination_margin(idx, 1) = evaluation.getGIA().getGIAInclinationMargin();
       end
+
+      if (data_logger.kSaveCostOfTransport_)
+        data_logger.variables_log_.CoT(idx, :) = evaluation.getCostOfTransport().getCoT();
+      end
     end
 
     function saveDataFiles(data_logger, config, run_id)
-    % saveDataFiles()
     % Save variable data file and config file
       arguments (Input)
         data_logger;

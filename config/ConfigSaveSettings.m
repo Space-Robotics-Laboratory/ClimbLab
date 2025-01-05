@@ -2,7 +2,7 @@ classdef ConfigSaveSettings < Configuration
 % Configuration for variables save settings
 %
 % Created     : 2020.07.08 by Warley Ribeiro
-% Last updated: 2025.01.03 by Masazumi Imai
+% Last updated: 2025.01.05 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = {?ConfigSaveSettings, ?Configuration}, GetAccess = public)
@@ -20,6 +20,8 @@ classdef ConfigSaveSettings < Configuration
     kSaveTumbleStabilityMargin_ (1, 1) logical = false;
 
     kSaveGravitoInertialAcceleration_ (1, 1) logical = false;
+
+    kSaveCostOfTransport_ (1, 1) logical = false;
   end
 
   %% Public Methods
@@ -42,23 +44,6 @@ classdef ConfigSaveSettings < Configuration
       config_save_settings = config_save_settings.override(config);
 
       % TODO: Check kVariableSavingTimeInterval_ is larger than time-step
-    end
-
-  end
-
-  %% Getter
-  methods (Access = public)
-
-    function save_manipulability = getSaveManipulability(config_save_settings)
-      save_manipulability = config_save_settings.kSaveManipulability_;
-    end
-
-    function save_dynamic_manipulability = getSaveDynamicManipulability(config_save_settings)
-      save_dynamic_manipulability = config_save_settings.kSaveDynamicManipulability_;
-    end
-
-    function save_tumble_stability_margin = getSaveTumbleStabilityMargin(config_save_settings)
-      save_tumble_stability_margin = config_save_settings.kSaveTumbleStabilityMargin_;
     end
 
   end

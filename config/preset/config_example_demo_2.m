@@ -13,9 +13,8 @@ classdef config_example_demo_2
 % Created     : 2021.03.02 by Kentaro Uno
 % Last updated: 2021.09.19 by Kentaro Uno
 
-% TODO: Add CoT
-% TODO: Add save settings (joint max torque, joint rms torque, cot)
-% TODO: Add plot settings (joint max torque, joint rms torque, cot)
+% TODO: Add save settings (joint max torque, joint rms torque)
+% TODO: Add plot settings (joint max torque, joint rms torque)
 
   %% Environment Parameters
   properties (SetAccess = private, GetAccess = {?ConfigWorld, ?Configuration})
@@ -163,7 +162,7 @@ classdef config_example_demo_2
     camera_elevation (1, 1) double =  10;  % [deg]
     camera_follow_robot (1, 1) logical = false;
 
-    acceleration_expansion_factor (1, 1) double = 0.02;
+    acceleration_expansion_factor (1, 1) double = 0.008;
 
     ground_reaction_force_vec_show (1, 1) logical = false;
   end
@@ -179,6 +178,7 @@ classdef config_example_demo_2
     kSaveDynamicManipulability_       (1, 1) logical = true;
     kSaveTumbleStabilityMargin_       (1, 1) logical = true;
     kSaveGravitoInertialAcceleration_ (1, 1) logical = true;
+    kSaveCostOfTransport_             (1, 1) logical = true;
   end
 
   %% Plot Settings
@@ -191,6 +191,7 @@ classdef config_example_demo_2
     kPlotDynamicManipulability_       (1, 1) logical = true;
     kPlotTumbleStabilityMargin_       (1, 1) logical = true;
     kPlotGravitoInertialAcceleration_ (1, 1) logical = true;
+    kPlotCostOfTransport_             (1, 1) logical = true;
   end
 
 end  % config_example_demo_2
