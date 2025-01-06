@@ -24,7 +24,7 @@ classdef Terrain < handle
     kPointDx_ (1, 1) double;
 
     graphics_ (1, 1) matlab.graphics.chart.primitive.Surface;
-    kGridColor_    (1, 3) double;
+    kGridColor_;  % 1 x 3 vector (double) or "none"
     kTransparency_ (1, 1) double;
   end
 

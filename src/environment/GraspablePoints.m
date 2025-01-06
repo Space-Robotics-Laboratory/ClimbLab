@@ -32,10 +32,6 @@ classdef GraspablePoints < handle
       [graspable_points.kVisualization_, graspable_points.kMarkerStyle_, ...
         graspable_points.kMarkerSize_, graspable_points.kColor_, ...
         graspable_points.kTransparency_] = config_terrain.getGraspablePointsVisualSettings();
-
-      if (graspable_points.kVisualization_)
-        graspable_points.createGraspablePointsGraphics();
-      end
     end
 
     function setGraspablePoints(graspable_points, terrain_points)
@@ -52,6 +48,10 @@ classdef GraspablePoints < handle
       end
 
       graspable_points.kPointCloud_ = point_cloud;
+
+      if (graspable_points.kVisualization_)
+        graspable_points.createGraspablePointsGraphics();
+      end
     end
 
   end
@@ -77,7 +77,7 @@ classdef GraspablePoints < handle
         graspable_points.kPointCloud_(3, :), ...
         Marker = graspable_points.kMarkerStyle_, ...
         SizeData = graspable_points.kMarkerSize_, ...
-        MarkerFaceColor = validatecolor(graspable_points.kColor_), ...
+        MarkerFaceColor = graspable_points.kColor_, ...
         MarkerEdgeColor = "none", ...
         MarkerFaceAlpha = graspable_points.kTransparency_, ...
         Visible = "off");

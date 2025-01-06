@@ -1,11 +1,14 @@
 classdef Configuration
+% Configuration for terrain parameters
+%
+% Created     : 2024.05.20 by Masazumi Imai
+% Last updated: 2025.01.06 by Masazumi Imai
 
   %% Public Methods
   methods (Access = public)
 
     function default_config = override(default_config, user_config)
-    % override()
-    %   Override properties value based on specified config file if config is not "default"
+    % Override properties value based on specified config file if config is not "default"
       arguments (Input)
         default_config;
         user_config (1, 1) {mustBeA(user_config, "string")};
@@ -49,6 +52,20 @@ classdef Configuration
         end
       end
 
+    end
+
+    function default_config = validateColor(default_config, property_name, color)
+    % Convert color specifications to valid values
+      arguments (Input)
+        default_config;
+        property_name (1, 1) {mustBeA(property_name, "string")};
+        color                {mustBeA(color, ["double", "string"])};
+      end
+
+      if (isstring(color) && color == "none")
+        return;
+      end
+      default_config.(property_name) = validatecolor(color);
     end
 
   end

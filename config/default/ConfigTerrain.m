@@ -38,8 +38,8 @@ classdef ConfigTerrain  < Configuration
   methods (Access = public)
 
     function config_terrain = ConfigTerrain(config)
-    % ConfigTerrain() Constructor
-    %   Override properties value based on specified config file if config is not "default"
+    % Constructor
+    % Override properties value based on specified config file if config is not "default"
       arguments (Input)
         config (1, 1) {mustBeA(config, "string")};
       end
@@ -51,19 +51,23 @@ classdef ConfigTerrain  < Configuration
       config_terrain = config_terrain.override(config);
 
       % Convert color specifications to valid values
-      config_terrain.surface_grid_color = validatecolor(config_terrain.surface_grid_color);
+      config_terrain = config_terrain.validateColor("surface_grid_color", config_terrain.surface_grid_color);
+      config_terrain = config_terrain.validateColor("kGraspablePointsColor_", config_terrain.kGraspablePointsColor_);
     end
 
   end
 
   %% Getter
   methods (Access = public)
+
     function surface_type = getSurfaceType(config_terrain)
       surface_type = config_terrain.surface_type;
     end
+
     function inclination = getSurfaceInclination(config_terrain)
       inclination = config_terrain.inclination;
     end
+
     function [GRF_stiffness, GRF_damping, GRM_stiffness, GRM_damping] = ...
         getGroundCoefficients(config_terrain)
       GRF_stiffness = config_terrain.stiffness_coefficient_for_GRF;
@@ -71,6 +75,7 @@ classdef ConfigTerrain  < Configuration
       GRM_stiffness = config_terrain.stiffness_coefficient_for_GRM;
       GRM_damping = config_terrain.damping_coefficient_for_GRM;
     end
+
     function [surface_grid_color, surface_alpha] = getTerrainVisualSettings(config_terrain)
       surface_grid_color = config_terrain.surface_grid_color;
       surface_alpha = config_terrain.surface_alpha;
@@ -79,14 +84,16 @@ classdef ConfigTerrain  < Configuration
     function graspable_points_detection_type = getGraspablePointsDetectionType(config_terrain)
       graspable_points_detection_type = config_terrain.graspable_points_detection_type;
     end
+
     function [visibility, marker_style, marker_size, color, transparency] = ...
         getGraspablePointsVisualSettings(config_terrain)
-      visibility = config_terrain.kVisualizeGraspablePoints_;
+      visibility   = config_terrain.kVisualizeGraspablePoints_;
       marker_style = config_terrain.kGraspablePointsMarkerStyle_;
-      marker_size = config_terrain.kGraspablePointsMarkerSize_;
-      color = config_terrain.kGraspablePointsColor_;
+      marker_size  = config_terrain.kGraspablePointsMarkerSize_;
+      color        = config_terrain.kGraspablePointsColor_;
       transparency = config_terrain.kGraspablePointsTransparency_;
     end
+
   end
 
 end  % ConfigTerrain

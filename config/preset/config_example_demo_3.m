@@ -29,7 +29,7 @@ classdef config_example_demo_3
 
   properties (SetAccess = private, GetAccess = {?ConfigTerrain, ?Configuration})
     surface_type (1, 1) string = "grid_3mx3m_dx100mm_thinned_40";
-    inclination (3, 1) double = [0.0; -45.0; 0.0];  % [deg]
+    inclination (3, 1) double = [0.0; 0.0; 0.0];  % [deg]
 
     stiffness_coefficient_for_GRF (1, 1) double = 100000.0;
     damping_coefficient_for_GRF   (1, 1) double = 100.0;
@@ -83,7 +83,7 @@ classdef config_example_demo_3
     local_path_plan_type  (1, 1) string = "LPP_based_on_next_way_point";
 
     % Visualization
-    kVisualizeGoalPosition_ (1, 1) logical = true;  % TODO: Implement this
+    % kVisualizeGoalPosition_ (1, 1) logical = true;  % TODO: Implement this
   end
 
   %% Foothold Planning Parameters
@@ -93,10 +93,10 @@ classdef config_example_demo_3
     max_allowable_stride (1, 1) double = 0.3;  % [m]
 
     % Visualization
-    kVisualizeNextDesiredFootholdPosition_ (1, 1) logical = true;  % TODO: Implement this
-    kVisualizeReachableArea_ (1, 1) logical = true;  % TODO: Implement this
-      kReachableAreaLineColor_ (1, 1) string = "m";
-      kReachableAreaLineWidth_ (1, 1) double = 1.0;
+    % kVisualizeNextDesiredFootholdPosition_ (1, 1) logical = true;  % TODO: Implement this
+    % kVisualizeReachableArea_ (1, 1) logical = true;  % TODO: Implement this
+    %   kReachableAreaLineColor_ (1, 1) string = "m";
+    %   kReachableAreaLineWidth_ (1, 1) double = 1.0;
   end
 
   %% Gait Planning Parameters
@@ -149,7 +149,7 @@ classdef config_example_demo_3
     display_animation (1, 1) logical = true;
     save_video        (1, 1) logical = true;
     frame_rate        (1, 1) double  = 20;          % [frames/s] (positive value)
-    resolution        (1, 2) double  = [640, 480];  % [px]
+    resolution        (1, 2) double  = [1280, 720];  % [px]
     show_elapsed_time (1, 1) logical = false;
 
     font_name (1, 1) string = "Calibri";
@@ -165,9 +165,9 @@ classdef config_example_demo_3
 
     acceleration_expansion_factor (1, 1) double = 0.02;
 
-    kVisualizeGravitationalAccelerationVector_ (1, 1) logical = true;  % TODO: Implement this
+    % kVisualizeGravitationalAccelerationVector_ (1, 1) logical = true;  % TODO: Implement this
 
-    kVisualizeSensingCameraFoV_ (1, 1) logical = true;  % TODO: Implement this
+    % kVisualizeSensingCameraFoV_ (1, 1) logical = true;  % TODO: Implement this
   end
 
   %% Save Settings
@@ -186,7 +186,7 @@ classdef config_example_demo_3
 
     kPlotJointTorque_           (1, 1) logical = true;
     kPlotTumbleStabilityMargin_ (1, 1) logical = true;
-    kPlotFootholdsHistory_      (1, 1) logical = true;
+    % kPlotFootholdsHistory_      (1, 1) logical = true;  % TODO: Implement this
   end
 
 end  % config_example_demo_3
