@@ -89,6 +89,12 @@ classdef config_example_demo_3
 
     kInitialKnownAreaShape_ (1, 1) string = "circle";
     kCircularRadiusFromBaseCoM_ (1, 1) double = 0.6;  % [m]
+
+    kVisualizeSensedGraspablePoints_ (1, 1) logical = true;
+      kSensedGraspablePointsMarkerStyle_  (1, 1) string = "o";
+      kSensedGraspablePointsMarkerSize_   (1, 1) double = 20.0;
+      kSensedGraspablePointsColor_                      = [0.0, 136.0 / 255.0, 170.0 / 255.0];
+      kSensedGraspablePointsTransparency_ (1, 1) double = 1.0;
   end
 
   %% Path Planning Parameters

@@ -27,6 +27,9 @@ terrain = Terrain(config_terrain);
 % Robot
 robot = Robot(config_robot, world, terrain);
 
+% Perception
+perception = Perception(config_perception, terrain, robot);
+
 % Path Planning
 path_planning = PathPlanning(config_path_planning, robot, terrain);
 path_planning.plan(robot);

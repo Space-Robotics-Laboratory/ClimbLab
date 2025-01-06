@@ -46,7 +46,10 @@ classdef Terrain < handle
 
       terrain.setSurfaceCoefficients(config_terrain);
 
-      terrain.graspable_points_ = GraspablePoints(config_terrain);
+      terrain.graspable_points_ = GraspablePoints();
+      terrain.graspable_points_.setDetectionType(config_terrain);
+      [kVisibility, kMarkerStyle, kMarkerSize, kColor, kTransparency] = config_terrain.getGraspablePointsVisualSettings();
+      terrain.graspable_points_.setVisualSettings(kVisibility, kMarkerStyle, kMarkerSize, kColor, kTransparency);
       terrain.graspable_points_.setGraspablePoints(terrain.kPointCloudInWorld_);
 
       [terrain.kGridColor_, terrain.kTransparency_] = config_terrain.getTerrainVisualSettings();
@@ -208,6 +211,21 @@ classdef Terrain < handle
       end
 
       norm_vector_at_point = terrain.kNormalVectors_(:, idx(idx_min));
+    end
+
+    function projection_point = getProjectionPointInWorldFrame(terrain, point)
+    % Obtain projection points of given points in the world frame
+    %
+    % Input  - point (3 x n): Given position of points to be projected on the terrain surface in the World frame
+    % Output - projection_point (3 x n): Projection points position of given points in the World frame
+      arguments
+        terrain;
+        point (3, :) {mustBeA(point, "double")};
+      end
+
+      point_in_Ground = rpy2dc(deg2rad(terrain.kInclination_)) * point;
+      projection_point_in_Ground = [point_in_Ground(1 : 2, :); zeros(1, size(point_in_Ground, 2))];
+      projection_point = rpy2dc(deg2rad(terrain.kInclination_))' * projection_point_in_Ground;
     end
   end
 

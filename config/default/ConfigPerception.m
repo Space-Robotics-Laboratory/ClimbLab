@@ -27,6 +27,13 @@ classdef ConfigPerception < Configuration
     kInitialKnownAreaShape_ (1, 1) string = "circle";
       % Parameters for "circle"
       kCircularRadiusFromBaseCoM_ (1, 1) double = 0.4;  % [m]
+
+    % Visualization settings for sensed graspable points
+    kVisualizeSensedGraspablePoints_ (1, 1) logical = false;
+      kSensedGraspablePointsMarkerStyle_  (1, 1) string = "o";
+      kSensedGraspablePointsMarkerSize_   (1, 1) double = 10.0;
+      kSensedGraspablePointsColor_                      = [1.0, 0.0, 1.0];  % RGB or color code
+      kSensedGraspablePointsTransparency_ (1, 1) double = 1.0;  % [0, 1]
   end
 
   %% Constructor
@@ -50,6 +57,27 @@ classdef ConfigPerception < Configuration
 
   %% Getter
   methods (Access = public)
+
+    function kUseSensingCamera = getUseSensingCamera(config_perception)
+      kUseSensingCamera = config_perception.kUseSensingCamera_;
+    end
+
+    function kInitialKnownAreaShape = getInitialKnownAreaShape(config_perception)
+      kInitialKnownAreaShape = config_perception.kInitialKnownAreaShape_;
+    end
+    function kCircularRadiusFromBaseCoM = getCircularRadiusFromBaseCoM(config_perception)
+      kCircularRadiusFromBaseCoM = config_perception.kCircularRadiusFromBaseCoM_;
+    end
+
+    function [visibility, marker_style, marker_size, color, transparency] = ...
+        getSensedGraspablePointsVisualSettings(config_terrain)
+      visibility   = config_terrain.kVisualizeSensedGraspablePoints_;
+      marker_style = config_terrain.kSensedGraspablePointsMarkerStyle_;
+      marker_size  = config_terrain.kSensedGraspablePointsMarkerSize_;
+      color        = config_terrain.kSensedGraspablePointsColor_;
+      transparency = config_terrain.kSensedGraspablePointsTransparency_;
+    end
+
   end
 
-end  % ConfigWorld
+end  % ConfigPerception
