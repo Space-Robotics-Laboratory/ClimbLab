@@ -4,6 +4,7 @@
 config_world = ConfigWorld(config);
 config_terrain = ConfigTerrain(config);
 config_robot = ConfigRobot(config);
+config_perception = ConfigPerception(config);
 config_path_planning = ConfigPathPlanning(config);
 config_foothold_planning = ConfigFootholdPlanning(config);
 config_gait_planning = ConfigGaitPlanning(config);

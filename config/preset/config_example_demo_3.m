@@ -13,13 +13,14 @@ classdef config_example_demo_3
 % Created     : 2021.03.09 by Kentaro Uno
 % Last updated: 2023.05.12 by Masazumi Imai
 
-% TODO: Add robot and map
-% TODO: Implement sim stop setting
 % TODO: Implement perception (sensing camera) related
+% TODO: Add foothold planning
+% TODO: Add non-periodic gait planning
+% TODO: Implement sim stop setting
 
   %% Environment Parameters
   properties (SetAccess = private, GetAccess = {?ConfigWorld, ?Configuration})
-    kMaxSimulationTime_ (1, 1) double = 100.0;  % [s]
+    kMaxSimulationTime_ (1, 1) double = 0.0;  % [s]  % TODO: 100.0
     KUseDynamics_ (1, 1) logical = false;
     kGravity_ (1, 1) double = 1.0;  % [G]
 
@@ -76,6 +77,20 @@ classdef config_example_demo_3
       limb_alpha (1, 1) double = 0.8;  % [0, 1]
   end
 
+  %% Perception Parameters
+  properties (SetAccess = private, GetAccess = {?ConfigPerception, ?Configuration})
+    kUseSensingCamera_ (1, 1) logical = true;
+    kSensingType_ (1, 1) string = "RealSense_D435i";
+
+    kMountingPosition_ (3, 1) double = [0.08599 / sqrt(2.0); 0.0 ; 0.07];  % [m]
+    kMountingAngle_    (3, 1) double = deg2rad([0.0; -60.0; 0.0]);  % (euler) [deg]
+
+    kFOVMinDistance_ (1, 1) double = 0.0;
+
+    kInitialKnownAreaShape_ (1, 1) string = "circle";
+    kCircularRadiusFromBaseCoM_ (1, 1) double = 0.6;  % [m]
+  end
+
   %% Path Planning Parameters
   properties (SetAccess = private, GetAccess = {?ConfigPathPlanning, ?Configuration})
     goal_position (3, 1) double = [1.0; 0.0; 0.0];  % [m]
@@ -89,7 +104,7 @@ classdef config_example_demo_3
   %% Foothold Planning Parameters
   properties (SetAccess = private, GetAccess = {?ConfigFootholdPlanning, ?Configuration})
     % Foothold selection type
-    foothold_selection_type (1, 1) string = "fixed_stride";
+    foothold_selection_type (1, 1) string = "fixed_stride";  % TODO: max_stride_to_goal_in_reachable_area
     max_allowable_stride (1, 1) double = 0.3;  % [m]
 
     % Visualization
@@ -101,7 +116,7 @@ classdef config_example_demo_3
 
   %% Gait Planning Parameters
   properties (SetAccess = private, GetAccess = {?ConfigGaitPlanning, ?Configuration})
-    gait_type (1, 1) string = "non_periodic_crawl";
+    gait_type (1, 1) string = "periodic_crawl";  % TODO: non_periodic_gait_for_discrete_footholds
 
     % Non-periodic gait settings
 
@@ -116,12 +131,8 @@ classdef config_example_demo_3
 
   %% Trajectory Planning Parameters
   properties (SetAccess = private, GetAccess = {?ConfigTrajectoryPlanning, ?Configuration})
-    % Base CoM trajectory type
     base_trajectory_type (1, 1) string = "5th_order_bezier";
-    % Limb end-effector trajectory type
     limb_trajectory_type (1, 1) string = "7th_order_spline";
-
-    visualize_limb_trajectory (1, 1) logical = false;
   end
 
   %% Joint Controller Parameters
@@ -177,7 +188,7 @@ classdef config_example_demo_3
     % Time interval for saving variables (should be larger than time-step)
     kVariableSavingTimeInterval_ (1, 1) double = 0.05;
 
-    kSaveTumbleStabilityMargin_       (1, 1) logical = true;
+    kSaveTumbleStabilityMargin_ (1, 1) logical = true;
   end
 
   %% Plot Settings
