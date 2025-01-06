@@ -1,4 +1,8 @@
 classdef ConfigTerrain  < Configuration
+% Configuration for terrain parameters
+%
+% Created     : 2020.07.08 by Warley Ribeiro
+% Last updated: 2025.01.06 by Masazumi Imai
 
   %% Properties for map
   properties (SetAccess = {?ConfigTerrain, ?Configuration}, GetAccess = public)
@@ -23,10 +27,11 @@ classdef ConfigTerrain  < Configuration
     % "all"
     graspable_points_detection_type (1, 1) string = "all";
 
-    graspable_points_marker_style (1, 1) string = "o";
-    graspable_points_marker_size  (1, 1) double = 10.0;
-    graspable_points_color                      = [0.0, 0.0, 0.3];  % RGB or color code
-    graspable_points_alpha        (1, 1) double = 0.1;  % [0, 1]
+    kVisualizeGraspablePoints_ (1, 1) logical = false;
+      kGraspablePointsMarkerStyle_  (1, 1) string = "o";
+      kGraspablePointsMarkerSize_   (1, 1) double = 10.0;
+      kGraspablePointsColor_                      = [0.0, 0.0, 0.3];  % RGB or color code
+      kGraspablePointsTransparency_ (1, 1) double = 0.1;  % [0, 1]
   end
 
   %% Constructor
@@ -74,13 +79,13 @@ classdef ConfigTerrain  < Configuration
     function graspable_points_detection_type = getGraspablePointsDetectionType(config_terrain)
       graspable_points_detection_type = config_terrain.graspable_points_detection_type;
     end
-    function [graspable_points_marker_style, graspable_points_marker_size, ...
-        graspable_points_color, graspable_points_alpha] = ...
+    function [visibility, marker_style, marker_size, color, transparency] = ...
         getGraspablePointsVisualSettings(config_terrain)
-      graspable_points_marker_style = config_terrain.graspable_points_marker_style;
-      graspable_points_marker_size = config_terrain.graspable_points_marker_size;
-      graspable_points_color = config_terrain.graspable_points_color;
-      graspable_points_alpha = config_terrain.graspable_points_alpha;
+      visibility = config_terrain.kVisualizeGraspablePoints_;
+      marker_style = config_terrain.kGraspablePointsMarkerStyle_;
+      marker_size = config_terrain.kGraspablePointsMarkerSize_;
+      color = config_terrain.kGraspablePointsColor_;
+      transparency = config_terrain.kGraspablePointsTransparency_;
     end
   end
 

@@ -1,50 +1,63 @@
-classdef config_example_demo_2
+classdef config_example_demo_3
 % config_example_demo_2
 % Define simulation parameters for the representative simulation cases of the ClimbLab
 % [ ] Demo (1) Static simulation to demonstrate the detachment of the gripper from an over-hanging wall
-% [x] Demo (2) Steep slope climbing of the mammalian typed robot
-% [ ] Demo (3) Perceptive walking of the half human sized quadrupedal robot
+% [ ] Demo (2) Steep slope climbing of the mammalian typed robot
+% [x] Demo (3) Perceptive walking of the half human sized quadrupedal robot
 % --------------------------------------------------------------------
 % This configuration file can reproduce the similar result of CLAWAR 2021 proceedings paper by K. Uno, W. Ribeiro et al.
 % (Some parameters were re-tuned, thus the result slightly differs from the paper.)
 % Proceedings Paper URL: https://link.springer.com/chapter/10.1007/978-3-030-86294-7_20
 % --------------------------------------------------------------------
 %
-% Created     : 2021.03.02 by Kentaro Uno
-% Last updated: 2025.01.05 by Masazumi Imai
+% Created     : 2021.03.09 by Kentaro Uno
+% Last updated: 2023.05.12 by Masazumi Imai
+
+% TODO: Add robot and map
+% TODO: Implement sim stop setting
+% TODO: Implement perception (sensing camera) related
 
   %% Environment Parameters
   properties (SetAccess = private, GetAccess = {?ConfigWorld, ?Configuration})
-    kMaxSimulationTime_ (1, 1) double = 16.0;  % [s]
-    KUseDynamics_ (1, 1) logical = true;
+    kMaxSimulationTime_ (1, 1) double = 100.0;  % [s]
+    KUseDynamics_ (1, 1) logical = false;
     kGravity_ (1, 1) double = 1.0;  % [G]
+
+    kSimulationStopByReachingGoalWithGrasping_ (1, 1) logical = true;
+      kThresholdForReachingGoal_ (1, 1) double = 0.1;
   end
 
   properties (SetAccess = private, GetAccess = {?ConfigTerrain, ?Configuration})
-    surface_type (1, 1) string = "flat_HR_5mx5m";
+    surface_type (1, 1) string = "grid_3mx3m_dx100mm_thinned_40";
     inclination (3, 1) double = [0.0; -45.0; 0.0];  % [deg]
 
-    stiffness_coefficient_for_GRF (1, 1) double = 50000.0;
-    damping_coefficient_for_GRF   (1, 1) double = 50.0;
+    stiffness_coefficient_for_GRF (1, 1) double = 100000.0;
+    damping_coefficient_for_GRF   (1, 1) double = 100.0;
     stiffness_coefficient_for_GRM (1, 1) double = 0.1;
     damping_coefficient_for_GRM   (1, 1) double = 0.01;
 
-    % Visualization settings
-    surface_grid_color = "white";
+    % Visualization
+    surface_grid_color = "none";
+    kVisualizeGraspablePoints_ (1, 1) logical = true;
+      kGraspablePointsMarkerStyle_  (1, 1) string = "o";
+      kGraspablePointsMarkerSize_   (1, 1) double = 20.0;
+      kGraspablePointsColor_                      = [0.8, 0.8, 0.8];
+      kGraspablePointsTransparency_ (1, 1) double = 1.0;
   end
 
   %% Robot Parameters
   properties (SetAccess = private, GetAccess = {?ConfigRobot, ?Configuration})
-    robot_type (1, 1) string = "ANYmal_B";
+    robot_type (1, 1) string = "ALPHRED";
 
     % Initial robot base position in Ground frame
-    initial_base_position (3, 1) double = [0.0; 0.0; 0.25];  % [m]
+    initial_base_position (3, 1) double = [-0.8; 0.0; 0.5];  % [m]
     % Initial robot base orientation (euler) in Ground frame
     initial_base_orientation_euler (3, 1) double = [0.0; 0.0; 0.0];  % [deg]
 
     % Desired initial End-Effector (x, y) distance from robot base CoM in Ground frame
-    desired_initial_EE_distance_xy_from_base_CoM (2, 1) double = [0.35; 0.35];  % [m]
+    desired_initial_EE_distance_xy_from_base_CoM (2, 1) double = [0.2; 0.2];  % [m]
 
+    % "max_holding_force"
     gripper_detachment_detection_method (1, 1) string = "max_holding_force";
 
     % Position threshold for checking if gripper can grasp
@@ -54,41 +67,45 @@ classdef config_example_demo_2
 
     % Visualization settings
     visualize_robot (1, 1) logical = true;
-      base_upper_thickness (1, 1) double = 0.20;  % [m]
-      base_lower_thickness (1, 1) double = 0.05;  % [m]
-      link_radius (1, 1) double = 0.03;  % [m]
-      base_color (3, 1) double = [0.0, 0.3, 0.6];
-      limb_color (3, 1) double = [0.3, 0.3, 0.3];
-      base_alpha (1, 1) double = 1.0;  % [0, 1]
-      limb_alpha (1, 1) double = 1.0;  % [0, 1]
+      base_upper_thickness (1, 1) double = 0.07;  % [m]
+      base_lower_thickness (1, 1) double = 0.03;  % [m]
+      link_radius (1, 1) double = 0.0185;  % [m]
+      base_color (3, 1) double = [0.1, 0.1, 0.1];
+      limb_color (3, 1) double = [0.1, 0.1, 0.1];
+      base_alpha (1, 1) double = 0.8;  % [0, 1]
+      limb_alpha (1, 1) double = 0.8;  % [0, 1]
   end
 
   %% Path Planning Parameters
   properties (SetAccess = private, GetAccess = {?ConfigPathPlanning, ?Configuration})
-    goal_position (3, 1) double = [0.4; 0.5; 0.0];  % [m]
+    goal_position (3, 1) double = [1.0; 0.0; 0.0];  % [m]
     global_path_plan_type (1, 1) string = "straight_toward_the_goal_direction";
     local_path_plan_type  (1, 1) string = "LPP_based_on_next_way_point";
+
+    % Visualization
+    kVisualizeGoalPosition_ (1, 1) logical = true;  % TODO: Implement this
   end
 
   %% Foothold Planning Parameters
   properties (SetAccess = private, GetAccess = {?ConfigFootholdPlanning, ?Configuration})
+    % Foothold selection type
     foothold_selection_type (1, 1) string = "fixed_stride";
-    max_allowable_stride (1, 1) double = 0.1;  % [m]
+    max_allowable_stride (1, 1) double = 0.3;  % [m]
+
+    % Visualization
+    kVisualizeNextDesiredFootholdPosition_ (1, 1) logical = true;  % TODO: Implement this
+    kVisualizeReachableArea_ (1, 1) logical = true;  % TODO: Implement this
+      kReachableAreaLineColor_ (1, 1) string = "m";
+      kReachableAreaLineWidth_ (1, 1) double = 1.0;
   end
 
   %% Gait Planning Parameters
   properties (SetAccess = private, GetAccess = {?ConfigGaitPlanning, ?Configuration})
-    gait_type (1, 1) string = "periodic_crawl";
+    gait_type (1, 1) string = "non_periodic_crawl";
 
-    % Periodic gait settings
-    gait_period (1, 1) double = 8.0;  % [s]
-    duty_factor (1, 1) double = 0.75;  % [0, 1]
-    % Gait sequence
-    % 1st dim: Limb number(s) starting at same timing during gait cycle
-    % 2nd dim: Limb number(s) starting at different timing during gait cycle
-    sequence uint8 = [1, 3, 4, 2];
+    % Non-periodic gait settings
 
-    step_height (1, 1) double = 0.1;  % [m]
+    step_height (1, 1) double = 0.05;  % [m]
     foot_lift_up_duration   (1, 1) double = 0.0;  % [s]
     foot_lift_down_duration (1, 1) double = 0.0;  % [s]
 
@@ -99,15 +116,19 @@ classdef config_example_demo_2
 
   %% Trajectory Planning Parameters
   properties (SetAccess = private, GetAccess = {?ConfigTrajectoryPlanning, ?Configuration})
+    % Base CoM trajectory type
     base_trajectory_type (1, 1) string = "5th_order_bezier";
+    % Limb end-effector trajectory type
     limb_trajectory_type (1, 1) string = "7th_order_spline";
+
+    visualize_limb_trajectory (1, 1) logical = false;
   end
 
   %% Joint Controller Parameters
   properties (SetAccess = private, GetAccess = {?ConfigJointController, ?Configuration})
     controller_type (1, 1) string = "PD_control";
-    proportional_gain (1, 1) double = 850.0;
-    derivative_gain   (1, 1) double = 3.0;
+    proportional_gain (1, 1) double = 1500.0;
+    derivative_gain   (1, 1) double = 4.5;
   end
 
   %% Evaluation Parameters
@@ -121,15 +142,6 @@ classdef config_example_demo_2
       supporting_leg_polygon_face_transparency (1, 1) double = 0.5;
 
     evaluate_tumble_stability_margin (1, 1) logical = true;
-    evaluate_gravito_inertial_acceleration (1, 1) logical = true;
-    visualize_stable_region (1, 1) logical = true;
-      gia_stable_region_face_color = [0.0, 136.0 / 255.0, 170.0 / 255.0];
-      gia_stable_region_face_transparency (1, 1) double = 0.2;
-      gia_stable_region_edge_color = "none";
-      gia_stable_region_edge_width (1, 1) double = 1.0;
-    visualize_gia_vector (1, 1) logical = true;
-      gia_vector_color = [1.0, 0.0, 0.0];
-      gia_vector_width (1, 1) double = 9.0;  % [mm]
   end
 
   %% Animation Settings
@@ -141,17 +153,21 @@ classdef config_example_demo_2
     show_elapsed_time (1, 1) logical = false;
 
     font_name (1, 1) string = "Calibri";
-    font_size (1, 1) double = 20;
+    font_size (1, 1) double = 25;
 
     % Camera related
-    x_axis_limit (1, 2) double = [-0.5, 1.0];  % [m]
-    y_axis_limit (1, 2) double = [-1.0, 1.0];  % [m]
-    z_axis_limit (1, 2) double = [-0.5, 1.0];  % [m]
-    camera_azimuth   (1, 1) double = -25;  % [deg]
-    camera_elevation (1, 1) double =  10;  % [deg]
+    x_axis_limit (1, 2) double = [-1.5, 1.5];  % [m]
+    y_axis_limit (1, 2) double = [-1.5, 1.5];  % [m]
+    z_axis_limit (1, 2) double = [ 0.0, 0.7];  % [m]
+    camera_azimuth   (1, 1) double = -10;  % [deg]
+    camera_elevation (1, 1) double =  20;  % [deg]
     camera_follow_robot (1, 1) logical = false;
 
-    acceleration_expansion_factor (1, 1) double = 0.008;
+    acceleration_expansion_factor (1, 1) double = 0.02;
+
+    kVisualizeGravitationalAccelerationVector_ (1, 1) logical = true;  % TODO: Implement this
+
+    kVisualizeSensingCameraFoV_ (1, 1) logical = true;  % TODO: Implement this
   end
 
   %% Save Settings
@@ -161,28 +177,16 @@ classdef config_example_demo_2
     % Time interval for saving variables (should be larger than time-step)
     kVariableSavingTimeInterval_ (1, 1) double = 0.05;
 
-    kSaveMaxJointTorque_              (1, 1) logical = true;
-    kSaveRMSJointTorque_              (1, 1) logical = true;  % NOTE: Need "Signal Processing Toolbox" if MATLAB version is before R2022a
-    kSaveManipulability_              (1, 1) logical = true;
-    kSaveDynamicManipulability_       (1, 1) logical = true;
     kSaveTumbleStabilityMargin_       (1, 1) logical = true;
-    kSaveGravitoInertialAcceleration_ (1, 1) logical = true;
-    kSaveCostOfTransport_             (1, 1) logical = true;
   end
 
   %% Plot Settings
   properties (SetAccess = private, GetAccess = {?ConfigPlotSettings, ?Configuration})
     kSaveGraphs_ (1, 1) logical = true;
 
-    kPlotBasePosition_                (1, 1) logical = true;
-    kPlotJointTorque_                 (1, 1) logical = true;
-    kPlotMaxJointTorque_              (1, 1) logical = true;
-    kPlotRMSJointTorque_              (1, 1) logical = true;
-    kPlotManipulability_              (1, 1) logical = true;
-    kPlotDynamicManipulability_       (1, 1) logical = true;
-    kPlotTumbleStabilityMargin_       (1, 1) logical = true;
-    kPlotGravitoInertialAcceleration_ (1, 1) logical = true;
-    kPlotCostOfTransport_             (1, 1) logical = true;
+    kPlotJointTorque_           (1, 1) logical = true;
+    kPlotTumbleStabilityMargin_ (1, 1) logical = true;
+    kPlotFootholdsHistory_      (1, 1) logical = true;
   end
 
-end  % config_example_demo_2
+end  % config_example_demo_3

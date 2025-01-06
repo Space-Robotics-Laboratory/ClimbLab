@@ -1,4 +1,8 @@
 classdef GraspablePoints < handle
+% Graspable points parameters
+%
+% Created     : 2020.05.12 by Yusuke Koizumi
+% Last updated: 2025.01.06 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -6,6 +10,8 @@ classdef GraspablePoints < handle
     kPointCloud_    (3, :) double;
   end
   properties (SetAccess = private, GetAccess = private)
+    graphics_ (1, 1) matlab.graphics.chart.primitive.Scatter;
+    kVisualization_ (1, 1) logical;
     kMarkerStyle_ (1, 1) string;
     kMarkerSize_ (1, 1) double;
     kColor_ (1, 3) double;  % [0, 1]
@@ -15,15 +21,21 @@ classdef GraspablePoints < handle
   %% Methods called only from Terrain
   methods (Access = ?Terrain)
 
-    % Constructor
     function graspable_points = GraspablePoints(config_terrain)
+    % Constructor
       arguments (Input)
         config_terrain (1, 1) {mustBeA(config_terrain, "ConfigTerrain")};
       end
+
       graspable_points.kDetectionType_ = config_terrain.getGraspablePointsDetectionType();
 
-      [graspable_points.kMarkerStyle_, graspable_points.kMarkerSize_, graspable_points.kColor_, ...
+      [graspable_points.kVisualization_, graspable_points.kMarkerStyle_, ...
+        graspable_points.kMarkerSize_, graspable_points.kColor_, ...
         graspable_points.kTransparency_] = config_terrain.getGraspablePointsVisualSettings();
+
+      if (graspable_points.kVisualization_)
+        graspable_points.createGraspablePointsGraphics();
+      end
     end
 
     function setGraspablePoints(graspable_points, terrain_points)
@@ -46,8 +58,20 @@ classdef GraspablePoints < handle
 
   %% Public Methods
   methods (Access = public)
+
     function visualize(graspable_points)
-      scatter3( ...
+      if (graspable_points.kVisualization_)
+        graspable_points.graphics_.Visible = "on";
+      end
+    end
+
+  end
+
+  %% Private Methods
+  methods (Access = private)
+
+    function createGraspablePointsGraphics(graspable_points)
+      graspable_points.graphics_ = scatter3( ...
         graspable_points.kPointCloud_(1, :), ...
         graspable_points.kPointCloud_(2, :), ...
         graspable_points.kPointCloud_(3, :), ...
@@ -55,16 +79,15 @@ classdef GraspablePoints < handle
         SizeData = graspable_points.kMarkerSize_, ...
         MarkerFaceColor = validatecolor(graspable_points.kColor_), ...
         MarkerEdgeColor = "none", ...
-        MarkerFaceAlpha = graspable_points.kTransparency_);
+        MarkerFaceAlpha = graspable_points.kTransparency_, ...
+        Visible = "off");
     end
-  end
 
-  %% Private Methods
-  methods (Access = private)
   end
 
   %% Getter
   methods (Access = public)
+
     function nearest_point = getNearestPoint(graspable_points, original_position)
       arguments (Input)
         graspable_points;
@@ -80,6 +103,7 @@ classdef GraspablePoints < handle
                         graspable_points.kPointCloud_(2, nearest_GPs_id); ...
                         graspable_points.kPointCloud_(3, nearest_GPs_id)];
     end
+
   end
 
 end  % GraspablePoints

@@ -1,4 +1,8 @@
 classdef ConfigTrajectoryPlanning < Configuration
+% Configuration for trajectory planning parameters
+%
+% Created     : 2024.05.20 by Masazumi Imai
+% Last updated: 2025.01.06 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = {?ConfigTrajectoryPlanning, ?Configuration}, GetAccess = public)
@@ -7,7 +11,7 @@ classdef ConfigTrajectoryPlanning < Configuration
       % "7th_order_bezier", "7th_order_spline"
 
     % Visualization settings
-    visualize_limb_trajectory (1, 1) logical = true;  % true/false
+    visualize_limb_trajectory (1, 1) logical = false;  % true/false
       limb_trajectory_line_style (1, 1) string = ":";
       limb_trajectory_color = [0.5, 0.5, 0.5];
       limb_trajectory_width (1, 1) double = 3;

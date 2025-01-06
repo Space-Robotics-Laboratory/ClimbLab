@@ -2,7 +2,7 @@ classdef Terrain < handle
 % Terrain (map surface) parameters
 %
 % Created     : 2020.04.06 by Warley Ribeiro
-% Last updated: 2025.01.05 by Masazumi Imai
+% Last updated: 2025.01.06 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -23,9 +23,9 @@ classdef Terrain < handle
   properties (Access = private)
     kPointDx_ (1, 1) double;
 
+    graphics_ (1, 1) matlab.graphics.chart.primitive.Surface;
     kGridColor_    (1, 3) double;
     kTransparency_ (1, 1) double;
-    graphics_ (1, 1) matlab.graphics.chart.primitive.Surface;
   end
 
   %% Public Methods
@@ -54,10 +54,16 @@ classdef Terrain < handle
     end
 
     function visualize(terrain, time)
+      arguments
+        terrain;
+        time (1, 1) {mustBeA(time, "double")};
+      end
+
       if (time ~= 0.0)
         return;
       end
       terrain.graphics_.Visible = "on";
+      terrain.graspable_points_.visualize();
     end
 
   end
