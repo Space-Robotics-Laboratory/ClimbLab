@@ -23,6 +23,7 @@
     "horzcat",
     "isfile",
     "isfolder",
+    "isnan",
     "isreal",
     "lightangle",
     "limitrate",

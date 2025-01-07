@@ -2,7 +2,7 @@ classdef ConfigPerception < Configuration
 % Configuration for perception (sensing camera) parameters
 %
 % Created     : 2021.02.10 by Keigo Haji
-% Last updated: 2025.01.06 by Masazumi Imai
+% Last updated: 2025.01.07 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = {?ConfigPerception, ?Configuration}, GetAccess = public)
@@ -13,14 +13,14 @@ classdef ConfigPerception < Configuration
     kSensingType_ (1, 1) string = "RealSense_D435i";
 
     % Mounting pose settings
-    kMountingPosition_ (3, 1) double = [0.079; -0.011 ; 0.07];      % [m] (Measured by CAD of Hubrobo v3.2)
-    kMountingAngle_    (3, 1) double = deg2rad([0.0; -45.0; 0.0]);  % (euler) [rad] (Measured by CAD of Hubrobo v3.2)
+    kMountingPosition_ (3, 1) double = [0.079; -0.011 ; 0.07];      % described in the Base frame [m] (Measured by CAD of Hubrobo v3.2)
+    kMountingAngle_    (3, 1) double = deg2rad([0.0; -45.0; 0.0]);  % described in the Base frame (euler) [rad] (Measured by CAD of Hubrobo v3.2)
 
     % Field of View settings
     kFOVHorizontal_  (1, 1) double = deg2rad(86.0);  % [rad] (RealSense D435i)
     kFOVVertical_    (1, 1) double = deg2rad(57.0);  % [rad] (RealSense D435i)
-    kFOVMaxDistance_ (1, 1) double = 2.0;   % [m]   (RealSense D435i)
     kFOVMinDistance_ (1, 1) double = 0.28;  % [m]   (RealSense D435i)
+    kFOVMaxDistance_ (1, 1) double = 2.0;   % [m]   (RealSense D435i)
 
     % Initial known area settings
     % options: "circle"
@@ -60,6 +60,22 @@ classdef ConfigPerception < Configuration
 
     function kUseSensingCamera = getUseSensingCamera(config_perception)
       kUseSensingCamera = config_perception.kUseSensingCamera_;
+    end
+
+    function kSensingType = getSensingType(config_perception)
+      kSensingType = config_perception.kSensingType_;
+    end
+
+    function [kMountingPosition, kMountingAngle] = getCameraMountingPose(config_perception)
+      kMountingPosition = config_perception.kMountingPosition_;
+      kMountingAngle    = config_perception.kMountingAngle_;
+    end
+
+    function [kFOVHorizontal, kFOVVertical, kFOVMinDistance, kFOVMaxDistance] = getCameraFOVSettings(config_perception)
+      kFOVHorizontal  = config_perception.kFOVHorizontal_;
+      kFOVVertical    = config_perception.kFOVVertical_;
+      kFOVMinDistance = config_perception.kFOVMinDistance_;
+      kFOVMaxDistance = config_perception.kFOVMaxDistance_;
     end
 
     function kInitialKnownAreaShape = getInitialKnownAreaShape(config_perception)
