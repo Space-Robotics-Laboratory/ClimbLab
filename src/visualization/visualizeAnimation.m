@@ -8,7 +8,7 @@ robot.visualize();
 
 animation.setLight();
 
-perception.visualize();
+perception.visualize(robot);
 
 trajectory_planning.visualize(time);
 

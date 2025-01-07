@@ -28,6 +28,20 @@ classdef ConfigPerception < Configuration
       % Parameters for "circle"
       kCircularRadiusFromBaseCoM_ (1, 1) double = 0.4;  % [m]
 
+    % Visualization settings for FOV of sensing camera
+    kVisualizeSensingCameraFOV_ (1, 1) logical = false;
+      % Marker for sensing camera position
+      kSensingCameraMarkerStyle_ (1, 1) string = "o";
+      kSensingCameraMarkerSize_  (1, 1) double = 1.0;
+      kSensingCameraMarkerColor_               = "k";  % RGB or color code
+      % Line for FOV area
+      kSensingCameraFOVLineColor_               = "k";  % RGB or color code
+      kSensingCameraFOVLineWidth_ (1, 1) double = 1.0;
+      % Sensing camera FOV are surface settings
+      kVisualizeSensingCameraFOVRegionSurface_   (1, 1) logical = false;
+        kSensingCameraFOVFaceColor_                             = "c";  % RGB or color code
+        kSensingCameraFOVFaceTransparency_       (1, 1) double  = 0.5;  % [0, 1]
+
     % Visualization settings for sensed graspable points
     kVisualizeSensedGraspablePoints_ (1, 1) logical = false;
       kSensedGraspablePointsMarkerStyle_  (1, 1) string = "o";
@@ -51,6 +65,12 @@ classdef ConfigPerception < Configuration
       end
 
       config_perception = config_perception.override(config);
+
+      % Convert color specifications to valid values
+      config_perception = config_perception.validateColor("kSensingCameraMarkerColor_", config_perception.kSensingCameraMarkerColor_);
+      config_perception = config_perception.validateColor("kSensingCameraFOVLineColor_", config_perception.kSensingCameraFOVLineColor_);
+      config_perception = config_perception.validateColor("kSensingCameraFOVFaceColor_", config_perception.kSensingCameraFOVFaceColor_);
+      config_perception = config_perception.validateColor("kSensedGraspablePointsColor_", config_perception.kSensedGraspablePointsColor_);
     end
 
   end
@@ -85,8 +105,22 @@ classdef ConfigPerception < Configuration
       kCircularRadiusFromBaseCoM = config_perception.kCircularRadiusFromBaseCoM_;
     end
 
+    function [kFOVVisibility, kMarkerStyle, kMarkerSize, kMarkerColor, ...
+          kLineColor, kLineWidth, ...
+          kFOVRegionSurfaceVisibility, kFaceColor, kFaceTransparency] = getSensingCameraFOVVisualSettings(config_perception)
+      kFOVVisibility = config_perception.kVisualizeSensingCameraFOV_;
+      kMarkerStyle = config_perception.kSensingCameraMarkerStyle_;
+      kMarkerSize = config_perception.kSensedGraspablePointsMarkerSize_;
+      kMarkerColor = config_perception.kSensingCameraMarkerColor_;
+      kLineColor = config_perception.kSensingCameraFOVLineColor_;
+      kLineWidth = config_perception.kSensingCameraFOVLineWidth_;
+      kFOVRegionSurfaceVisibility = config_perception.kVisualizeSensingCameraFOVRegionSurface_;
+      kFaceColor = config_perception.kSensingCameraFOVFaceColor_;
+      kFaceTransparency = config_perception.kSensingCameraFOVFaceTransparency_;
+    end
+
     function [visibility, marker_style, marker_size, color, transparency] = ...
-        getSensedGraspablePointsVisualSettings(config_terrain)
+          getSensedGraspablePointsVisualSettings(config_terrain)
       visibility   = config_terrain.kVisualizeSensedGraspablePoints_;
       marker_style = config_terrain.kSensedGraspablePointsMarkerStyle_;
       marker_size  = config_terrain.kSensedGraspablePointsMarkerSize_;

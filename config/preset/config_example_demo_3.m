@@ -13,7 +13,6 @@ classdef config_example_demo_3
 % Created     : 2021.03.09 by Kentaro Uno
 % Last updated: 2023.05.12 by Masazumi Imai
 
-% TODO: Implement perception (sensing camera) related
 % TODO: Add foothold planning
 % TODO: Add non-periodic gait planning
 % TODO: Implement sim stop setting
@@ -89,6 +88,17 @@ classdef config_example_demo_3
 
     kInitialKnownAreaShape_ (1, 1) string = "circle";
     kCircularRadiusFromBaseCoM_ (1, 1) double = 0.6;  % [m]
+
+    % Visualization settings for FOV of sensing camera
+    kVisualizeSensingCameraFOV_ (1, 1) logical = true;
+      kSensingCameraMarkerStyle_            (1, 1) string  = ".";
+      kSensingCameraMarkerSize_             (1, 1) double  = 1.0;
+      kSensingCameraMarkerColor_                           = "k";  % RGB or color code
+      kSensingCameraFOVLineColor_                          = "w";  % RGB or color code
+      kSensingCameraFOVLineWidth_           (1, 1) double  = 1.0;
+      kVisualizeSensingCameraFOVRegionSurface_   (1, 1) logical = true;
+        kSensingCameraFOVFaceColor_                             = "k";  % RGB or color code
+        kSensingCameraFOVFaceTransparency_       (1, 1) double  = 0.2;  % [0, 1]
 
     kVisualizeSensedGraspablePoints_ (1, 1) logical = true;
       kSensedGraspablePointsMarkerStyle_  (1, 1) string = "o";
@@ -183,8 +193,6 @@ classdef config_example_demo_3
     acceleration_expansion_factor (1, 1) double = 0.02;
 
     % kVisualizeGravitationalAccelerationVector_ (1, 1) logical = true;  % TODO: Implement this
-
-    % kVisualizeSensingCameraFoV_ (1, 1) logical = true;  % TODO: Implement this
   end
 
   %% Save Settings
