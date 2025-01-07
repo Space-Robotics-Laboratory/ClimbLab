@@ -2,7 +2,7 @@ classdef Configuration
 % Configuration for terrain parameters
 %
 % Created     : 2024.05.20 by Masazumi Imai
-% Last updated: 2025.01.06 by Masazumi Imai
+% Last updated: 2025.01.07 by Masazumi Imai
 
   %% Public Methods
   methods (Access = public)
@@ -54,18 +54,19 @@ classdef Configuration
 
     end
 
-    function default_config = validateColor(default_config, property_name, color)
+    function default_config = validateColor(default_config, property_name_for_color)
     % Convert color specifications to valid values
       arguments (Input)
         default_config;
-        property_name (1, 1) {mustBeA(property_name, "string")};
-        color                {mustBeA(color, ["double", "string"])};
+        property_name_for_color (1, 1) {mustBeA(property_name_for_color, "string")};
       end
+
+      color = default_config.(property_name_for_color);
 
       if (isstring(color) && color == "none")
         return;
       end
-      default_config.(property_name) = validatecolor(color);
+      default_config.(property_name_for_color) = validatecolor(color);
     end
 
   end

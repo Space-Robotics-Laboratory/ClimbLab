@@ -2,7 +2,7 @@ classdef ConfigTerrain  < Configuration
 % Configuration for terrain parameters
 %
 % Created     : 2020.07.08 by Warley Ribeiro
-% Last updated: 2025.01.06 by Masazumi Imai
+% Last updated: 2025.01.07 by Masazumi Imai
 
   %% Properties for map
   properties (SetAccess = {?ConfigTerrain, ?Configuration}, GetAccess = public)
@@ -51,8 +51,8 @@ classdef ConfigTerrain  < Configuration
       config_terrain = config_terrain.override(config);
 
       % Convert color specifications to valid values
-      config_terrain = config_terrain.validateColor("surface_grid_color", config_terrain.surface_grid_color);
-      config_terrain = config_terrain.validateColor("kGraspablePointsColor_", config_terrain.kGraspablePointsColor_);
+      config_terrain = config_terrain.validateColor("surface_grid_color");
+      config_terrain = config_terrain.validateColor("kGraspablePointsColor_");
     end
 
   end

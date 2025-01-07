@@ -67,10 +67,10 @@ classdef ConfigPerception < Configuration
       config_perception = config_perception.override(config);
 
       % Convert color specifications to valid values
-      config_perception = config_perception.validateColor("kSensingCameraMarkerColor_", config_perception.kSensingCameraMarkerColor_);
-      config_perception = config_perception.validateColor("kSensingCameraFOVLineColor_", config_perception.kSensingCameraFOVLineColor_);
-      config_perception = config_perception.validateColor("kSensingCameraFOVFaceColor_", config_perception.kSensingCameraFOVFaceColor_);
-      config_perception = config_perception.validateColor("kSensedGraspablePointsColor_", config_perception.kSensedGraspablePointsColor_);
+      config_perception = config_perception.validateColor("kSensingCameraMarkerColor_");
+      config_perception = config_perception.validateColor("kSensingCameraFOVLineColor_");
+      config_perception = config_perception.validateColor("kSensingCameraFOVFaceColor_");
+      config_perception = config_perception.validateColor("kSensedGraspablePointsColor_");
     end
 
   end
