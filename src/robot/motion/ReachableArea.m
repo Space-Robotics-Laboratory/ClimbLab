@@ -10,16 +10,28 @@ classdef ReachableArea < handle
   end
   properties (SetAccess = private, GetAccess = public)
     % Position vectors of reachable boundary on the near side
-    boundary_position_vector_near_
+    kBoundaryPositionVectorNear_
     % Position vectors of reachable boundary on the far side
-    boundary_position_vector_far_
+    kBoundaryPositionVectorFar_
     % Minimum range from base CoM
-    min_range_
+    kMinRange_ (1, 1) double;
     % Maximum range from base CoM
-    max_range_
+    kMaxRange_ (1, 1) double;
+
+    % Reachable area boundary on the terrain surface
+    %   1st dim: x-y-z coordinates
+    %   2nd dim: Number of points of boundary
+    %   3rd dim: Limb ID
+    boundary_on_surface_ (3, :, :) double;
+
+    % Endpoint of arc on the near/far side within boundary on the terrain surface
+    %   1st dim: x-y-z coordinates
+    %   2nd dim: Number of endpoints of arc
+    %   3rd dim: Near and far side
+    arc_endpoint_ (3, 2, 2) double;
   end
   properties (SetAccess = private, GetAccess = private)
-    graphics_
+    graphics_ (:, 1) matlab.graphics.chart.primitive.Line;
   end
 
   %% Public Methods
@@ -34,28 +46,49 @@ classdef ReachableArea < handle
         SV (1, 1) {mustBeA(SV, "StateVariable")};
       end
 
+      kNumLimb = LP.getNumberOfLimb();
+
       [reachable_area.kVisualizeReachableArea_, kLineColor, kLineWidth] = config_robot.getReachableAreaVisualSettings();
       if (reachable_area.kVisualizeReachableArea_)
-        reachable_area.createReachableAreaGraphics(kLineColor, kLineWidth);
+        reachable_area.createReachableAreaGraphics(kNumLimb, kLineColor, kLineWidth);
       end
 
       reachable_area.calcReachableAreaForInsectJointConfig3DofLimb(terrain, LP, SV);
+
+      % Reachable area boundary on the terrain surface for each limb
+      for limb_id = 1 : kNumLimb
+        boundary_on_surface(:, :, limb_id) = reachable_area.calcBoundary(terrain, LP, SV, limb_id);
+      end
+      reachable_area.boundary_on_surface_ = boundary_on_surface;
     end
 
-    function visualize(reachable_area, terrain, robot, foothold_planning)
+    function updateBoundary(reachable_area, terrain, LP, SV)
+      % Reachable area boundary on the terrain surface for each limb
+      for limb_id = 1 : LP.getNumberOfLimb()
+        reachable_area.boundary_on_surface_(:, :, limb_id) = reachable_area.calcBoundary(terrain, LP, SV, limb_id);
+      end
+    end
+
+    function visualize(reachable_area, robot, foothold_planning)
       arguments (Input)
         reachable_area;
-        terrain           (1, 1) {mustBeA(terrain,           "Terrain")};
         robot             (1, 1) {mustBeA(robot,             "Robot")};
         foothold_planning (1, 1) {mustBeA(foothold_planning, "FootholdPlanning")};
       end
 
-      boundary = reachable_area.calcBoundary(terrain, robot, foothold_planning);
+      swing_limb_id = foothold_planning.getPlanner().getOutput().getSwingLimbId();
 
-      reachable_area.graphics_.XData = boundary(1, :);
-      reachable_area.graphics_.YData = boundary(2, :);
-      reachable_area.graphics_.ZData = boundary(3, :);
-      reachable_area.graphics_.Visible = "on";
+      for limb_id = 1 : robot.getLinkParameter().getNumberOfLimb()
+        reachable_area.graphics_(limb_id, 1).XData = reachable_area.boundary_on_surface_(1, :, limb_id);
+        reachable_area.graphics_(limb_id, 1).YData = reachable_area.boundary_on_surface_(2, :, limb_id);
+        reachable_area.graphics_(limb_id, 1).ZData = reachable_area.boundary_on_surface_(3, :, limb_id);
+
+        if (limb_id == swing_limb_id)
+          reachable_area.graphics_(limb_id, 1).Visible = "on";
+        else
+          reachable_area.graphics_(limb_id, 1).Visible = "off";
+        end
+      end
     end
 
   end
@@ -152,67 +185,68 @@ classdef ReachableArea < handle
       % Index of minimum z position on the far side boundary
       [~, idx_min] = min(boundary_position_vector_far(3, :));
 
-      reachable_area.boundary_position_vector_near_ = [fliplr(boundary_position_vector_far(:, 1 : idx_min)), boundary_position_vector_near];
-      reachable_area.boundary_position_vector_far_ = [boundary_position_vector_far(:, idx_min : length(boundary_position_vector_far))];
+      reachable_area.kBoundaryPositionVectorNear_ = [fliplr(boundary_position_vector_far(:, 1 : idx_min)), boundary_position_vector_near];
+      reachable_area.kBoundaryPositionVectorFar_ = [boundary_position_vector_far(:, idx_min : length(boundary_position_vector_far))];
 
       base_position = SV.getBasePosition();
       projection_point_of_base_position_in_world_frame = terrain.getProjectionPointInWorldFrame(base_position);
       vector_base_to_proj = projection_point_of_base_position_in_world_frame - base_position;
       % Find the points where z = ground out of dataset
-      distance_near = abs(reachable_area.boundary_position_vector_near_(3, :) - vector_base_to_proj(3, 1));
-      distance_far = abs(reachable_area.boundary_position_vector_far_(3, :) - vector_base_to_proj(3, 1));
+      distance_near = abs(reachable_area.kBoundaryPositionVectorNear_(3, :) - vector_base_to_proj(3, 1));
+      distance_far = abs(reachable_area.kBoundaryPositionVectorFar_(3, :) - vector_base_to_proj(3, 1));
       [~, idx_near] = min(distance_near(1, :));
       [~, idx_far] = min(distance_far(1, :));
 
-      min_z_distance_near = reachable_area.boundary_position_vector_near_(2, idx_near(1, 1));
-      min_z_distance_far = reachable_area.boundary_position_vector_far_(2, idx_far(1, 1));
-      reachable_area.min_range_ = min_z_distance_near;
-      reachable_area.max_range_ = min_z_distance_far;
+      min_z_distance_near = reachable_area.kBoundaryPositionVectorNear_(2, idx_near(1, 1));
+      min_z_distance_far = reachable_area.kBoundaryPositionVectorFar_(2, idx_far(1, 1));
+      reachable_area.kMinRange_ = min_z_distance_near;
+      reachable_area.kMaxRange_ = min_z_distance_far;
     end
 
-    function createReachableAreaGraphics(reachable_area, kLineColor, kLineWidth)
+    function createReachableAreaGraphics(reachable_area, kNumLimb, kLineColor, kLineWidth)
       arguments (Input)
         reachable_area;
+        kNumLimb   (1, 1) {mustBeA(kNumLimb,   "uint8")};
         kLineColor        {mustBeA(kLineColor, ["double", "string"])};
         kLineWidth (1, 1) {mustBeA(kLineWidth, "double")};
       end
 
       boundary = zeros(3, 1);  % for initialization
-      reachable_area.graphics_ = plot3(boundary(1, :), boundary(2, :), boundary(3, :), ...
-        Color = kLineColor, LineWidth = kLineWidth, Visible = "off");
+      graphics_reachable_area = matlab.graphics.chart.primitive.Line.empty;
+      for limb_id = 1 : kNumLimb
+        graphics_reachable_area(limb_id, 1) = plot3(boundary(1, :), boundary(2, :), boundary(3, :), ...
+          Color = kLineColor, LineWidth = kLineWidth, Visible = "off");
+      end
+      reachable_area.graphics_ = graphics_reachable_area;
     end
 
-    function reachable_boundary = calcBoundary(reachable_area, terrain, robot, foothold_planning)
-    % Calculation of reachable area boundary for visualization
+    function boundary_on_surface = calcBoundary(reachable_area, terrain, LP, SV, limb_id)
+    % Calculation of reachable area boundary on the terrain surface for a limb
       arguments (Input)
         reachable_area;
-        terrain           (1, 1) {mustBeA(terrain,           "Terrain")};
-        robot             (1, 1) {mustBeA(robot,             "Robot")};
-        foothold_planning (1, 1) {mustBeA(foothold_planning, "FootholdPlanning")};
+        terrain (1, 1) {mustBeA(terrain, "Terrain")};
+        LP      (1, 1) {mustBeA(LP,      "LinkParameters")};
+        SV      (1, 1) {mustBeA(SV,      "StateVariable")};
+        limb_id (1, 1) {mustBeA(limb_id, "uint8")};
       end
 
-      LP = robot.getLinkParameter();
-      SV = robot.getStateVariable();
-
-      swing_limb_id = foothold_planning.getPlanner().getOutput().getSwingLimbId();
-
       kNumJointsPerLimb = LP.getNumberOfJointsPerLimb();
-      num_joints_of_swing_limb = kNumJointsPerLimb(1, swing_limb_id);
+      num_joints_of_swing_limb = kNumJointsPerLimb(1, limb_id);
       Qi = LP.getRotationalRelationshipOfLinkFrames();
       base_orientation_euler = SV.getBaseOrientationEuler();
       % Angle from Base frame to first joint frame of limb in the World frame
-      alpha = Qi(3, num_joints_of_swing_limb * (swing_limb_id - 1) + 1) + base_orientation_euler(3, 1);
+      alpha = Qi(3, num_joints_of_swing_limb * (limb_id - 1) + 1) + base_orientation_euler(3, 1);
 
       c0 = LP.getPositionVectorFromBaseCoMToJoint();
       base_position = SV.getBasePosition();
       base_orientation_DCM = SV.getBaseOrientationDCM();
       % Position of the first joint of limb in the World frame
-      first_joint_position = base_position + base_orientation_DCM * c0(:, num_joints_of_swing_limb * (swing_limb_id - 1) + 1);
+      first_joint_position = base_position + base_orientation_DCM * c0(:, num_joints_of_swing_limb * (limb_id - 1) + 1);
 
       % Minimum range of reachable area from the first joint of limb
-      min_range_from_first_joint = reachable_area.min_range_ - c0(1, 1);
+      min_range_from_first_joint = reachable_area.kMinRange_ - c0(1, 1);
       % Maximum range of reachable area from the first joint of limb
-      max_range_from_first_joint = reachable_area.max_range_ - c0(1, 1);
+      max_range_from_first_joint = reachable_area.kMaxRange_ - c0(1, 1);
 
       [kMinJointLimit, kMaxJointLimit] = LP.getJointLimit();
       first_joint_angle_range = linspace(deg2rad(kMinJointLimit(1, 1)), deg2rad(kMaxJointLimit(1, 1)), 10);
@@ -242,7 +276,10 @@ classdef ReachableArea < handle
       arc_min = arc_min + kOffset * unit_normal_vec;
       arc_max = arc_max + kOffset * unit_normal_vec;
 
-      reachable_boundary = [arc_min, arc_max, arc_min];
+      boundary_on_surface = [arc_min, arc_max, arc_min];
+
+      reachable_area.arc_endpoint_(:, :, 1) = arc_min(:, [1, end]);
+      reachable_area.arc_endpoint_(:, :, 2) = arc_max(:, [1, end]);
     end
 
   end
@@ -250,9 +287,15 @@ classdef ReachableArea < handle
   %% Getter
   methods (Access = public)
 
-    function max_range = getMaxRange(reachable_area)
-      max_range = reachable_area.max_range_;
-    end
+    % function [kBoundaryPositionVectorNear, kBoundaryPositionVectorFar] = getBoundaryPositionVector(reachable_area)
+    %   kBoundaryPositionVectorNear = reachable_area.kBoundaryPositionVectorNear_;
+    %   kBoundaryPositionVectorFar = reachable_area.kBoundaryPositionVectorFar_;
+    % end
+
+    % function [kMinRange, kMaxRange] = getReachableRange(reachable_area)
+    %   kMinRange = reachable_area.kMinRange_;
+    %   kMaxRange = reachable_area.kMaxRange_;
+    % end
 
   end
 

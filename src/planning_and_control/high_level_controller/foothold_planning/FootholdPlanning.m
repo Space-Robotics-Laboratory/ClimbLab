@@ -4,14 +4,16 @@ classdef FootholdPlanning < handle
 % history
 %
 % Created     : 2020.04.13 by Warley Ribeiro
-% Last updated: 2024.12.12 by Masazumi Imai
+% Last updated: 2025.01.08 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
     kType_ (1, 1) string;
     planner_;
 
-    max_allowable_stride_ (1, 1) double;
+    max_allowable_stride_ (1, 1) double;  % TODO: Change name to kAllowableMaxStride_
+
+    % graspable_points_in_reachable_area_ (:, 1) GraspablePoints;
   end
 
   %% Public Methods
@@ -36,13 +38,14 @@ classdef FootholdPlanning < handle
       foothold_planning.planner_.output_.setFootholdHistory();
     end
 
-    function plan(foothold_planning, current_time, terrain, path_planning, gait_planning)
+    function plan(foothold_planning, current_time, terrain, robot, path_planning, gait_planning)
     % plan()
     %   Plan the footholds based on the moving direction and graspable points.
       arguments (Input)
         foothold_planning;
         current_time  (1, 1) {mustBeA(current_time,  "double")};
         terrain       (1, 1) {mustBeA(terrain,       "Terrain")};
+        robot         (1, 1) {mustBeA(robot,         "Robot")};
         path_planning (1, 1) {mustBeA(path_planning, "PathPlanning")};
         gait_planning (1, 1) {mustBeA(gait_planning, "GaitPlanning")};
       end
@@ -55,6 +58,9 @@ classdef FootholdPlanning < handle
         return;  % Do not update if current time is during motion
       end
 
+      robot.getKinematics().getReachableArea().updateBoundary(terrain, robot.getLinkParameter(), robot.getStateVariable());
+
+      % TODO: Change following 2 functions to foothold_planning.planner_.plan()
       % Update swing limb ID and its history
       foothold_planning.planner_.updateSwingLimbId(gait_planning);
 
@@ -102,9 +108,15 @@ classdef FootholdPlanning < handle
 
   %% Getter
   methods (Access = public)
+
     function max_allowable_stride = getMaxAllowableStride(foothold_planning)
       max_allowable_stride = foothold_planning.max_allowable_stride_;
     end
+
+    function planner = getPlanner(foothold_planning)
+      planner = foothold_planning.planner_;
+    end
+
   end
 
 end  % FootholdPlanning
