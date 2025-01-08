@@ -8,7 +8,6 @@ classdef GraspablePoints < handle
   properties (SetAccess = private, GetAccess = public)
     kDetectionType_ (1, 1) string;
     point_cloud_    (3, :) double;  % Graspable points position described in world frame [m]
-    CoG_ (3, 1) double;  % Center of Gravity of graspable points [m]
   end
   properties (SetAccess = private, GetAccess = private)
     graphics_ (1, 1) matlab.graphics.chart.primitive.Scatter;
@@ -87,20 +86,6 @@ classdef GraspablePoints < handle
       graspable_points.point_cloud_ = point_cloud;
     end
 
-    function calcCoGAroundRobot(graspable_points, kinematics, kProjectionPointOfBaseCoMInWorldFrame)
-      kGraspablePointsPositionInWorldFrame = graspable_points.point_cloud_;
-      kMaxReachableRangeFromBaseCoM = kinematics.getReachableArea().getMaxRange();
-
-      graspable_points_position_from_base_CoM = kGraspablePointsPositionInWorldFrame - kProjectionPointOfBaseCoMInWorldFrame;
-      distance_from_base_CoM = vecnorm(graspable_points_position_from_base_CoM, 2, 1);
-
-      % Index of graspable points around the robot position
-      idx = distance_from_base_CoM <= kMaxReachableRangeFromBaseCoM;
-      graspable_points_position_around_base_position = kGraspablePointsPositionInWorldFrame(:, idx);
-      % Center of Gravity of graspable points around base position
-      graspable_points.CoG_ = mean(graspable_points_position_around_base_position(:, :), 2);
-    end
-
   end
 
   %% Methods called only from Perception
@@ -162,10 +147,6 @@ classdef GraspablePoints < handle
 
     function kPointCloud = getPointCloud(graspable_points)
       kPointCloud = graspable_points.point_cloud_;
-    end
-
-    function CoG = getCoG(graspable_points)
-      CoG = graspable_points.CoG_;
     end
 
     function nearest_point = getNearestPoint(graspable_points, original_position)

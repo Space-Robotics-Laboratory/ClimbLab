@@ -56,13 +56,6 @@ classdef Terrain < handle
       terrain.createSurfaceGraphics();
     end
 
-    function update(terrain, robot)
-      SV = robot.getStateVariable();
-      kinematics = robot.getKinematics();
-      kProjectionPointOfBaseCoMInWorldFrame = terrain.getProjectionPointInWorldFrame(SV.getBasePosition());
-      terrain.graspable_points_.calcCoGAroundRobot(kinematics, kProjectionPointOfBaseCoMInWorldFrame);
-    end
-
     function visualize(terrain, time)
       arguments
         terrain;

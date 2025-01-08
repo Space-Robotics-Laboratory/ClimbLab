@@ -2,9 +2,6 @@
 
 disp(time);
 
-% Terrain
-terrain.update(robot);
-
 % Perception
 perception.sensing(terrain, robot);
 
