@@ -1,4 +1,8 @@
 classdef Robot < handle
+% Robot
+%
+% Created     : 2019.10.30 by Warley Ribeiro
+% Last updated: 2025.01.08 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -49,7 +53,7 @@ classdef Robot < handle
       % robot.EE_orientation_euler_rad = zeros(3, kNumLimb);
       % robot.EE_orientation_euler_deg = zeros(3, kNumLimb);
 
-      robot.kinematics_ = Kinematics(robot);
+      robot.kinematics_ = Kinematics(robot.LP_);
       base_position = robot.SV_.getBasePosition();
       base_orientation_dcm = robot.SV_.getBaseOrientationDCM();
       joint_angles = robot.kinematics_.computeInverse(base_position, base_orientation_dcm, ...
@@ -81,6 +85,44 @@ classdef Robot < handle
     %   Compute forward kinematics
       [robot.EE_position_, robot.EE_orientation_dcm_] = robot.kinematics_.computeForward( ...
         robot.LP_, robot.SV_);
+    end
+
+    function inverseKinematics(robot, d_time, trajectory_planning)
+    % Compute inverse kinematics
+      arguments (Input)
+        robot;
+        d_time              (1, 1) {mustBeA(d_time, "double")};
+        trajectory_planning (1, 1) {mustBeA(trajectory_planning, "TrajectoryPlanning")};
+      end
+      des_SV_last = robot.des_SV_.clone();
+      des_SV_tmp = des_SV_last;
+      LP_tmp = robot.LP_.clone();
+
+      desired_base_position = trajectory_planning.getDesiredBasePosition();
+      desired_base_orientation_dcm = robot.des_SV_.getBaseOrientationDCM();  % TODO: Get from motion planning
+      desired_EE_positions = trajectory_planning.getDesiredEEPositions();
+
+      desired_joint_angles = robot.kinematics_.computeInverse( ...
+        desired_base_position, desired_base_orientation_dcm, desired_EE_positions);
+
+      des_SV_tmp.R0 = desired_base_position;
+      des_SV_tmp.A0 = desired_base_orientation_dcm;
+      des_SV_tmp.Q0 = dc2rpy(desired_base_orientation_dcm');
+      des_SV_tmp.q  = desired_joint_angles;
+      % Update desired state variables using desired joint angle solved from IK
+      des_SV_tmp.qd  = (des_SV_tmp.q  - des_SV_last.q)  / d_time;
+      des_SV_tmp.qdd = (des_SV_tmp.qd - des_SV_last.qd) / d_time;
+      des_SV_tmp.v0  = (des_SV_tmp.R0 - des_SV_last.R0) / d_time;
+      des_SV_tmp.vd0 = (des_SV_tmp.v0 - des_SV_last.v0) / d_time;
+      des_SV_tmp.w0  = (des_SV_tmp.Q0 - des_SV_last.Q0) / d_time;
+      des_SV_tmp.wd0 = (des_SV_tmp.w0 - des_SV_last.w0) / d_time;
+      % Calculate links orientations, positions, velocities and accelerations
+      des_SV_tmp = calc_aa(LP_tmp, des_SV_tmp);
+      des_SV_tmp = calc_pos(LP_tmp, des_SV_tmp);
+      des_SV_tmp = calc_vel(LP_tmp, des_SV_tmp);
+      des_SV_tmp = calc_acc(LP_tmp, des_SV_tmp);
+
+      robot.overwriteDesiredStateVariables(des_SV_tmp);
     end
 
     function robot = forwardDynamics(robot)
