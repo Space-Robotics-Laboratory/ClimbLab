@@ -1,5 +1,8 @@
 classdef StateVariable < handle
 % State Variable
+%
+% Created     : 2024.05.20 by Masazumi Imai
+% Last updated: 2025.01.08 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)

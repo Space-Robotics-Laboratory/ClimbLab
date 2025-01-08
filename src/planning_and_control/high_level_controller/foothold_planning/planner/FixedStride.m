@@ -4,7 +4,7 @@ classdef FixedStride < handle
 % and foothold positions based on the moving direction and graspable points.
 %
 % Created     : 2020.04.13 by Warley Ribeiro
-% Last updated: 2024.12.12 by Masazumi Imai
+% Last updated: 2025.01.08 by Masazumi Imai
 
   properties (SetAccess = private, GetAccess = public)
     output_ FootholdPlannerOutput;
@@ -92,6 +92,16 @@ classdef FixedStride < handle
         fixed_stride.output_.setFootholdHistory(limb_id);
       end
 
+    end
+
+  end
+
+  %% Getter
+  methods (Access = public)
+
+    function output = getOutput(planner)
+      % TODO: Create abstract class and inherit from it like "Configuration" class
+      output = planner.output_;
     end
 
   end

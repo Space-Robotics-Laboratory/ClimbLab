@@ -2,23 +2,29 @@ classdef Kinematics < handle
 % Kinematics
 %
 % Created     : 2024.05.20 by Masazumi Imai
-% Last updated: 2024.12.17 by Masazumi Imai
+% Last updated: 2025.01.08 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
     IK_solver_ (:, 1);
+    reachable_area_;
   end
 
   %% Methods called only from Robot
   methods (Access = ?Robot)
 
-    function kinematics = Kinematics(LP)
+    function kinematics = Kinematics(config_robot, terrain, LP, SV)
     % Constructor
       arguments (Input)
+        config_robot (1, 1) {mustBeA(config_robot, "ConfigRobot")};
+        terrain (1, 1) {mustBeA(terrain, "Terrain")};
         LP (1, 1) {mustBeA(LP, "LinkParameters")};
+        SV (1, 1) {mustBeA(SV, "StateVariable")};
       end
 
       kinematics.setIKSolver(LP);
+
+      kinematics.reachable_area_ = ReachableArea(config_robot, terrain, LP, SV);
     end
 
     function [EE_position, EE_orientation_dcm] = computeForward(kinematics, LP, SV)
@@ -101,6 +107,15 @@ classdef Kinematics < handle
               "Check ""joint_allocation_type"" defined in LP file.");
       end
       kinematics.IK_solver_ = solver;
+    end
+
+  end
+
+  %% Getter
+  methods (Access = public)
+
+    function reachable_area = getReachableArea(kinematics)
+      reachable_area = kinematics.reachable_area_;
     end
 
   end

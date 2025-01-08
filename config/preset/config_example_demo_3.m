@@ -74,6 +74,10 @@ classdef config_example_demo_3
       limb_color (3, 1) double = [0.1, 0.1, 0.1];
       base_alpha (1, 1) double = 0.8;  % [0, 1]
       limb_alpha (1, 1) double = 0.8;  % [0, 1]
+
+    kVisualizeReachableArea_ (1, 1) logical = true;
+      kReachableAreaLineColor_ = "magenta";
+      kReachableAreaLineWidth_ (1, 1) double = 1.0;
   end
 
   %% Perception Parameters

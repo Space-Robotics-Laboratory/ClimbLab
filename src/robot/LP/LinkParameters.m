@@ -1,5 +1,9 @@
 classdef LinkParameters < dynamicprops & handle
-% Link Parameters
+% Link Parameter
+%
+% Created     : 2024.05.20 by Masazumi Imai
+% Last updated: 2025.01.08 by Masazumi Imai
+
   %% Properties
   properties (SetAccess = private, GetAccess = public)
     BB       (1, :) double     % Link connection relationship
@@ -158,6 +162,11 @@ classdef LinkParameters < dynamicprops & handle
 
     function joint_allocation_type = getJointAllocationType(LinkParameters)
       joint_allocation_type = LinkParameters.kJointAllocationType_;
+    end
+
+    function [kMinJointLimit, kMaxJointLimit] = getJointLimit(link_parameter)
+      kMinJointLimit = link_parameter.kJointLimit_(:, 1);
+      kMaxJointLimit = link_parameter.kJointLimit_(:, 2);
     end
 
     function joints = getJoints(LinkParameters)  % TODO: Change function name

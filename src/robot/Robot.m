@@ -53,7 +53,7 @@ classdef Robot < handle
       % robot.EE_orientation_euler_rad = zeros(3, kNumLimb);
       % robot.EE_orientation_euler_deg = zeros(3, kNumLimb);
 
-      robot.kinematics_ = Kinematics(robot.LP_);
+      robot.kinematics_ = Kinematics(config_robot, terrain, robot.LP_, robot.SV_);
       base_position = robot.SV_.getBasePosition();
       base_orientation_dcm = robot.SV_.getBaseOrientationDCM();
       joint_angles = robot.kinematics_.computeInverse(base_position, base_orientation_dcm, ...
@@ -435,6 +435,10 @@ classdef Robot < handle
 
     function state_variable = getStateVariable(robot)
       state_variable = robot.SV_;
+    end
+
+    function kinematics = getKinematics(robot)
+      kinematics = robot.kinematics_;
     end
 
     function EE_position = getEEPosition(robot, xyz, limb_id)

@@ -5,6 +5,7 @@ animation.resetGraphicsObjects(time, robot, evaluation);
 terrain.visualize(time);
 
 robot.visualize();
+robot.getKinematics().getReachableArea().visualize(terrain, robot, foothold_planning);
 
 animation.setLight();
 

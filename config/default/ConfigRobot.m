@@ -1,5 +1,8 @@
 classdef ConfigRobot < Configuration
-  % Configure robot parameters
+% Configuration for robot parameters
+%
+% Created     : 2020.07.08 by Warley Ribeiro
+% Last updated: 2024.12.25 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = {?ConfigRobot, ?Configuration}, GetAccess = public)
@@ -32,6 +35,10 @@ classdef ConfigRobot < Configuration
       limb_color (3, 1) double = [0.2, 0.2, 0.2];
       base_alpha (1, 1) double = 0.8;  % [0, 1]
       limb_alpha (1, 1) double = 0.8;  % [0, 1]
+
+    kVisualizeReachableArea_ (1, 1) logical = false;
+      kReachableAreaLineColor_ = "magenta";
+      kReachableAreaLineWidth_ (1, 1) double = 1.0;
   end
 
   %% Constructor
@@ -97,6 +104,13 @@ classdef ConfigRobot < Configuration
       limb_color = config_robot.limb_color;
       limb_alpha = config_robot.limb_alpha;
     end
+
+    function [kVisibility, kLineColor, kLineWidth] = getReachableAreaVisualSettings(config_robot)
+      kVisibility = config_robot.kVisualizeReachableArea_;
+      kLineColor = config_robot.kReachableAreaLineColor_;
+      kLineWidth = config_robot.kReachableAreaLineWidth_;
+    end
+
   end
 
 end  % ConfigRobot
