@@ -9,6 +9,24 @@ classdef ReachableArea < handle
     kVisualizeReachableArea_ (1, 1) logical;
   end
   properties (SetAccess = private, GetAccess = public)
+    % Reachable area boundary on the near side on the terrain surface in the World frame
+    %   1st dim: x-y-z coordinates
+    %   2nd dim: Number of points of boundary
+    %   3rd dim: Limb ID
+    near_boundary_on_surface_ (3, :, :) double;
+    % Reachable area boundary on the far side on the terrain surface in the World frame
+    %   1st dim: x-y-z coordinates
+    %   2nd dim: Number of points of boundary
+    %   3rd dim: Limb ID
+    far_boundary_on_surface_ (3, :, :) double;
+
+    % Reachable area boundary on the terrain surface in the World frame
+    %   1st dim: x-y-z coordinates
+    %   2nd dim: Number of points of boundary
+    %   3rd dim: Limb ID
+    boundary_on_surface_ (3, :, :) double;
+  end
+  properties (SetAccess = private, GetAccess = private)
     % Position vectors of reachable area boundary on the near side of "limb 1" in z direction of the Base frame
     % (when the robot base pose is same as origin of the World frame and first joint angle is 0)
     %   1st dim: x-y-z coordinates
@@ -20,19 +38,6 @@ classdef ReachableArea < handle
     %   2nd dim: Number of points of boundary on the near side
     kFarBoundaryInZDirOfBaseFrame_ (3, :) double;
 
-    % Reachable area boundary on the terrain surface
-    %   1st dim: x-y-z coordinates
-    %   2nd dim: Number of points of boundary
-    %   3rd dim: Limb ID
-    boundary_on_surface_ (3, :, :) double;
-
-    % Endpoint of arc on the near/far side within boundary on the terrain surface
-    %   1st dim: x-y-z coordinates
-    %   2nd dim: Number of endpoints of arc
-    %   3rd dim: Near and far side
-    arc_endpoint_ (3, 2, 2) double;
-  end
-  properties (SetAccess = private, GetAccess = private)
     graphics_ (:, 1) matlab.graphics.chart.primitive.Line;
   end
 
@@ -59,15 +64,20 @@ classdef ReachableArea < handle
 
       % Reachable area boundary on the terrain surface for each limb
       for limb_id = 1 : kNumLimb
-        boundary_on_surface(:, :, limb_id) = reachable_area.calcBoundary(terrain, LP, SV, limb_id);
+        [near_boundary_on_surface(:, :, limb_id), far_boundary_on_surface(:, :, limb_id)] = reachable_area.calcBoundary(terrain, LP, SV, limb_id);
       end
+      reachable_area.near_boundary_on_surface_ = near_boundary_on_surface;
+      reachable_area.far_boundary_on_surface_ = far_boundary_on_surface;
+
+      boundary_on_surface = [near_boundary_on_surface, far_boundary_on_surface, near_boundary_on_surface(:, 1, :)];
       reachable_area.boundary_on_surface_ = boundary_on_surface;
     end
 
     function updateBoundary(reachable_area, terrain, LP, SV)
       % Reachable area boundary on the terrain surface for each limb
       for limb_id = 1 : LP.getNumberOfLimb()
-        reachable_area.boundary_on_surface_(:, :, limb_id) = reachable_area.calcBoundary(terrain, LP, SV, limb_id);
+        [reachable_area.near_boundary_on_surface_(:, :, limb_id), reachable_area.far_boundary_on_surface_(:, :, limb_id)] = reachable_area.calcBoundary(terrain, LP, SV, limb_id);
+        reachable_area.boundary_on_surface_ = [reachable_area.near_boundary_on_surface_, reachable_area.far_boundary_on_surface_, reachable_area.near_boundary_on_surface_(:, 1, :)];
       end
     end
 
@@ -235,7 +245,7 @@ classdef ReachableArea < handle
       reachable_area.graphics_ = graphics_reachable_area;
     end
 
-    function boundary_on_surface = calcBoundary(reachable_area, terrain, LP, SV, limb_id)
+    function [arc_near_on_surface, arc_far_on_surface] = calcBoundary(reachable_area, terrain, LP, SV, limb_id)
     % Calculation of reachable area boundary on the terrain surface for a limb
       arguments (Input)
         reachable_area;
@@ -258,7 +268,7 @@ classdef ReachableArea < handle
       first_joint_position = base_position + base_orientation_DCM * c0(:, num_joints_of_limb * (limb_id - 1) + 1);
 
       % Number of points forming reachable area boundary on the terrain surface
-      kNumPointsOnSurface = 10;
+      kNumPointsOnSurface = 10 + 1;
       [kMinJointLimit, kMaxJointLimit] = LP.getJointLimit();
       first_joint_angle_range = linspace(deg2rad(kMinJointLimit(1, 1)), deg2rad(kMaxJointLimit(1, 1)), kNumPointsOnSurface);  % [rad]
 
@@ -303,10 +313,6 @@ classdef ReachableArea < handle
         arc_near_on_surface(:, boundary_id) = near_boundary_in_z_dir_for_limb(:, idx_min_dist_near, boundary_id);
         arc_far_on_surface(:, boundary_id) = far_boundary_in_z_dir_for_limb(:, idx_min_dist_far, boundary_id);
       end
-      boundary_on_surface = [arc_near_on_surface, arc_far_on_surface, arc_near_on_surface(:, 1)];
-
-      reachable_area.arc_endpoint_(:, :, 1) = arc_near_on_surface(:, [1, end]);
-      reachable_area.arc_endpoint_(:, :, 2) = arc_far_on_surface(:, [1, end]);
     end
 
   end
@@ -314,9 +320,12 @@ classdef ReachableArea < handle
   %% Getter
   methods (Access = public)
 
-    function [kNearBoundaryInZDirOfBaseFrame, kFarBoundaryInZDirOfBaseFrame] = getBoundaryInZDirOfBaseFrame(reachable_area)
-      kNearBoundaryInZDirOfBaseFrame = reachable_area.kNearBoundaryInZDirOfBaseFrame_;
-      kFarBoundaryInZDirOfBaseFrame = reachable_area.kFarBoundaryInZDirOfBaseFrame_;
+    function near_boundary_on_surface = getNearBoundaryOnTerrainSurface(reachable_area)
+      near_boundary_on_surface = reachable_area.near_boundary_on_surface_;
+    end
+
+    function far_boundary_on_surface = getFarBoundaryOnTerrainSurface(reachable_area)
+      far_boundary_on_surface = reachable_area.far_boundary_on_surface_;
     end
 
   end

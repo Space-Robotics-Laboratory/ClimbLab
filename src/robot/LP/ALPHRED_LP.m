@@ -54,6 +54,7 @@ LP.SE = [ 0 0 1 0 0 1 0 0 1 0 0 1 ];
 LP.J_type = [ "R" "R" "R"  "R" "R" "R"  "R" "R" "R"  "R" "R" "R" ];
 % Movable limitation of joint <- based on [1]
 LP.joint_limit=[-90, 90; -80, 135; -165, 165];  % [deg]
+LP.joint_limit = repmat(LP.joint_limit, [sum(LP.SE, 2), 1]); % for each joints
 
 % Distance from base CoM to Coxa joint <- based on [2]
 baseCoM2Coxa = 0.08599;  % [m]

@@ -373,16 +373,16 @@ classdef Perception < handle
   end
 
   %% Getter
-  % methods (Access = public)
+  methods (Access = public)
 
-  %   function kUseSensingCamera = getUseSensingCamera(perception)
-  %     kUseSensingCamera = perception.kUseSensingCamera_;
-  %   end
+    function kUseSensingCamera = getUseSensingCamera(perception)
+      kUseSensingCamera = perception.kUseSensingCamera_;
+    end
 
-  %   function sensed_graspable_points = getSensedGraspablePoints(perception)
-  %     sensed_graspable_points = perception.sensed_graspable_points_;
-  %   end
+    function sensed_graspable_points = getSensedGraspablePoints(perception)
+      sensed_graspable_points = perception.sensed_graspable_points_;
+    end
 
-  % end
+  end
 
 end  % Perception

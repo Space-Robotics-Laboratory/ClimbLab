@@ -6,7 +6,7 @@ disp(time);
 perception.sensing(terrain, robot);
 
 % Foothold Planning
-foothold_planning.plan(time, terrain, robot, path_planning, gait_planning);
+foothold_planning.plan(time, terrain, robot, perception, path_planning, gait_planning);
 
 % Gait Planning
 gait_planning.plan(time, robot, path_planning, foothold_planning);

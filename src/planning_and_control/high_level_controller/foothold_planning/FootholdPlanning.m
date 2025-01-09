@@ -4,7 +4,7 @@ classdef FootholdPlanning < handle
 % history
 %
 % Created     : 2020.04.13 by Warley Ribeiro
-% Last updated: 2025.01.08 by Masazumi Imai
+% Last updated: 2025.01.09 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -13,7 +13,7 @@ classdef FootholdPlanning < handle
 
     max_allowable_stride_ (1, 1) double;  % TODO: Change name to kAllowableMaxStride_
 
-    % graspable_points_in_reachable_area_ (:, 1) GraspablePoints;
+    graspable_points_in_reachable_area_ GraspablePoints;
   end
 
   %% Public Methods
@@ -36,16 +36,18 @@ classdef FootholdPlanning < handle
 
       foothold_planning.planner_.output_.setFootholdPosition(current_EE_position);
       foothold_planning.planner_.output_.setFootholdHistory();
+
+      foothold_planning.graspable_points_in_reachable_area_ = GraspablePoints();
     end
 
-    function plan(foothold_planning, current_time, terrain, robot, path_planning, gait_planning)
-    % plan()
-    %   Plan the footholds based on the moving direction and graspable points.
+    function plan(foothold_planning, current_time, terrain, robot, perception, path_planning, gait_planning)
+    % Plan the footholds based on the moving direction and graspable points.
       arguments (Input)
         foothold_planning;
         current_time  (1, 1) {mustBeA(current_time,  "double")};
         terrain       (1, 1) {mustBeA(terrain,       "Terrain")};
         robot         (1, 1) {mustBeA(robot,         "Robot")};
+        perception    (1, 1) {mustBeA(perception,    "Perception")};
         path_planning (1, 1) {mustBeA(path_planning, "PathPlanning")};
         gait_planning (1, 1) {mustBeA(gait_planning, "GaitPlanning")};
       end
@@ -59,6 +61,8 @@ classdef FootholdPlanning < handle
       end
 
       robot.getKinematics().getReachableArea().updateBoundary(terrain, robot.getLinkParameter(), robot.getStateVariable());
+
+      foothold_planning.graspable_points_in_reachable_area_.updateGraspablePointsInReachableArea(terrain, robot, perception);
 
       % TODO: Change following 2 functions to foothold_planning.planner_.plan()
       % Update swing limb ID and its history
