@@ -2,7 +2,7 @@ classdef Perception < handle
 % Perception
 %
 % Created     : 2021.02.15 by Keigo Haji
-% Last updated: 2025.01.07 by Masazumi Imai
+% Last updated: 2025.01.09 by Masazumi Imai
 
 %% Properties
   properties (SetAccess = immutable, GetAccess = private)
@@ -126,7 +126,7 @@ classdef Perception < handle
 
       kAllGraspablePointsPositionInWorldFrame = terrain.getGraspablePoints().getPointCloud();
       kInitialBasePositionInWorldFrame = SV.getBasePosition();
-      kProjectionPointOfInitialBasePositionInWorldFrame = terrain.getProjectionPointInWorldFrame(kInitialBasePositionInWorldFrame);
+      kProjectionPointOfInitialBasePositionInWorldFrame = terrain.getProjectionPointInWorldFrameInZDirOfGroundFrame(kInitialBasePositionInWorldFrame);
       sensed_graspable_points_position = NaN(size(kAllGraspablePointsPositionInWorldFrame));
 
       switch (config_perception.getInitialKnownAreaShape())
@@ -371,5 +371,18 @@ classdef Perception < handle
     end
 
   end
+
+  %% Getter
+  % methods (Access = public)
+
+  %   function kUseSensingCamera = getUseSensingCamera(perception)
+  %     kUseSensingCamera = perception.kUseSensingCamera_;
+  %   end
+
+  %   function sensed_graspable_points = getSensedGraspablePoints(perception)
+  %     sensed_graspable_points = perception.sensed_graspable_points_;
+  %   end
+
+  % end
 
 end  % Perception

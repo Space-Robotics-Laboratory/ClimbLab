@@ -2,7 +2,7 @@ classdef Terrain < handle
 % Terrain (map surface) parameters
 %
 % Created     : 2020.04.06 by Warley Ribeiro
-% Last updated: 2025.01.06 by Masazumi Imai
+% Last updated: 2025.01.09 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = private, GetAccess = public)
@@ -213,8 +213,15 @@ classdef Terrain < handle
       norm_vector_at_point = terrain.kNormalVectors_(:, idx(idx_min));
     end
 
-    function projection_point = getProjectionPointInWorldFrame(terrain, point)
-    % Obtain projection points of given points in the world frame
+    function projection_point = getProjectionPointInWorldFrameInZDirOfGroundFrame(terrain, point)
+    % Obtain projection points of given points in the world frame in the z direction of the Ground frame
+    %
+    %       O  <- point
+    %         '. ,.     ,//
+    %           '. '.,//
+    %             ;X'  <- projection_point
+    %          ,//
+    %       ,//
     %
     % Input  - point (3 x n): Given position of points to be projected on the terrain surface in the World frame
     % Output - projection_point (3 x n): Projection points position of given points in the World frame

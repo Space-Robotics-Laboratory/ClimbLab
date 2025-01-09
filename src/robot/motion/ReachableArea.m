@@ -2,21 +2,23 @@ classdef ReachableArea < handle
 % Reachable area
 %
 % Created     : 2020.05.13 by Yusuke Koizumi
-% Last updated: 2025.01.08 by Masazumi Imai
+% Last updated: 2025.01.09 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = immutable, GetAccess = private)
     kVisualizeReachableArea_ (1, 1) logical;
   end
   properties (SetAccess = private, GetAccess = public)
-    % Position vectors of reachable boundary on the near side
-    kBoundaryPositionVectorNear_
-    % Position vectors of reachable boundary on the far side
-    kBoundaryPositionVectorFar_
-    % Minimum range from base CoM
-    kMinRange_ (1, 1) double;
-    % Maximum range from base CoM
-    kMaxRange_ (1, 1) double;
+    % Position vectors of reachable area boundary on the near side of "limb 1" in z direction of the Base frame
+    % (when the robot base pose is same as origin of the World frame and first joint angle is 0)
+    %   1st dim: x-y-z coordinates
+    %   2nd dim: Number of points of boundary on the near side
+    kNearBoundaryInZDirOfBaseFrame_ (3, :) double;
+    % Position vectors of reachable area boundary on the far side of "limb 1" in z direction of the Base frame
+    % (when the robot base pose is same as origin of the World frame and first joint angle is 0)
+    %   1st dim: x-y-z coordinates
+    %   2nd dim: Number of points of boundary on the near side
+    kFarBoundaryInZDirOfBaseFrame_ (3, :) double;
 
     % Reachable area boundary on the terrain surface
     %   1st dim: x-y-z coordinates
@@ -117,9 +119,13 @@ classdef ReachableArea < handle
       % Set initial joint angle
       SV_tmp.q = zeros(kNumJoints, 1);
 
+      % Joint angle of first joint is fixed to 0 [deg]
+      theta_1 = 0.0;
+
+      % TODO: Need to consider all reachable area if need. The following 4 for loop is not enough
       % Change the joint 2 when joint 3 bends up maximally
       d_theta_2 = 0.5;
-      SV_tmp.q(1, 1) = deg2rad(45.0);
+      SV_tmp.q(1, 1) = deg2rad(theta_1);
       SV_tmp.q(3, 1) = deg2rad(kMaxJointLimit(3, 1));
       range_theta_2 = kMinJointLimit(2, 1) : d_theta_2 : kMaxJointLimit(2, 1);
       end_effector_position_tmp_1 = NaN(numel(range_theta_2), 3);
@@ -134,7 +140,7 @@ classdef ReachableArea < handle
       end
 
       % Change the joint 2 when joint 3 bends down minimally
-      SV_tmp.q(1, 1) = deg2rad(45.0);
+      SV_tmp.q(1, 1) = deg2rad(theta_1);
       SV_tmp.q(3, 1) = deg2rad(kMinJointLimit(3, 1));
       end_effector_position_tmp_2 = NaN(numel(range_theta_2), 3);
       cnt = 1;
@@ -149,7 +155,7 @@ classdef ReachableArea < handle
 
       % Change the joint 3 when joint 2 bends down minimally
       d_theta_3 = d_theta_2;
-      SV_tmp.q(1, 1) = deg2rad(45.0);
+      SV_tmp.q(1, 1) = deg2rad(theta_1);
       SV_tmp.q(2, 1) = deg2rad(kMinJointLimit(2, 1));
       range_theta_3 = kMinJointLimit(3, 1) : d_theta_3 : kMaxJointLimit(3, 1);
       end_effector_position_tmp_3 = NaN(numel(range_theta_3), 3);
@@ -164,8 +170,8 @@ classdef ReachableArea < handle
       end
 
       % Change the joint 3 when joint 2 bends up maximally
-      SV_tmp.q(1, 1) = deg2rad(45.0);
-      SV_tmp.q(2, 1) = deg2rad(kMinJointLimit(2, 1));
+      SV_tmp.q(1, 1) = deg2rad(theta_1);
+      SV_tmp.q(2, 1) = deg2rad(kMaxJointLimit(2, 1));
       end_effector_position_tmp_4 = NaN(numel(range_theta_3), 3);
       cnt = 1;
       for theta_3 = range_theta_3
@@ -177,30 +183,39 @@ classdef ReachableArea < handle
         cnt = cnt + 1;
       end
 
-      % Position vectors of reachable boundary on the near side
-      boundary_position_vector_near = [end_effector_position_tmp_2', end_effector_position_tmp_4'];
-      % Position vectors of reachable boundary on the far side
-      boundary_position_vector_far = [end_effector_position_tmp_3', end_effector_position_tmp_1'];
+      %%% Calculation of reachable area boundary on the near/far side in the first joint frame
+      position_vector = [end_effector_position_tmp_1', end_effector_position_tmp_2', end_effector_position_tmp_3', end_effector_position_tmp_4'];  % 3 x n matrix
+      % Index of minimum y position on the position vector
+      [~, idx_y_min] = min(position_vector(2, :));
+      min_y_point = position_vector(2, idx_y_min);
+      % Index of minimum z position on the position vector
+      [~, idx_z_min] = min(position_vector(3, :));
+      % Index of maximum z position on the position vector
+      [~, idx_z_max] = max(position_vector(3, :));
+      kDeltaZ = 0.005;
+      kZRange = position_vector(3, idx_z_min) : kDeltaZ : position_vector(3, idx_z_max) - kDeltaZ;
+      boundary_near_side = NaN(3, length(kZRange));
+      boundary_far_side = NaN(3, length(kZRange));
+      boundary_near_side(:, 1) = position_vector(:, idx_z_min);
+      boundary_far_side(:, 1) = position_vector(:, idx_z_min);
+      cnt = 2;
+      for z_point = kZRange  % z_point: z position of point for getting boundary of reachable area
+        % Index for points with z distance from z_point is small
+        idx_small_z_dist = position_vector(3, :) > z_point & position_vector(3, :) <= z_point + kDeltaZ;
+        points_with_small_z_dist = position_vector(:, idx_small_z_dist);
+        % Index of point for boundary on the near side
+        [~, idx_near] = min(points_with_small_z_dist(2, :) - min_y_point);
+        boundary_near_side(:, cnt) = points_with_small_z_dist(:, idx_near);
+        % Index of point for boundary on the far side
+        [~, idx_far] = max(points_with_small_z_dist(2, :) - min_y_point);
+        boundary_far_side(:, cnt) = points_with_small_z_dist(:, idx_far);
+        cnt = cnt + 1;
+      end
+      boundary_near_side(:, end) = position_vector(:, idx_z_max);
+      boundary_far_side(:, end) = position_vector(:, idx_z_max);
 
-      % Index of minimum z position on the far side boundary
-      [~, idx_min] = min(boundary_position_vector_far(3, :));
-
-      reachable_area.kBoundaryPositionVectorNear_ = [fliplr(boundary_position_vector_far(:, 1 : idx_min)), boundary_position_vector_near];
-      reachable_area.kBoundaryPositionVectorFar_ = [boundary_position_vector_far(:, idx_min : length(boundary_position_vector_far))];
-
-      base_position = SV.getBasePosition();
-      projection_point_of_base_position_in_world_frame = terrain.getProjectionPointInWorldFrame(base_position);
-      vector_base_to_proj = projection_point_of_base_position_in_world_frame - base_position;
-      % Find the points where z = ground out of dataset
-      distance_near = abs(reachable_area.kBoundaryPositionVectorNear_(3, :) - vector_base_to_proj(3, 1));
-      distance_far = abs(reachable_area.kBoundaryPositionVectorFar_(3, :) - vector_base_to_proj(3, 1));
-      [~, idx_near] = min(distance_near(1, :));
-      [~, idx_far] = min(distance_far(1, :));
-
-      min_z_distance_near = reachable_area.kBoundaryPositionVectorNear_(2, idx_near(1, 1));
-      min_z_distance_far = reachable_area.kBoundaryPositionVectorFar_(2, idx_far(1, 1));
-      reachable_area.kMinRange_ = min_z_distance_near;
-      reachable_area.kMaxRange_ = min_z_distance_far;
+      reachable_area.kNearBoundaryInZDirOfBaseFrame_ = boundary_near_side;
+      reachable_area.kFarBoundaryInZDirOfBaseFrame_ = boundary_far_side;
     end
 
     function createReachableAreaGraphics(reachable_area, kNumLimb, kLineColor, kLineWidth)
@@ -231,55 +246,67 @@ classdef ReachableArea < handle
       end
 
       kNumJointsPerLimb = LP.getNumberOfJointsPerLimb();
-      num_joints_of_swing_limb = kNumJointsPerLimb(1, limb_id);
+      num_joints_of_limb = kNumJointsPerLimb(1, limb_id);
       Qi = LP.getRotationalRelationshipOfLinkFrames();
-      base_orientation_euler = SV.getBaseOrientationEuler();
-      % Angle from Base frame to first joint frame of limb in the World frame
-      alpha = Qi(3, num_joints_of_swing_limb * (limb_id - 1) + 1) + base_orientation_euler(3, 1);
+      % Angle from Base frame to first joint frame of limb in the Base frame [rad]
+      alpha = Qi(3, num_joints_of_limb * (limb_id - 1) + 1);
 
       c0 = LP.getPositionVectorFromBaseCoMToJoint();
       base_position = SV.getBasePosition();
       base_orientation_DCM = SV.getBaseOrientationDCM();
       % Position of the first joint of limb in the World frame
-      first_joint_position = base_position + base_orientation_DCM * c0(:, num_joints_of_swing_limb * (limb_id - 1) + 1);
+      first_joint_position = base_position + base_orientation_DCM * c0(:, num_joints_of_limb * (limb_id - 1) + 1);
 
-      % Minimum range of reachable area from the first joint of limb
-      min_range_from_first_joint = reachable_area.kMinRange_ - c0(1, 1);
-      % Maximum range of reachable area from the first joint of limb
-      max_range_from_first_joint = reachable_area.kMaxRange_ - c0(1, 1);
-
+      % Number of points forming reachable area boundary on the terrain surface
+      kNumPointsOnSurface = 10;
       [kMinJointLimit, kMaxJointLimit] = LP.getJointLimit();
-      first_joint_angle_range = linspace(deg2rad(kMinJointLimit(1, 1)), deg2rad(kMaxJointLimit(1, 1)), 10);
+      first_joint_angle_range = linspace(deg2rad(kMinJointLimit(1, 1)), deg2rad(kMaxJointLimit(1, 1)), kNumPointsOnSurface);  % [rad]
 
-      % Arc in x-y plane of the World frame
-      arc_min = [ min_range_from_first_joint * cos(first_joint_angle_range);
-                  min_range_from_first_joint * sin(first_joint_angle_range);
-                  zeros(1, length(first_joint_angle_range))];
-      arc_max = [ max_range_from_first_joint * cos(-first_joint_angle_range);
-                  max_range_from_first_joint * sin(-first_joint_angle_range);
-                  zeros(1, length(first_joint_angle_range))];
-      arc_min = rot_z(alpha) * arc_min;
-      arc_max = rot_z(alpha) * arc_max;
-      % Arc in x-y plane of the Ground frame
-      kInclination = terrain.getSurfaceInclination();
-      arc_min = rpy2dc(deg2rad(kInclination))' * arc_min;
-      arc_max = rpy2dc(deg2rad(kInclination))' * arc_max;
+      % Angle from Base frame to first joint frame of "limb 1" in the Base frame [rad]
+      alpha_1 = Qi(3, 1);
+      % Angle from first joint frame of "limb 1" to first joint frame of limb in the Base frame [rad]
+      beta = alpha - alpha_1;
+      % Position of the first joint (joint 1) of "limb 1" in the Base frame
+      joint_1_position_in_Base_frame = c0(:, 1);
+      % Boundary in z direction in the joint 1 frame
+      near_boundary_in_z_dir = reachable_area.kNearBoundaryInZDirOfBaseFrame_ - joint_1_position_in_Base_frame;
+      far_boundary_in_z_dir = reachable_area.kFarBoundaryInZDirOfBaseFrame_ - joint_1_position_in_Base_frame;
+      % Boundary in z direction for each first joint angle in the joint 1 frame
+      near_boundary_in_z_dir_for_each_angle = zeros(3, length(near_boundary_in_z_dir), length(first_joint_angle_range));
+      far_boundary_in_z_dir_for_each_angle = zeros(3, length(far_boundary_in_z_dir), length(first_joint_angle_range));
+      % Boundary in z direction for limb in the World frame
+      near_boundary_in_z_dir_for_limb = zeros(size(near_boundary_in_z_dir_for_each_angle));
+      far_boundary_in_z_dir_for_limb = zeros(size(far_boundary_in_z_dir_for_each_angle));
+      cnt = 1;
+      for theta_1 = beta + first_joint_angle_range
+        near_boundary_in_z_dir_for_each_angle(:, :, cnt) = rot_z(theta_1) * near_boundary_in_z_dir;
+        far_boundary_in_z_dir_for_each_angle(:, :, cnt) = rot_z(theta_1) * far_boundary_in_z_dir;
 
-      % Arc in the first joint frame
-      projection_point_of_first_joint_position_in_world_frame = terrain.getProjectionPointInWorldFrame(first_joint_position);
-      vector_joint_to_proj = projection_point_of_first_joint_position_in_world_frame - first_joint_position;
-      arc_min = arc_min + first_joint_position + vector_joint_to_proj;
-      arc_max = arc_max + first_joint_position + vector_joint_to_proj;
-      % Offset from actual position so that reachable area should be drawn a bit higher not to be buried in the terrain surface visualization
-      kOffset = 0.005;
-      unit_normal_vec = -vector_joint_to_proj / norm(vector_joint_to_proj);
-      arc_min = arc_min + kOffset * unit_normal_vec;
-      arc_max = arc_max + kOffset * unit_normal_vec;
+        near_boundary_in_z_dir_for_limb(:, :, cnt) = base_orientation_DCM * near_boundary_in_z_dir_for_each_angle(:, :, cnt) + first_joint_position;
+        far_boundary_in_z_dir_for_limb(:, :, cnt) = base_orientation_DCM * far_boundary_in_z_dir_for_each_angle(:, :, cnt) + first_joint_position;
+        cnt = cnt + 1;
+      end
 
-      boundary_on_surface = [arc_min, arc_max, arc_min];
+      % Calculation of reachable area boundary on the terrain surface
+      arc_near_on_surface = zeros(3, kNumPointsOnSurface);
+      arc_far_on_surface = zeros(3, kNumPointsOnSurface);
+      for boundary_id = 1 : kNumPointsOnSurface
+        % Projection points of boundary in z direction for limb in the World frame
+        projection_points_of_near_boundary_in_z_dir = terrain.getProjectionPointInWorldFrameInZDirOfGroundFrame(near_boundary_in_z_dir_for_limb(:, :, boundary_id));
+        projection_points_of_far_boundary_in_z_dir = terrain.getProjectionPointInWorldFrameInZDirOfGroundFrame(far_boundary_in_z_dir_for_limb(:, :, boundary_id));
+        % Distance between before and after projection
+        distance_near_boundary_points = vecnorm(near_boundary_in_z_dir_for_limb(:, :, boundary_id) - projection_points_of_near_boundary_in_z_dir, 2);
+        distance_far_boundary_points = vecnorm(far_boundary_in_z_dir_for_limb(:, :, boundary_id) - projection_points_of_far_boundary_in_z_dir, 2);
+        % Index of minimum distance
+        [~, idx_min_dist_near] = min(distance_near_boundary_points);
+        [~, idx_min_dist_far] = min(distance_far_boundary_points);
+        arc_near_on_surface(:, boundary_id) = near_boundary_in_z_dir_for_limb(:, idx_min_dist_near, boundary_id);
+        arc_far_on_surface(:, boundary_id) = far_boundary_in_z_dir_for_limb(:, idx_min_dist_far, boundary_id);
+      end
+      boundary_on_surface = [arc_near_on_surface, arc_far_on_surface, arc_near_on_surface(:, 1)];
 
-      reachable_area.arc_endpoint_(:, :, 1) = arc_min(:, [1, end]);
-      reachable_area.arc_endpoint_(:, :, 2) = arc_max(:, [1, end]);
+      reachable_area.arc_endpoint_(:, :, 1) = arc_near_on_surface(:, [1, end]);
+      reachable_area.arc_endpoint_(:, :, 2) = arc_far_on_surface(:, [1, end]);
     end
 
   end
@@ -287,15 +314,10 @@ classdef ReachableArea < handle
   %% Getter
   methods (Access = public)
 
-    % function [kBoundaryPositionVectorNear, kBoundaryPositionVectorFar] = getBoundaryPositionVector(reachable_area)
-    %   kBoundaryPositionVectorNear = reachable_area.kBoundaryPositionVectorNear_;
-    %   kBoundaryPositionVectorFar = reachable_area.kBoundaryPositionVectorFar_;
-    % end
-
-    % function [kMinRange, kMaxRange] = getReachableRange(reachable_area)
-    %   kMinRange = reachable_area.kMinRange_;
-    %   kMaxRange = reachable_area.kMaxRange_;
-    % end
+    function [kNearBoundaryInZDirOfBaseFrame, kFarBoundaryInZDirOfBaseFrame] = getBoundaryInZDirOfBaseFrame(reachable_area)
+      kNearBoundaryInZDirOfBaseFrame = reachable_area.kNearBoundaryInZDirOfBaseFrame_;
+      kFarBoundaryInZDirOfBaseFrame = reachable_area.kFarBoundaryInZDirOfBaseFrame_;
+    end
 
   end
 
