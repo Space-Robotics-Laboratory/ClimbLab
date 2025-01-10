@@ -1,4 +1,8 @@
 classdef ConfigFootholdPlanning < Configuration
+% Configuration for foothold planning parameters
+%
+% Created     : 2020.07.08 by Warley Ribeiro
+% Last updated: 2025.01.09 by Masazumi Imai
 
   %% Properties
   properties (SetAccess = {?ConfigFootholdPlanning, ?Configuration}, GetAccess = public)
@@ -7,7 +11,7 @@ classdef ConfigFootholdPlanning < Configuration
     foothold_selection_type (1, 1) string = "fixed_stride";
 
     % For "fixed_stride"
-    max_allowable_stride (1, 1) double = 0.05;  % [m]
+    kAllowableMaxStride_ (1, 1) double = 0.05;  % [m]
   end
 
   %% Constructor
@@ -26,11 +30,6 @@ classdef ConfigFootholdPlanning < Configuration
 
 
       config_foothold_planning = config_foothold_planning.override(config);
-
-      % TODO: This should be delete
-      if (config_foothold_planning.foothold_selection_type ~= "fixed_stride")
-        config_foothold_planning.max_allowable_stride = NaN;
-      end
     end
 
   end
@@ -40,8 +39,8 @@ classdef ConfigFootholdPlanning < Configuration
     function foothold_selection_type = getFootholdSelectionType(config_foothold_planning)
       foothold_selection_type = config_foothold_planning.foothold_selection_type;
     end
-    function max_allowable_stride = getMaxAllowableStride(config_foothold_planning)
-      max_allowable_stride = config_foothold_planning.max_allowable_stride;
+    function kAllowableMaxStride_ = getAllowableMaxStride(config_foothold_planning)
+      kAllowableMaxStride_ = config_foothold_planning.kAllowableMaxStride_;
     end
   end
 end  % ConfigFootholdPlanning

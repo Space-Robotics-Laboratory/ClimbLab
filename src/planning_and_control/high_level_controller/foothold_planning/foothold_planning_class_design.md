@@ -22,7 +22,7 @@ classDiagram
     - setPlanner()
     + getSwingLimbId()
     + getFootholdPosition()
-    + getMaxAllowableStride()
+    + getAllowableMaxStride()
     + getStepHeight()
   }
   FootholdPlanning *-- FootholdPlanner

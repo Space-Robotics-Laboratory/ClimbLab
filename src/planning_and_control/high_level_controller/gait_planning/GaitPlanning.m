@@ -110,6 +110,10 @@ classdef GaitPlanning < handle
       type = gait_planning.kType_;
     end
 
+    function scheduler = getScheduler(gait_planning)
+      scheduler = gait_planning.scheduler_;
+    end
+
     function step_height = getStepHeight(gait_planning)
       step_height = gait_planning.kStepHeight_;
     end

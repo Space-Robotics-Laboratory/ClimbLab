@@ -43,4 +43,17 @@ classdef PathPlanning < handle
 
   end
 
+  %% Getter
+  methods (Access = public)
+
+    function global_path = getGlobalPath(path_planning)
+      global_path = path_planning.global_path_;
+    end
+
+    function local_path = getLocalPath(path_planning)
+      local_path = path_planning.local_path_;
+    end
+
+  end
+
 end  % PathPlanning

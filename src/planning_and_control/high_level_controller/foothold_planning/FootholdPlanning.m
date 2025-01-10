@@ -11,7 +11,7 @@ classdef FootholdPlanning < handle
     kType_ (1, 1) string;
     planner_;
 
-    max_allowable_stride_ (1, 1) double;  % TODO: Change name to kAllowableMaxStride_
+    kAllowableMaxStride_ (1, 1) double;  % TODO: Change name to kAllowableMaxStride_
 
     graspable_points_in_reachable_area_ GraspablePoints;
   end
@@ -32,7 +32,7 @@ classdef FootholdPlanning < handle
       foothold_planning.kType_ = config_foothold_planning.getFootholdSelectionType();
       foothold_planning.setPlanner(kNumLimb);
 
-      foothold_planning.max_allowable_stride_ = config_foothold_planning.getMaxAllowableStride();
+      foothold_planning.kAllowableMaxStride_ = config_foothold_planning.getAllowableMaxStride();
 
       foothold_planning.planner_.output_.setFootholdPosition(current_EE_position);
       foothold_planning.planner_.output_.setFootholdHistory();
@@ -56,7 +56,7 @@ classdef FootholdPlanning < handle
         return;
       end
 
-      if (~foothold_planning.isUpdateTiming(current_time, gait_planning.scheduler_.output_.getLandingTimings()))
+      if (~foothold_planning.isUpdateTiming(current_time, robot, gait_planning))
         return;  % Do not update if current time is during motion
       end
 
@@ -64,12 +64,15 @@ classdef FootholdPlanning < handle
 
       foothold_planning.graspable_points_in_reachable_area_.updateGraspablePointsInReachableArea(terrain, robot, perception);
 
-      % TODO: Change following 2 functions to foothold_planning.planner_.plan()
-      % Update swing limb ID and its history
-      foothold_planning.planner_.updateSwingLimbId(gait_planning);
+      foothold_planning.planner_.plan(robot, path_planning, ...
+        foothold_planning.graspable_points_in_reachable_area_, foothold_planning.kAllowableMaxStride_);
 
-      % Update foothold position and its history
-      foothold_planning.planner_.updateFootholdPositions(terrain, path_planning, foothold_planning);
+      % TODO: Change following 2 functions to foothold_planning.planner_.plan()
+      % % Update swing limb ID and its history
+      % foothold_planning.planner_.updateSwingLimbId(gait_planning);
+
+      % % Update foothold position and its history
+      % foothold_planning.planner_.updateFootholdPositions(terrain, path_planning, foothold_planning);
     end
 
   end
@@ -77,17 +80,29 @@ classdef FootholdPlanning < handle
   %% Private Methods
   methods (Access = private)
 
-    function boolean = isUpdateTiming(foothold_planning, current_time, landing_time)
+    function is_update_timing = isUpdateTiming(foothold_planning, current_time, robot, gait_planning)
       arguments (Input)
         foothold_planning;
-        current_time (1, 1) {mustBeA(current_time,  "double")};
-        landing_time (1, :) {mustBeA(landing_time,  "double")};
+        current_time  (1, 1) {mustBeA(current_time,  "double")};
+        robot         (1, 1) {mustBeA(robot,         "Robot")};
+        gait_planning (1, :) {mustBeA(gait_planning, "GaitPlanning")};
       end
-      if (current_time ~= 0.0 && ...
-          any(current_time ~= landing_time(1, foothold_planning.planner_.output_.getSwingLimbId())))
-        boolean = false;
-      else
-        boolean = true;
+
+      is_update_timing = false;
+
+      if (current_time == 0.0)  % Initial condition
+        is_update_timing = true;
+        return;
+      end
+
+      landing_time = gait_planning.getScheduler().getOutput().getLandingTimings();  % [s] (1 x kNumLimb)
+      swing_limb_id = foothold_planning.planner_.getOutput().getSwingLimbId();
+      is_swing_limb_landing_time = all(current_time == landing_time(1, swing_limb_id));
+
+      is_all_limb_grasping = all(robot.getStateVariable().getIsGrasping());
+
+      if (is_swing_limb_landing_time && is_all_limb_grasping)
+        is_update_timing = true;
       end
     end
 
@@ -102,6 +117,8 @@ classdef FootholdPlanning < handle
           planner = [];
         case "fixed_stride"
           planner = FixedStride(kNumLimb);
+        case "max_stride_to_goal_in_reachable_area"
+          planner = MaxStrideToGoalInReachableArea(kNumLimb);
         otherwise
           error("Invalid foothold selection type is specified!!");
       end
@@ -113,8 +130,8 @@ classdef FootholdPlanning < handle
   %% Getter
   methods (Access = public)
 
-    function max_allowable_stride = getMaxAllowableStride(foothold_planning)
-      max_allowable_stride = foothold_planning.max_allowable_stride_;
+    function kAllowableMaxStride = getAllowableMaxStride(foothold_planning)
+      kAllowableMaxStride = foothold_planning.kAllowableMaxStride_;
     end
 
     function planner = getPlanner(foothold_planning)

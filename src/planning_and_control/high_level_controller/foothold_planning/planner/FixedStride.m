@@ -62,7 +62,7 @@ classdef FixedStride < handle
       moving_direction = path_planning.local_path_.getMovingDirection();
       swing_limb_id = fixed_stride.output_.getSwingLimbId();
       current_foothold_positions = fixed_stride.output_.getFootholdPosition();
-      max_allowable_stride = foothold_planning.getMaxAllowableStride();
+      max_allowable_stride = foothold_planning.getAllowableMaxStride();
 
       kNumLimb = uint8(size(current_foothold_positions, 2));
       ideal_next_EE_positions = zeros(3, kNumLimb);

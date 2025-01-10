@@ -124,8 +124,8 @@ classdef config_example_demo_3
   %% Foothold Planning Parameters
   properties (SetAccess = private, GetAccess = {?ConfigFootholdPlanning, ?Configuration})
     % Foothold selection type
-    foothold_selection_type (1, 1) string = "fixed_stride";  % TODO: max_stride_to_goal_in_reachable_area
-    max_allowable_stride (1, 1) double = 0.3;  % [m]
+    foothold_selection_type (1, 1) string = "max_stride_to_goal_in_reachable_area";  % TODO: max_stride_to_goal_in_reachable_area
+    kAllowableMaxStride_ (1, 1) double = 0.3;  % [m]
 
     % Visualization
     % kVisualizeNextDesiredFootholdPosition_ (1, 1) logical = true;  % TODO: Implement this

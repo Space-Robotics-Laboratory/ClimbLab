@@ -16,7 +16,7 @@ classdef PeriodicGait < handle
 
     output_ GaitSchedulerOutput;
   end
-  properties (Access = public)
+  properties (Access = private)
     % Number of limb motions starting at different timing during gait cycle
     kNumLimbMotionStartingAtDiffTiming (1, 1) double;
   end
@@ -125,9 +125,15 @@ classdef PeriodicGait < handle
 
   %% Getter
   methods (Access = public)
+
     function sequence = getSequence(periodic_gait)
       sequence = periodic_gait.kSequence_;
     end
+
+    function output = getOutput(periodic_gait)
+      output = periodic_gait.output_;
+    end
+
   end
 
   %% Methods for Visualization
